@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GrowOS">
+<meta name="theme-color" content="#0d0d0d">
+<title>GrowOS</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0d0d0d;--bg2:#121212;--bg3:#181818;--bg4:#202020;--bg5:#282828;
+  --g:#a3e635;--gd:rgba(163,230,53,.08);--g3:#4d7c0f;
+  --w:#efefef;--w2:#aaa;--w3:#666;--w4:#333;
+  --a:#fbbf24;--ad:rgba(251,191,36,.08);
+  --b:#60a5fa;--bd:rgba(96,165,250,.08);
+  --r:#f87171;--rd:rgba(248,113,113,.08);
+  --pu:#c084fc;--pud:rgba(192,132,252,.08);
+  --bdr:#1f1f1f;--bdr2:#2a2a2a;--rad:8px;--rad2:14px;
+  --safe-top:env(safe-area-inset-top);--safe-bot:env(safe-area-inset-bottom);
+}
+html,body{height:100%;background:var(--bg);color:var(--w);font-family:'IBM Plex Mono',monospace;font-size:12px;overflow-x:hidden}
+nav{display:flex;align-items:center;border-bottom:1px solid var(--bdr);background:var(--bg);position:sticky;top:0;z-index:200;overflow-x:auto;padding-top:var(--safe-top)}
+.logo{padding:11px 14px;font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:14px;color:var(--g);border-right:1px solid var(--bdr);white-space:nowrap;flex-shrink:0}
+.logo em{color:var(--w3);font-style:normal;font-weight:400}
+.nt{padding:11px 12px;font-size:9px;color:var(--w3);cursor:pointer;border:none;background:none;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.nt.on{color:var(--g);border-bottom-color:var(--g)}
+.live-ind{display:flex;align-items:center;gap:5px;margin-left:auto;padding:0 12px;font-size:9px;color:var(--w3);border-left:1px solid var(--bdr);flex-shrink:0;white-space:nowrap}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--w4);transition:background .3s}
+.dot.on{background:var(--g);animation:blink 2s infinite}
+.dot.err{background:var(--r)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.page{display:none;padding:14px;gap:12px;flex-direction:column;max-width:1100px;margin:0 auto;padding-bottom:calc(14px + var(--safe-bot))}
+.page.on{display:flex}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:380px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad2);padding:14px}
+.sm{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:11px}
+.sec{font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:var(--w3);margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.sec::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--g);flex-shrink:0}
+.tile{border-radius:var(--rad2);padding:14px 12px;border:1px solid var(--bdr);background:var(--bg2);display:flex;flex-direction:column;gap:5px;position:relative;overflow:hidden}
+.tile-val{font-family:'IBM Plex Sans',sans-serif;font-size:28px;font-weight:600;line-height:1;letter-spacing:-0.5px}
+.tile-unit{font-size:10px;color:var(--w3)}
+.tile-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w3)}
+.tile-badge{font-size:9px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:2px;align-self:flex-start}
+.tile-accent{position:absolute;bottom:0;left:0;right:0;height:2px;transition:background .5s}
+.badge{font-size:9px;padding:2px 8px;border-radius:20px;display:inline-block;white-space:nowrap}
+.ok{color:var(--g);background:var(--gd)}
+.warn{color:var(--a);background:var(--ad)}
+.info{color:var(--b);background:var(--bd)}
+.danger{color:var(--r);background:var(--rd)}
+.off-st{color:var(--w3);background:var(--bg4)}
+.purp{color:var(--pu);background:var(--pud)}
+.vpd-bar{position:relative;height:14px;border-radius:7px;background:linear-gradient(to right,#1e3a8a 0%,#2563eb 15%,#15803d 30%,#4ade80 48%,#ca8a04 70%,#c2410c 85%,#dc2626 100%)}
+.vpd-pin{position:absolute;top:-5px;width:2px;height:24px;background:var(--w);border-radius:1px;transform:translateX(-50%);transition:left .8s ease}
+.vpd-pin::before{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--w);border:2px solid var(--bg)}
+.range-ov{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.12);border-left:2px solid rgba(255,255,255,.5);border-right:2px solid rgba(255,255,255,.5);pointer-events:none;transition:left .3s,right .3s}
+input,select,textarea{background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rad);color:var(--w);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:7px 9px;outline:none;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--g3)}
+select option{background:var(--bg3)}
+textarea{resize:vertical;min-height:60px}
+input[type=range]{-webkit-appearance:none;height:3px;border-radius:2px;background:var(--bdr2);padding:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--g);cursor:pointer}
+input[type=time]{color-scheme:dark}
+.btn{background:var(--gd);border:1px solid var(--g3);color:var(--g);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.8px;padding:7px 12px;border-radius:var(--rad);cursor:pointer;transition:all .15s;text-transform:uppercase}
+.btn:hover{background:var(--g3);color:var(--bg)}
+.btn:active{transform:scale(.97)}
+.btn.on{background:var(--g3);color:var(--bg)}
+.btn-g{background:transparent;border:1px solid var(--bdr2);color:var(--w3)}
+.btn-g:hover{color:var(--w2);background:var(--bg3)}
+.btn-w{background:var(--ad);border:1px solid rgba(251,191,36,.25);color:var(--a)}
+.btn-r{background:var(--rd);border:1px solid rgba(248,113,113,.25);color:var(--r)}
+.btn-pu{background:var(--pud);border:1px solid rgba(192,132,252,.25);color:var(--pu)}
+.sw-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)}
+.sw-row:last-child{border-bottom:none}
+.sw{position:relative;width:34px;height:19px;cursor:pointer;flex-shrink:0}
+.sw input{opacity:0;width:0;height:0}
+.sl{position:absolute;inset:0;background:var(--bg5);border:1px solid var(--bdr2);border-radius:10px;transition:.25s}
+.sl::before{content:'';position:absolute;width:13px;height:13px;left:2px;top:2px;background:var(--w3);border-radius:50%;transition:.25s}
+.sw input:checked+.sl{background:var(--gd);border-color:var(--g3)}
+.sw input:checked+.sl::before{transform:translateX(15px);background:var(--g)}
+.log-e{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--bdr)}
+.log-e:last-child{border-bottom:none}
+.ld{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.plant-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad2);padding:14px;margin-bottom:10px}
+.prog-bar{height:5px;border-radius:3px;background:var(--bg5);overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .5s}
+.phase-tl{display:flex;gap:2px;height:18px;border-radius:4px;overflow:hidden;margin:6px 0}
+.phase-seg{display:flex;align-items:center;justify-content:center;font-size:7px;letter-spacing:.3px;text-transform:uppercase}
+.blm-g{position:relative;height:8px;border-radius:4px;background:var(--bg5);overflow:hidden;margin:4px 0}
+.blm-f{height:100%;border-radius:4px;transition:width .5s}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-d{border:1px solid var(--bdr);border-radius:6px;padding:6px 4px;text-align:center;cursor:pointer;font-size:11px;color:var(--w3)}
+.cal-d.today{border-color:var(--g);color:var(--g)}
+.cal-d.has::after{content:'';display:block;width:3px;height:3px;border-radius:50%;background:var(--g);margin:2px auto 0;opacity:.6}
+.cal-h{font-size:8px;color:var(--w4);text-align:center;padding:3px 0;letter-spacing:.5px;text-transform:uppercase}
+.sm-step{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr);transition:background .2s}
+.sm-step:last-child{border-bottom:none}
+.sm-num{width:22px;height:22px;border-radius:50%;background:var(--bg4);border:1px solid var(--bdr2);color:var(--w3);font-size:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
+.sm-step.running .sm-num{background:var(--ad);border-color:rgba(251,191,36,.3);color:var(--a);animation:blink .8s infinite}
+.sm-step.done .sm-num{background:var(--g3);border-color:var(--g3);color:var(--bg)}
+.sm-step.error .sm-num{background:var(--rd);border-color:rgba(248,113,113,.3);color:var(--r)}
+.sm-step.active .sm-num{background:var(--ad);border-color:rgba(251,191,36,.3);color:var(--a)}
+.t-bar{height:3px;border-radius:2px;background:var(--bg5);overflow:hidden;margin-top:6px}
+.t-fill{height:100%;border-radius:2px;transition:width 1s linear}
+.modal-overlay{background:rgba(0,0,0,.7);border-radius:var(--rad2);padding:16px;border:1px solid var(--bdr2);margin-bottom:12px}
+.toast{position:fixed;bottom:calc(20px + var(--safe-bot));left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rad2);padding:10px 18px;font-size:11px;color:var(--w2);transition:transform .3s ease;z-index:999;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok-t{border-color:var(--g3);color:var(--g)}
+.toast.err-t{border-color:rgba(248,113,113,.3);color:var(--r)}
+/* CHART */
+.chart-container{position:relative;width:100%;height:180px;margin-top:8px}
+.chart-container canvas{width:100%!important;height:100%!important}
+/* SECAGEM BANNER */
+.secagem-banner{background:rgba(192,132,252,.08);border:1px solid rgba(192,132,252,.3);border-radius:var(--rad);padding:10px 14px;display:flex;align-items:center;gap:10px}
+/* STAGE SELECTOR */
+.stage-btn{padding:7px 14px;border-radius:var(--rad);border:1px solid var(--bdr2);background:transparent;color:var(--w3);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.stage-btn.on{background:var(--gd);border-color:var(--g3);color:var(--g)}
+/* MINI PLANT CARD */
+.plant-mini{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:10px 12px;display:flex;align-items:center;gap:10px}
+table{width:100%;border-collapse:collapse;font-size:10px}
+th{padding:6px 8px;border-bottom:1px solid var(--bdr);color:var(--w3);text-align:left;font-weight:500;font-size:8px;letter-spacing:.8px;text-transform:uppercase}
+td{padding:8px;border-bottom:1px solid var(--bdr);color:var(--w2)}
+tr:last-child td{border-bottom:none}
+tr.hl td:first-child{color:var(--g)}
+tr.hl{background:rgba(163,230,53,.04)}
+.fl{font-size:8px;color:var(--w3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.page.on>*{animation:fadeUp .2s ease both}
+.page.on>*:nth-child(2){animation-delay:.04s}
+.page.on>*:nth-child(3){animation-delay:.08s}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<nav>
+  <div class="logo">Grow<em>OS</em></div>
+  <button class="nt on" onclick="pg('hub',this)">Hub</button>
+  <button class="nt" onclick="pg('auto',this)">Automação</button>
+  <button class="nt" onclick="pg('ar',this)">AR</button>
+  <button class="nt" onclick="pg('plantas',this)">Plantas</button>
+  <button class="nt" onclick="pg('plan',this)">Planner</button>
+  <button class="nt" onclick="pg('graficos',this)">Gráficos</button>
+  <div class="live-ind"><div class="dot" id="liveDot"></div><span id="liveClock">--:--</span></div>
+</nav>
+
+<!-- ═══ HUB ═══ -->
+<div class="page on" id="hub">
+
+  <!-- Secagem banner (só aparece quando ativo) -->
+  <div class="secagem-banner" id="secagemBanner" style="display:none">
+    <div style="font-size:16px">❄</div>
+    <div style="flex:1">
+      <div style="font-size:11px;color:var(--pu);font-weight:500">Modo Secagem ativo</div>
+      <div style="font-size:9px;color:var(--w3);margin-top:1px">Alvo: UR ≤ 65% · Temperatura mínima possível</div>
+    </div>
+    <span class="badge purp">SECAGEM</span>
+  </div>
+
+  <!-- Estágio global -->
+  <div class="card" style="padding:12px 14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div>
+        <div class="sec" style="margin-bottom:2px">Estágio do Grow</div>
+        <div style="font-size:9px;color:var(--w3)" id="stageVPDHint">VPD alvo: 0.8–1.2 kPa</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap" id="stageBtns">
+        <button class="stage-btn on" onclick="setGrowStage('prop',this)">Propagação</button>
+        <button class="stage-btn" onclick="setGrowStage('veg',this)">Vegetativo</button>
+        <button class="stage-btn" onclick="setGrowStage('flor',this)">Floração</button>
+        <button class="stage-btn" onclick="setGrowStage('seca',this)">Secagem</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 tiles fundamentais -->
+  <div class="g4">
+    <div class="tile"><div class="tile-label">VPD</div><div style="display:flex;align-items:baseline;gap:3px"><div class="tile-val" id="hVPD" style="color:var(--g)">—</div><div class="tile-unit">kPa</div></div><div class="tile-badge ok" id="hVPDBadge">—</div><div class="tile-accent" id="hVPDAcc" style="background:var(--g);opacity:.4"></div></div>
+    <div class="tile"><div class="tile-label">Temperatura</div><div style="display:flex;align-items:baseline;gap:3px"><div class="tile-val" id="hTemp">—</div><div class="tile-unit">°C</div></div><div class="tile-badge off-st" id="hTempBadge">—</div><div class="tile-accent" id="hTempAcc" style="background:var(--a);opacity:.4"></div></div>
+    <div class="tile"><div class="tile-label">Umidade</div><div style="display:flex;align-items:baseline;gap:3px"><div class="tile-val" id="hHum">—</div><div class="tile-unit">%</div></div><div class="tile-badge off-st" id="hHumBadge">—</div><div class="tile-accent" id="hHumAcc" style="background:var(--b);opacity:.4"></div></div>
+    <div class="tile"><div class="tile-label">Luz</div><div class="tile-val" id="hLight" style="font-size:20px;color:var(--w3)">—</div><div class="tile-badge off-st" id="hLightBadge">—</div><div style="font-size:9px;color:var(--w3);margin-top:2px" id="hLightSub"></div><div class="tile-accent" id="hLightAcc" style="background:var(--a);opacity:.3"></div></div>
+  </div>
+
+  <!-- VPD + Blumat -->
+  <div class="g2">
+    <div class="card">
+      <div class="sec" style="margin-bottom:12px">VPD ao vivo — Inkbird</div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--w3);margin-bottom:5px"><span>0.0</span><span>0.5</span><span>1.0</span><span>1.5</span><span>2.0+</span></div>
+      <div class="vpd-bar"><div class="vpd-pin" id="vpdPin" style="left:0%"></div></div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">
+        <span style="font-size:8px;padding:2px 7px;border-radius:20px;background:#0a1525;color:#93c5fd">0–0.4</span>
+        <span style="font-size:8px;padding:2px 7px;border-radius:20px;background:var(--gd);color:var(--g)">0.4–0.8</span>
+        <span style="font-size:8px;padding:2px 7px;border-radius:20px;background:var(--gd);color:var(--g);border:1px solid rgba(163,230,53,.3)">0.8–1.2 Veg</span>
+        <span style="font-size:8px;padding:2px 7px;border-radius:20px;background:#1a1000;color:#ca8a04">1.2–1.6 Flor</span>
+        <span style="font-size:8px;padding:2px 7px;border-radius:20px;background:#1a0800;color:#ea580c">>1.6</span>
+      </div>
+      <div style="margin-top:10px;background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:10px">
+        <div style="font-size:9px;color:var(--w3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Diagnóstico</div>
+        <div style="font-size:12px" id="vpdDiag">Aguardando leitura...</div>
+        <div style="font-size:9px;color:var(--w3);margin-top:3px;line-height:1.5" id="vpdAdv"></div>
+      </div>
+      <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:9px;color:var(--w3)" id="lastRead">—</div>
+        <button class="btn" onclick="fetchSensor()">Atualizar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec" style="margin-bottom:12px">Blumat — Solo</div>
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:12px">
+        <div style="flex:1"><div class="fl">Leitura atual</div><input type="number" id="blmCur" value="40" min="0" max="200" oninput="updBlumat();logBlumat()" style="font-size:20px;font-family:'IBM Plex Sans',sans-serif;font-weight:600;text-align:center"></div>
+        <div style="font-size:10px;color:var(--w3);padding-bottom:10px">mbar</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--w3);margin-bottom:3px"><span>0 (saturado)</span><span>200 (seco)</span></div>
+      <div class="blm-g"><div class="blm-f" id="blmFill" style="width:20%;background:var(--g)"></div></div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;margin-bottom:10px"><span style="color:var(--g)">Min: <span id="blmMinL">30</span></span><span style="color:var(--a)">Max: <span id="blmMaxL">60</span></span></div>
+      <div class="g2" style="gap:8px;margin-bottom:10px">
+        <div><div class="fl">Target mín</div><input type="number" id="blmMin" value="30" oninput="updBlumat()"></div>
+        <div><div class="fl">Target máx</div><input type="number" id="blmMax" value="60" oninput="updBlumat()"></div>
+      </div>
+      <div class="sm"><div style="font-size:9px;color:var(--w3);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Status</div><div style="font-size:11px" id="blmDiag">—</div></div>
+    </div>
+  </div>
+
+  <!-- Timer de luz -->
+  <div class="card">
+    <div class="sec" style="margin-bottom:12px">Timer de luz</div>
+    <div class="g2" style="gap:8px;margin-bottom:12px">
+      <div><div class="fl">Acende</div><input type="time" id="lOn" value="06:00" oninput="updLight()"></div>
+      <div><div class="fl">Apaga</div><input type="time" id="lOff" value="00:00" oninput="updLight()"></div>
+    </div>
+    <div class="sm" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="font-size:22px" id="lightIcon">○</div>
+        <div><div style="font-size:12px;font-weight:500" id="lightTxt">—</div><div style="font-size:9px;color:var(--w3);margin-top:1px" id="lightNext">—</div></div>
+        <div style="margin-left:auto;text-align:right"><div style="font-size:8px;color:var(--w3)">Ciclo</div><div style="font-size:14px;font-weight:600" id="lightCycle">—</div></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--w3);margin-bottom:3px"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>24h</span></div>
+    <div style="display:grid;grid-template-columns:repeat(48,1fr);gap:1px;height:10px" id="lightBar"></div>
+  </div>
+
+  <!-- Plantas no hub -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="sec" style="margin-bottom:0">Plantas</div>
+      <button class="btn btn-g" style="font-size:8px;padding:4px 8px" onclick="pg('plantas',document.querySelector('.nt:nth-child(5)'))">Ver todas</button>
+    </div>
+    <div id="hubPlants">
+      <div style="font-size:9px;color:var(--w4);text-align:center;padding:16px 0">Nenhuma planta cadastrada.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AUTOMAÇÃO VPD ═══ -->
+<div class="page" id="auto">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px">
+    <div>
+      <div style="font-size:15px;font-weight:500;margin-bottom:2px">Automação VPD</div>
+      <div style="font-size:9px;color:var(--w3)">Lê Inkbird → calcula VPD → aciona IR automaticamente</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--w4)" id="aDot"></div>
+      <span style="font-size:9px;color:var(--w3)" id="aMainStatus">Desligado</span>
+      <button class="btn" id="aMainBtn" onclick="toggleAutoEngine()">Ligar automação</button>
+    </div>
+  </div>
+
+  <!-- MODO SECAGEM -->
+  <div class="card" style="border:1px solid rgba(192,132,252,.2)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div>
+        <div style="font-size:12px;font-weight:500;color:var(--pu)">Modo Secagem</div>
+        <div style="font-size:9px;color:var(--w3);margin-top:2px">UR ≤ 65% · temperatura mínima possível · IR em modo contínuo</div>
+      </div>
+      <label class="sw"><input type="checkbox" id="secagemToggle" onchange="toggleSecagem()"><span class="sl" style=""></span></label>
+    </div>
+    <div id="secagemCfg" style="display:none">
+      <div style="background:var(--bg3);border:1px solid rgba(192,132,252,.15);border-radius:var(--rad);padding:12px;margin-top:8px">
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <div class="sm" style="flex:1;text-align:center;padding:10px;border-color:rgba(192,132,252,.2)">
+            <div style="font-size:8px;color:var(--w3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">UR alvo máx</div>
+            <div style="font-size:22px;font-weight:600;color:var(--pu)">65%</div>
+          </div>
+          <div class="sm" style="flex:1;text-align:center;padding:10px;border-color:rgba(192,132,252,.2)">
+            <div style="font-size:8px;color:var(--w3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Temperatura</div>
+            <div style="font-size:22px;font-weight:600;color:var(--b)">Mín</div>
+          </div>
+          <div class="sm" style="flex:1;text-align:center;padding:10px;border-color:rgba(192,132,252,.2)">
+            <div style="font-size:8px;color:var(--w3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Modo IR</div>
+            <div style="font-size:14px;font-weight:600;color:var(--pu)">RESFRIAR</div>
+          </div>
+        </div>
+        <div style="font-size:9px;color:var(--w3);margin-top:10px;line-height:1.7;padding-top:10px;border-top:1px solid var(--bdr)">
+          No modo secagem o AR opera continuamente para baixar temperatura e umidade. O ciclo verifica a cada 5min e ajusta se UR > 65%. Temperatura é mantida o mais baixa possível para favorecer a evaporação de umidade dos buds.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VPD Live -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+      <div class="sec" style="margin-bottom:0">Leitura em tempo real — Inkbird via Tuya</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:24px;font-weight:600;color:var(--g)" id="aVPDLive">—</div>
+        <div style="font-size:10px;color:var(--w3)">kPa</div>
+        <span class="badge off-st" id="aVPDBadge">—</span>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--w3);margin-bottom:4px"><span>0.0</span><span>0.5</span><span>1.0</span><span>1.5</span><span>2.0</span></div>
+    <div class="vpd-bar">
+      <div class="range-ov" id="aRangeOv" style="left:35%;right:46%"></div>
+      <div class="vpd-pin" id="aVPDPin" style="left:0%"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:8px;margin-top:4px">
+      <span style="color:var(--g)">Min: <span id="aRangeMinL">0.8</span> kPa</span>
+      <span style="color:var(--w3)" id="aVPDAction">—</span>
+      <span style="color:var(--a)">Max: <span id="aRangeMaxL">1.2</span> kPa</span>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:10px;font-size:9px;color:var(--w3)">
+      <span>T: <span id="aTempLive" style="color:var(--a)">—</span>°C</span>
+      <span>UR: <span id="aHumLive" style="color:var(--b)">—</span>%</span>
+      <span id="aNightBadge" style="color:var(--pu);display:none">🌙 Perfil noturno</span>
+      <span style="margin-left:auto;color:var(--w4)" id="aLastReadTime">—</span>
+    </div>
+  </div>
+
+  <!-- Config -->
+  <div class="card">
+    <div class="sec" style="margin-bottom:14px">Configuração</div>
+    <div class="g3" style="margin-bottom:12px">
+      <div><div class="fl">Fase</div>
+        <select id="aCfgPhase" onchange="autoUpdPhase()">
+          <option value="prop">Propagação (0.4–0.8)</option>
+          <option value="veg">Vegetativo (0.8–1.2)</option>
+          <option value="flor">Floração (1.0–1.5)</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
+      <div><div class="fl">VPD mínimo (kPa)</div><input type="number" id="aCfgMin" value="0.8" step="0.05" oninput="autoUpdOverlay()"></div>
+      <div><div class="fl">VPD máximo (kPa)</div><input type="number" id="aCfgMax" value="1.2" step="0.05" oninput="autoUpdOverlay()"></div>
+    </div>
+    <div class="g3" style="margin-bottom:12px">
+      <div><div class="fl">Espera após ajuste</div>
+        <select id="aCfgWaitAdj"><option value="600">10 minutos</option><option value="900">15 minutos</option><option value="1200">20 minutos</option></select>
+      </div>
+      <div><div class="fl">Confirmação 1ª</div>
+        <select id="aCfgChk1"><option value="1200">20 minutos</option><option value="1800">30 minutos</option><option value="2400">40 minutos</option></select>
+      </div>
+      <div><div class="fl">Confirmação 2ª</div>
+        <select id="aCfgChk2"><option value="2400">40 minutos</option><option value="3600">60 minutos</option><option value="1800">30 minutos</option></select>
+      </div>
+    </div>
+    <div class="g3" style="margin-bottom:12px">
+      <div><div class="fl">Máx tentativas</div>
+        <select id="aCfgMaxTries"><option value="3">3 tentativas</option><option value="5">5 tentativas</option><option value="2">2 tentativas</option></select>
+      </div>
+      <div><div class="fl">Turbo se UR ≥</div>
+        <div style="display:flex;gap:6px;align-items:center"><input type="number" id="aCfgTurboRH" value="75" min="50" max="95"><span style="font-size:10px;color:var(--w3);white-space:nowrap">%</span></div>
+      </div>
+      <div><div class="fl">Leitura sensor</div>
+        <select id="aCfgSensorInt"><option value="60">1 min</option><option value="120">2 min</option><option value="300">5 min</option></select>
+      </div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:12px">
+      <div class="fl" style="margin-bottom:8px;color:var(--pu)">Perfil noturno</div>
+      <div class="g3" style="gap:8px">
+        <div><div class="fl">Início noite</div><input type="time" id="aCfgNightStart" value="00:00" style="color-scheme:dark"></div>
+        <div><div class="fl">Fim noite</div><input type="time" id="aCfgNightEnd" value="06:00" style="color-scheme:dark"></div>
+        <div><div class="fl">VPD máx noturno</div><input type="number" id="aCfgNightMax" value="1.0" step="0.05"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- State machine -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="sec" style="margin-bottom:0">Estado da automação</div>
+      <span class="badge off-st" id="aStateBadge">IDLE</span>
+    </div>
+    <div>
+      <div class="sm-step" id="aSteps0"><div class="sm-num">1</div><div style="flex:1"><div style="font-size:11px;color:var(--w)">Leitura do sensor</div><div style="font-size:9px;color:var(--w3);margin-top:2px" id="aDescs0">Busca temp, umidade e VPD do Inkbird via Tuya</div><div class="t-bar" id="aBars0" style="display:none"><div class="t-fill" id="aFills0" style="width:0%"></div></div></div><div style="flex-shrink:0"><span class="badge off-st" id="aBadges0">aguardando</span></div></div>
+      <div class="sm-step" id="aSteps1"><div class="sm-num">2</div><div style="flex:1"><div style="font-size:11px;color:var(--w)">Análise do VPD</div><div style="font-size:9px;color:var(--w3);margin-top:2px" id="aDescs1">Compara com range e decide ação</div></div><div style="flex-shrink:0"><span class="badge off-st" id="aBadges1">aguardando</span></div></div>
+      <div class="sm-step" id="aSteps2"><div class="sm-num">3</div><div style="flex:1"><div style="font-size:11px;color:var(--w)">Comando IR</div><div style="font-size:9px;color:var(--w3);margin-top:2px" id="aDescs2">Envia temp_up / temp_down / turbo</div></div><div style="flex-shrink:0"><span class="badge off-st" id="aBadges2">aguardando</span></div></div>
+      <div class="sm-step" id="aSteps3"><div class="sm-num">4</div><div style="flex:1"><div style="font-size:11px;color:var(--w)">Aguardando estabilização</div><div style="font-size:9px;color:var(--w3);margin-top:2px" id="aDescs3">Espera o ambiente reagir</div><div class="t-bar" id="aBars3" style="display:none"><div class="t-fill" id="aFills3" style="width:0%;background:var(--a)"></div></div><div style="font-size:10px;color:var(--a);margin-top:4px;font-family:'IBM Plex Sans',sans-serif;font-weight:600" id="aTimer"></div></div><div style="flex-shrink:0"><span class="badge off-st" id="aBadges3">aguardando</span></div></div>
+      <div class="sm-step" id="aSteps4"><div class="sm-num">5</div><div style="flex:1"><div style="font-size:11px;color:var(--w)">Confirmação</div><div style="font-size:9px;color:var(--w3);margin-top:2px" id="aDescs4">Verifica em 20min e 40min</div><div class="t-bar" id="aBars4" style="display:none"><div class="t-fill" id="aFills4" style="width:0%;background:var(--b)"></div></div></div><div style="flex-shrink:0"><span class="badge off-st" id="aBadges4">aguardando</span></div></div>
+    </div>
+    <div class="g3" style="gap:8px;margin-top:12px">
+      <div class="sm" style="text-align:center"><div class="fl" style="margin-bottom:4px">Tentativas</div><div style="font-size:20px;font-weight:500" id="aTriesDisplay">0 / 3</div></div>
+      <div class="sm" style="text-align:center"><div class="fl" style="margin-bottom:4px">Último cmd</div><div style="font-size:11px;color:var(--w3)" id="lastCmdDisplay">—</div></div>
+      <div class="sm" style="text-align:center"><div class="fl" style="margin-bottom:4px">Próxima leitura</div><div style="font-size:11px;color:var(--w3)" id="aNextRead">—</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="sec" style="margin-bottom:0">Log de automação</div>
+      <button class="btn btn-g" onclick="document.getElementById('autoEngineLog').innerHTML='<div data-empty style=\'font-size:9px;color:var(--w4);text-align:center;padding:16px 0\'>Log limpo.</div>'" style="font-size:8px;padding:4px 8px">Limpar</button>
+    </div>
+    <div id="autoEngineLog" style="max-height:300px;overflow-y:auto">
+      <div data-empty style="font-size:9px;color:var(--w4);text-align:center;padding:16px 0">Automação não iniciada.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AR MANUAL ═══ -->
+<div class="page" id="ar">
+  <div class="g2">
+    <div class="card">
+      <div class="sec" style="margin-bottom:12px">Controle manual — Ekaza IR</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+        <button class="btn" onclick="sendCmd('cool')" style="flex:1">❄ Resfriar</button>
+        <button class="btn btn-w" onclick="sendCmd('turbo')" style="flex:1">⚡ Turbo</button>
+        <button class="btn btn-g" onclick="sendCmd('fan')" style="flex:1">💨 Fan</button>
+        <button class="btn btn-r" onclick="sendCmd('off')" style="flex:1">⏻ Desligar</button>
+        <button class="btn btn-g" onclick="sendCmd('temp_down')" style="flex:1">↓ Temp</button>
+        <button class="btn btn-g" onclick="sendCmd('temp_up')" style="flex:1">↑ Temp</button>
+      </div>
+      <div class="sec" style="margin-top:4px;margin-bottom:8px">Log IR</div>
+      <div id="irLog" style="max-height:200px;overflow-y:auto">
+        <div style="font-size:9px;color:var(--w4);text-align:center;padding:16px 0">Nenhum sinal enviado.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec" style="margin-bottom:10px">Tabela VPD</div>
+      <table>
+        <thead><tr><th>Fase</th><th>VPD Ideal</th><th>Temp dia</th><th>Umidade</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--b)">Propagação</td><td>0.4–0.8</td><td>22–26°C</td><td>65–80%</td></tr>
+          <tr class="hl"><td>Vegetativo</td><td>0.8–1.2</td><td>22–28°C</td><td>50–70%</td></tr>
+          <tr><td style="color:var(--a)">Floração</td><td>1.0–1.5</td><td>20–26°C</td><td>45–60%</td></tr>
+          <tr><td style="color:var(--pu)">Secagem</td><td>—</td><td>Mín possível</td><td>≤ 65%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PLANTAS ═══ -->
+<div class="page" id="plantas">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:8px">
+    <div><div style="font-size:15px;font-weight:500;margin-bottom:2px">Plantas</div><div style="font-size:9px;color:var(--w3)" id="plantCount">0 plantas</div></div>
+    <div style="display:flex;gap:6px">
+      <div style="display:flex;border:1px solid var(--bdr2);border-radius:var(--rad);overflow:hidden">
+        <button style="padding:6px 10px;background:var(--gd);border:none;color:var(--g);font-size:9px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;font-family:inherit" id="vCards" onclick="setPlantView('cards',this)">Cards</button>
+        <button style="padding:6px 10px;background:transparent;border:none;color:var(--w3);font-size:9px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;font-family:inherit" id="vTable" onclick="setPlantView('table',this)">Tabela</button>
+      </div>
+      <button class="btn" onclick="showPlantForm()">+ Nova</button>
+    </div>
+  </div>
+  <div class="g4">
+    <div class="sm" style="text-align:center"><div class="fl" style="margin-bottom:3px">Total</div><div style="font-size:20px;font-weight:500" id="psTot">0</div></div>
+    <div class="sm" style="text-align:center"><div class="fl" style="margin-bottom:3px">Veg</div><div style="font-size:20px;font-weight:500;color:var(--g)" id="psVeg">0</div></div>
+    <div class="sm" style="text-align:center"><div class="fl" style="margin-bottom:3px">Flor</div><div style="font-size:20px;font-weight:500;color:var(--a)" id="psFlor">0</div></div>
+    <div class="sm" style="text-align:center"><div class="fl" style="margin-bottom:3px">Strains</div><div style="font-size:20px;font-weight:500;color:var(--b)" id="psStr">0</div></div>
+  </div>
+  <div id="plantFormWrap" style="display:none">
+    <div class="modal-overlay">
+      <div class="sec" style="margin-bottom:12px" id="plantFormTitle">Nova planta</div>
+      <div class="g2" style="margin-bottom:10px"><div><div class="fl">Nome</div><input type="text" id="pName" placeholder="Planta A, #1..."></div><div><div class="fl">Strain</div><input type="text" id="pStrain" placeholder="White Widow..."></div></div>
+      <div class="g3" style="margin-bottom:10px;gap:8px"><div><div class="fl">Germinação</div><input type="date" id="pGerm"></div><div><div class="fl">Estágio</div><select id="pStage"><option value="semente">Germinação</option><option value="seedling">Seedling</option><option value="veg">Vegetativo</option><option value="flor">Floração</option><option value="colheita">Colheita</option></select></div><div><div class="fl">Semana</div><input type="number" id="pWeek" min="1" value="1"></div></div>
+      <div class="g3" style="margin-bottom:10px;gap:8px"><div><div class="fl">Substrato</div><select id="pSub"><option>Terra</option><option>Coco</option><option>Hidro</option></select></div><div><div class="fl">Vaso (L)</div><input type="number" id="pPot" min="1" placeholder="20"></div><div><div class="fl">Floração (dias)</div><input type="number" id="pFloDays" placeholder="63"></div></div>
+      <div style="margin-bottom:10px"><div class="fl">Semente</div><select id="pSeedType"><option>Feminizada</option><option>Auto-flower</option><option>Regular</option></select></div>
+      <div style="margin-bottom:14px"><div class="fl">Notas</div><textarea id="pNotes" placeholder="Observações iniciais..."></textarea></div>
+      <div style="display:flex;gap:8px"><button class="btn" onclick="savePlant()" style="flex:1">Salvar</button><button class="btn btn-g" onclick="hidePlantForm()">Cancelar</button></div>
+    </div>
+  </div>
+  <div id="plantCards"></div>
+  <div id="plantTable" style="display:none;overflow-x:auto"><table><thead><tr><th>Nome</th><th>Strain</th><th>Idade</th><th>Estágio</th><th>Sem</th><th>Colheita</th><th>%</th><th></th></tr></thead><tbody id="plantTBody"></tbody></table></div>
+  <div style="font-size:10px;color:var(--w3);text-align:center;padding:32px;border:1px dashed var(--bdr2);border-radius:var(--rad2);display:none" id="plantEmpty">Nenhuma planta. Clique em <span style="color:var(--g)">+ Nova</span>.</div>
+</div>
+
+<!-- ═══ PLANNER ═══ -->
+<div class="page" id="plan">
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+      <div><div class="sec" style="margin-bottom:2px">Calendário</div><div style="font-size:9px;color:var(--w3)" id="calSub">Semana 5 · Vegetativo</div></div>
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <div style="display:flex;border:1px solid var(--bdr2);border-radius:var(--rad);overflow:hidden">
+          <button class="nt on" id="phVeg" onclick="setPhase('veg',this)" style="padding:5px 10px;border-bottom:none">Veg</button>
+          <button class="nt" id="phFlor" onclick="setPhase('flor',this)" style="padding:5px 10px;border-bottom:none">Flor</button>
+        </div>
+        <button class="btn btn-g" style="padding:5px 9px" onclick="chMo(-1)">←</button>
+        <span style="font-size:10px;color:var(--w2);min-width:72px;text-align:center" id="moLbl">—</span>
+        <button class="btn btn-g" style="padding:5px 9px" onclick="chMo(1)">→</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px"><div class="cal-h">D</div><div class="cal-h">S</div><div class="cal-h">T</div><div class="cal-h">Q</div><div class="cal-h">Q</div><div class="cal-h">S</div><div class="cal-h">S</div></div>
+    <div class="cal-grid" id="calGrid"></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="sec" style="margin-bottom:0">Tarefas</div><span style="font-size:9px;color:var(--w3)" id="tDate"></span></div>
+      <div id="planTasks">
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr);cursor:pointer" class="task done" onclick="togT2(this)"><div class="tchk" style="width:14px;height:14px;border:1px solid var(--bdr2);border-radius:3px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:9px;background:var(--g3);border-color:var(--g3);color:var(--bg)">✓</div><div><div style="font-size:10px;color:var(--w2)">Verificar VPD</div><div style="font-size:9px;color:var(--w3)">Diário</div></div></div>
+        <div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;cursor:pointer" class="task" onclick="togT2(this)"><div class="tchk" style="width:14px;height:14px;border:1px solid var(--bdr2);border-radius:3px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:9px"></div><div><div style="font-size:10px;color:var(--w2)">Rega + Blumat</div><div style="font-size:9px;color:var(--w3)">A cada 2 dias</div></div></div>
+      </div>
+      <div style="display:flex;gap:6px;margin-top:10px"><input type="text" placeholder="Nova tarefa..." id="nPlanTask" onkeydown="if(event.key==='Enter')addPlanTask()" style="flex:1;font-size:10px"><button class="btn" onclick="addPlanTask()">+</button></div>
+    </div>
+    <div class="card"><div class="sec" style="margin-bottom:12px">Timeline</div><div style="position:relative;padding-left:16px" id="tlBox"><div style="position:absolute;left:5px;top:0;bottom:0;width:1px;background:var(--bdr2)"></div></div></div>
+  </div>
+</div>
+
+<!-- ═══ GRÁFICOS ═══ -->
+<div class="page" id="graficos">
+  <div style="font-size:15px;font-weight:500;margin-bottom:4px">Gráficos históricos</div>
+  <div style="font-size:9px;color:var(--w3);margin-bottom:4px">Período noturno destacado em roxo. Dados salvos localmente.</div>
+
+  <!-- VPD -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="sec" style="margin-bottom:0">VPD ao longo do tempo</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-g" style="font-size:8px;padding:4px 8px" onclick="setChartRange('vpd','6h')">6h</button>
+        <button class="btn on" style="font-size:8px;padding:4px 8px" id="vpdRange24" onclick="setChartRange('vpd','24h')">24h</button>
+        <button class="btn btn-g" style="font-size:8px;padding:4px 8px" onclick="setChartRange('vpd','7d')">7d</button>
+      </div>
+    </div>
+    <div class="chart-container"><canvas id="chartVPD"></canvas></div>
+  </div>
+
+  <!-- Temp + Umidade -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="sec" style="margin-bottom:0">Temperatura e Umidade</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-g" style="font-size:8px;padding:4px 8px" onclick="setChartRange('th','6h')">6h</button>
+        <button class="btn on" style="font-size:8px;padding:4px 8px" id="thRange24" onclick="setChartRange('th','24h')">24h</button>
+        <button class="btn btn-g" style="font-size:8px;padding:4px 8px" onclick="setChartRange('th','7d')">7d</button>
+      </div>
+    </div>
+    <div class="chart-container"><canvas id="chartTH"></canvas></div>
+  </div>
+
+  <!-- Blumat -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="sec" style="margin-bottom:0">Blumat — Umidade do solo (mbar)</div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-g" style="font-size:8px;padding:4px 8px" onclick="setChartRange('blm','6h')">6h</button>
+        <button class="btn on" style="font-size:8px;padding:4px 8px" id="blmRange24" onclick="setChartRange('blm','24h')">24h</button>
+        <button class="btn btn-g" style="font-size:8px;padding:4px 8px" onclick="setChartRange('blm','7d')">7d</button>
+      </div>
+    </div>
+    <div class="chart-container"><canvas id="chartBLM"></canvas></div>
+    <div style="display:flex;gap:12px;margin-top:8px;font-size:9px;color:var(--w3)">
+      <span style="color:var(--g)">— Solo ideal</span>
+      <span style="color:var(--r)">— Solo seco (regar)</span>
+      <span style="color:var(--b)">— Solo úmido</span>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-g" onclick="clearChartData()" style="font-size:9px">Limpar histórico</button>
+    <div style="font-size:9px;color:var(--w3);display:flex;align-items:center;gap:6px"><div style="width:10px;height:10px;border-radius:2px;background:rgba(192,132,252,.2)"></div>Período noturno</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+const WORKER="https://keep.portugalmedeiros.workers.dev";
+let liveTemp=null,liveHum=null,liveVPD=null;
+let growStage='veg';
+let secagemActive=false;
+
+// Stage ranges
+const stageRanges={
+  prop:{min:0.4,max:0.8,label:'Propagação',hint:'VPD alvo: 0.4–0.8 kPa'},
+  veg:{min:0.8,max:1.2,label:'Vegetativo',hint:'VPD alvo: 0.8–1.2 kPa'},
+  flor:{min:1.0,max:1.5,label:'Floração',hint:'VPD alvo: 1.0–1.5 kPa'},
+  seca:{min:null,max:null,label:'Secagem',hint:'UR ≤ 65% · Temperatura mínima'},
+};
+
+function setGrowStage(s,el){
+  growStage=s;
+  document.querySelectorAll('.stage-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  const r=stageRanges[s];
+  document.getElementById('stageVPDHint').textContent=r.hint;
+  // sincroniza com automação
+  if(s!=='seca'&&s!=='prop'){
+    const phMap={veg:'veg',flor:'flor'};
+    const ph=document.getElementById('aCfgPhase');
+    if(ph&&phMap[s]){ph.value=phMap[s];autoUpdPhase();}
+  }
+  if(s==='seca'&&!secagemActive){
+    document.getElementById('secagemToggle').checked=true;
+    toggleSecagem();
+  } else if(s!=='seca'&&secagemActive){
+    document.getElementById('secagemToggle').checked=false;
+    toggleSecagem();
+  }
+  saveState();
+}
+
+function toggleSecagem(){
+  secagemActive=document.getElementById('secagemToggle').checked;
+  document.getElementById('secagemCfg').style.display=secagemActive?'block':'none';
+  document.getElementById('secagemBanner').style.display=secagemActive?'flex':'none';
+  if(secagemActive){
+    toast('Modo Secagem ativado — UR ≤ 65%','ok');
+    autoLog('🧊 Modo Secagem ativado — priorizando UR ≤ 65%','warn');
+  }
+}
+
+// NAV
+function pg(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nt').forEach(t=>t.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  if(el)el.classList.add('on');
+  if(id==='graficos')setTimeout(renderAllCharts,100);
+}
+function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type==='ok'?'ok-t':'err-t');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+// SENSOR
+async function fetchSensor(){
+  try{
+    const res=await fetch(WORKER+'/sensor');const d=await res.json();
+    if(!d.ok)throw new Error(d.error);
+    liveTemp=d.temp;liveHum=d.humidity;liveVPD=d.vpd;
+    updHubTiles(d.temp,d.humidity,d.vpd);
+    document.getElementById('liveDot').className='dot on';
+    document.getElementById('lastRead').textContent='Atualizado: '+new Date().toLocaleTimeString('pt-BR');
+    // auto tab
+    if(document.getElementById('aVPDLive')){
+      document.getElementById('aVPDLive').textContent=d.vpd.toFixed(2);
+      document.getElementById('aVPDLive').style.color=d.vpd<0.8?'var(--b)':d.vpd<=1.2?'var(--g)':d.vpd<=1.6?'var(--a)':'var(--r)';
+      document.getElementById('aTempLive').textContent=d.temp.toFixed(1);
+      document.getElementById('aHumLive').textContent=d.humidity.toFixed(1);
+      document.getElementById('aLastReadTime').textContent=new Date().toLocaleTimeString('pt-BR');
+      document.getElementById('aVPDPin').style.left=(Math.min(d.vpd/2,1)*100)+'%';
+      const nb=document.getElementById('aNightBadge');if(nb)nb.style.display=autoIsNight()?'inline':'none';
+    }
+    // log para gráficos
+    logSensorData(d.temp,d.humidity,d.vpd);
+    return d;
+  }catch(e){document.getElementById('liveDot').className='dot err';return null;}
+}
+
+function updHubTiles(t,h,v){
+  document.getElementById('hTemp').textContent=t.toFixed(1);
+  document.getElementById('hHum').textContent=h.toFixed(1);
+  document.getElementById('hVPD').textContent=v.toFixed(2);
+  const tb=document.getElementById('hTempBadge');tb.className='tile-badge '+(t>28?'danger':t>26?'warn':'ok');tb.textContent=t>28?'↑ Alto':t>26?'↑ Atenção':'✓ Ideal';
+  document.getElementById('hTempAcc').style.background=t>28?'var(--r)':t>26?'var(--a)':'var(--g)';
+  const hb=document.getElementById('hHumBadge');hb.className='tile-badge '+(h>75||h<40?'warn':'ok');hb.textContent=h>75?'↑ Alta':h<40?'↓ Baixa':'✓ Ideal';
+  let vc,vt,va;
+  if(v<0.4){vc='var(--b)';vt='Muito baixo';va='Risco de pythium.'}
+  else if(v<0.8){vc='var(--g)';vt='Propagação — OK';va='Ideal para mudas.'}
+  else if(v<1.2){vc='var(--g)';vt='Vegetativo — Ótimo';va='Range ideal para vegetativo.'}
+  else if(v<1.6){vc='var(--a)';vt='Floração — OK';va='Considere reduzir umidade.'}
+  else{vc='var(--r)';vt='VPD Alto — Stress';va='Aumente umidade imediatamente.'}
+  document.getElementById('hVPD').style.color=vc;
+  const vb=document.getElementById('hVPDBadge');vb.className='tile-badge '+(v>=0.8&&v<1.6?'ok':v>=1.6?'danger':'warn');vb.textContent=vt.split('—')[0].trim();
+  document.getElementById('hVPDAcc').style.background=vc;
+  document.getElementById('vpdPin').style.left=(Math.min(v/2,1)*100)+'%';
+  document.getElementById('vpdDiag').textContent=vt;document.getElementById('vpdDiag').style.color=vc;
+  document.getElementById('vpdAdv').textContent=va;
+}
+
+// IR MANUAL
+async function sendCmd(cmd){
+  try{
+    const res=await fetch(WORKER+'/ir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command:cmd})});
+    const d=await res.json();
+    addIRLog(cmd,d.ok?'ok':'err',d.ok?'Enviado ✓':'Falha: '+JSON.stringify(d.response));
+    toast(d.ok?'IR → '+cmd.toUpperCase()+' ✓':'Falha IR',d.ok?'ok':'err');
+    return d.ok;
+  }catch(e){addIRLog(cmd,'err',e.message);toast('Erro IR','err');return false;}
+}
+function addIRLog(cmd,type,detail){
+  const list=document.getElementById('irLog');if(!list)return;
+  const empty=list.querySelector('[style*="color:var(--w4)"]');if(empty)empty.remove();
+  const icons={cool:'❄',turbo:'⚡',fan:'💨',off:'⏻',temp_down:'↓T',temp_up:'↑T',auto:'⚙'};
+  const colors={ok:'var(--g)',err:'var(--r)',warn:'var(--a)',info:'var(--b)'};
+  const d=document.createElement('div');d.className='log-e';
+  d.innerHTML=`<div class="ld" style="background:${colors[type]||'var(--g)'}"></div><div><div style="font-size:10px;color:${colors[type]||'var(--g)'}">${cmd.toUpperCase()}</div><div style="font-size:9px;color:var(--w3);margin-top:1px">${detail}</div><div style="font-size:8px;color:var(--w4);margin-top:1px">${new Date().toLocaleTimeString('pt-BR')}</div></div>`;
+  list.insertBefore(d,list.firstChild);if(list.children.length>30)list.removeChild(list.lastChild);
+}
+
+// LIGHT
+function updLight(){
+  const on=document.getElementById('lOn').value||'06:00',off=document.getElementById('lOff').value||'00:00';
+  const[oh,om]=on.split(':').map(Number),[fh,fm]=off.split(':').map(Number);
+  const now=new Date(),cur=now.getHours()*60+now.getMinutes(),onMin=oh*60+om;
+  let offMin=fh*60+fm;const cross=offMin<=onMin;if(cross)offMin+=1440;
+  const lightOn=cross?(cur>=onMin||cur<fh*60+fm):(cur>=onMin&&cur<offMin);
+  const lightH=cross?(1440-onMin+fh*60+fm)/60:(offMin-onMin)/60,darkH=24-lightH;
+  document.getElementById('lightCycle').textContent=Math.round(lightH)+'/'+Math.round(darkH)+'h';
+  const lv=document.getElementById('hLight'),lb=document.getElementById('hLightBadge'),la=document.getElementById('hLightAcc');
+  const ltxt=document.getElementById('lightTxt'),lnxt=document.getElementById('lightNext'),lico=document.getElementById('lightIcon');
+  if(lightOn){
+    lv.textContent='ACESA';lv.style.color='var(--a)';lb.className='tile-badge warn';lb.textContent='Ligada';la.style.background='var(--a)';
+    ltxt.textContent='Luz ACESA';ltxt.style.color='var(--a)';lico.textContent='●';lico.style.color='var(--a)';
+    let ml=offMin-cur;if(ml<0)ml+=1440;lnxt.textContent='Apaga em '+Math.floor(ml/60)+'h'+ml%60+'min';
+    document.getElementById('hLightSub').textContent='Apaga às '+off;
+  } else {
+    lv.textContent='APAGADA';lv.style.color='var(--w3)';lb.className='tile-badge off-st';lb.textContent='Apagada';la.style.background='var(--w4)';
+    ltxt.textContent='Luz APAGADA';ltxt.style.color='var(--w3)';lico.textContent='○';lico.style.color='var(--w4)';
+    let ml=onMin-cur;if(ml<0)ml+=1440;lnxt.textContent='Acende em '+Math.floor(ml/60)+'h'+ml%60+'min';
+    document.getElementById('hLightSub').textContent='Acende às '+on;
+  }
+  const bar=document.getElementById('lightBar');let html='';
+  for(let i=0;i<48;i++){const sm=i*30;let son=cross?(sm>=onMin||sm<fh*60+fm):(sm>=onMin&&sm<offMin);const isCur=sm<=cur&&cur<sm+30;html+=`<div style="border-radius:2px;background:${son?'var(--a)':'var(--bg5)'};${isCur?'outline:1px solid var(--w);':''}" title="${Math.floor(i/2)}:${i%2===0?'00':'30'}"></div>`;}
+  bar.innerHTML=html;
+}
+
+// BLUMAT
+let blmLog=[];
+function updBlumat(){
+  const cur=parseInt(document.getElementById('blmCur').value)||0,mn=parseInt(document.getElementById('blmMin').value)||30,mx=parseInt(document.getElementById('blmMax').value)||60;
+  document.getElementById('blmMinL').textContent=mn;document.getElementById('blmMaxL').textContent=mx;
+  const fill=document.getElementById('blmFill');fill.style.width=Math.min(cur/200,1)*100+'%';fill.style.background=cur<mn?'var(--b)':cur<=mx?'var(--g)':'var(--r)';
+  const d=document.getElementById('blmDiag');
+  if(cur<mn){d.textContent='↓ Solo úmido — sem necessidade de rega';d.style.color='var(--b)'}
+  else if(cur<=mx){d.textContent='✓ Umidade ideal';d.style.color='var(--g)'}
+  else{d.textContent='⚠ Solo seco — regar agora!';d.style.color='var(--r)'}
+}
+function logBlumat(){
+  const cur=parseInt(document.getElementById('blmCur').value)||0;
+  if(!cur)return;
+  blmLog.push({t:Date.now(),v:cur});
+  if(blmLog.length>2000)blmLog.shift();
+  saveState();
+}
+
+// DATA LOGGING
+let sensorLog=[];
+function logSensorData(temp,hum,vpd){
+  const now=Date.now();
+  sensorLog.push({t:now,temp,hum,vpd});
+  if(sensorLog.length>2000)sensorLog.shift();
+  saveState();
+}
+
+// CHARTS
+let charts={};
+let chartRanges={vpd:'24h',th:'24h',blm:'24h'};
+
+function isNightTime(ts){
+  const d=new Date(ts);const h=d.getHours(),m=d.getMinutes();
+  const cur=h*60+m;
+  const ns=document.getElementById('aCfgNightStart')?.value||'00:00';
+  const ne=document.getElementById('aCfgNightEnd')?.value||'06:00';
+  const[sh,sm]=ns.split(':').map(Number),[eh,em]=ne.split(':').map(Number);
+  const s=sh*60+sm,e=eh*60+em;
+  return s>e?cur>=s||cur<e:cur>=s&&cur<e;
+}
+
+function filterByRange(data,range){
+  const now=Date.now();
+  const ms={
+    '6h':6*3600*1000,'24h':24*3600*1000,
+    '7d':7*24*3600*1000
+  }[range]||86400000;
+  return data.filter(d=>now-d.t<=ms);
+}
+
+function buildNightAnnotations(data){
+  if(!data.length)return[];
+  const boxes=[];let nightStart=null;
+  for(let i=0;i<data.length;i++){
+    const night=isNightTime(data[i].t);
+    if(night&&nightStart===null)nightStart=data[i].t;
+    if(!night&&nightStart!==null){boxes.push({from:nightStart,to:data[i].t});nightStart=null;}
+  }
+  if(nightStart!==null)boxes.push({from:nightStart,to:data[data.length-1].t});
+  return boxes;
+}
+
+function nightPlugin(data){
+  return{
+    id:'nightShade',
+    beforeDraw(chart){
+      const{ctx,chartArea:{left,right,top,bottom},scales:{x}}=chart;
+      const boxes=buildNightAnnotations(data);
+      ctx.save();
+      boxes.forEach(b=>{
+        const x1=x.getPixelForValue(b.from),x2=x.getPixelForValue(b.to);
+        ctx.fillStyle='rgba(192,132,252,0.12)';
+        ctx.fillRect(Math.max(x1,left),top,Math.min(x2,right)-Math.max(x1,left),bottom-top);
+      });
+      ctx.restore();
+    }
+  };
+}
+
+function setChartRange(chart,range){
+  chartRanges[chart]=range;
+  renderChart(chart);
+}
+
+function renderChart(id){
+  if(id==='vpd')renderVPDChart();
+  else if(id==='th')renderTHChart();
+  else if(id==='blm')renderBLMChart();
+}
+function renderAllCharts(){
+  renderVPDChart();renderTHChart();renderBLMChart();
+}
+
+function renderVPDChart(){
+  const data=filterByRange(sensorLog,chartRanges.vpd);
+  if(charts.vpd)charts.vpd.destroy();
+  const ctx=document.getElementById('chartVPD');if(!ctx)return;
+  const labels=data.map(d=>new Date(d.t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
+  const values=data.map(d=>d.vpd);
+  charts.vpd=new Chart(ctx,{
+    type:'line',
+    plugins:[nightPlugin(data)],
+    data:{labels,datasets:[{label:'VPD (kPa)',data:values,borderColor:'#a3e635',backgroundColor:'rgba(163,230,53,.1)',borderWidth:1.5,tension:.3,pointRadius:0,fill:true}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      animation:{duration:0},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:v=>v.parsed.y.toFixed(2)+' kPa'}}},
+      scales:{
+        x:{ticks:{color:'#666',maxTicksLimit:8,font:{size:9}},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{ticks:{color:'#666',font:{size:9}},grid:{color:'rgba(255,255,255,.04)'},min:0,max:2.5}
+      }
+    }
+  });
+}
+
+function renderTHChart(){
+  const data=filterByRange(sensorLog,chartRanges.th);
+  if(charts.th)charts.th.destroy();
+  const ctx=document.getElementById('chartTH');if(!ctx)return;
+  const labels=data.map(d=>new Date(d.t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
+  charts.th=new Chart(ctx,{
+    type:'line',
+    plugins:[nightPlugin(data)],
+    data:{labels,datasets:[
+      {label:'Temp (°C)',data:data.map(d=>d.temp),borderColor:'#fbbf24',backgroundColor:'rgba(251,191,36,.08)',borderWidth:1.5,tension:.3,pointRadius:0,fill:false,yAxisID:'yT'},
+      {label:'UR (%)',data:data.map(d=>d.hum),borderColor:'#60a5fa',backgroundColor:'rgba(96,165,250,.08)',borderWidth:1.5,tension:.3,pointRadius:0,fill:false,yAxisID:'yH'}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      animation:{duration:0},
+      plugins:{legend:{labels:{color:'#666',font:{size:9},boxWidth:12}}},
+      scales:{
+        x:{ticks:{color:'#666',maxTicksLimit:8,font:{size:9}},grid:{color:'rgba(255,255,255,.04)'}},
+        yT:{type:'linear',position:'left',ticks:{color:'#fbbf24',font:{size:9}},grid:{color:'rgba(255,255,255,.04)'},min:10,max:40},
+        yH:{type:'linear',position:'right',ticks:{color:'#60a5fa',font:{size:9}},grid:{display:false},min:20,max:100}
+      }
+    }
+  });
+}
+
+function renderBLMChart(){
+  const data=filterByRange(blmLog,chartRanges.blm);
+  if(charts.blm)charts.blm.destroy();
+  const ctx=document.getElementById('chartBLM');if(!ctx)return;
+  const mn=parseInt(document.getElementById('blmMin').value)||30;
+  const mx=parseInt(document.getElementById('blmMax').value)||60;
+  const labels=data.map(d=>new Date(d.t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}));
+  const values=data.map(d=>d.v);
+  charts.blm=new Chart(ctx,{
+    type:'line',
+    plugins:[nightPlugin(data)],
+    data:{labels,datasets:[
+      {label:'mbar',data:values,borderColor:'#a3e635',backgroundColor:'rgba(163,230,53,.1)',borderWidth:1.5,tension:.3,pointRadius:2,pointBackgroundColor:values.map(v=>v<mn?'#60a5fa':v<=mx?'#a3e635':'#f87171'),fill:true},
+      {label:'Min',data:values.map(()=>mn),borderColor:'rgba(163,230,53,.3)',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false},
+      {label:'Max',data:values.map(()=>mx),borderColor:'rgba(248,113,113,.3)',borderWidth:1,borderDash:[4,4],pointRadius:0,fill:false}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      animation:{duration:0},
+      plugins:{legend:{labels:{color:'#666',font:{size:9},boxWidth:12}}},
+      scales:{
+        x:{ticks:{color:'#666',maxTicksLimit:8,font:{size:9}},grid:{color:'rgba(255,255,255,.04)'}},
+        y:{ticks:{color:'#666',font:{size:9}},grid:{color:'rgba(255,255,255,.04)'},min:0,max:200}
+      }
+    }
+  });
+}
+
+function clearChartData(){
+  if(!confirm('Limpar todo o histórico de gráficos?'))return;
+  sensorLog=[];blmLog=[];saveState();renderAllCharts();toast('Histórico limpo');
+}
+
+// HUB PLANTS
+function renderHubPlants(){
+  const el=document.getElementById('hubPlants');if(!el)return;
+  if(!plants.length){el.innerHTML='<div style="font-size:9px;color:var(--w4);text-align:center;padding:16px 0">Nenhuma planta cadastrada.</div>';return;}
+  const cols=['var(--g)','var(--a)','var(--b)','var(--pu)','#fb923c','#f472b6'];
+  el.innerHTML=plants.map((p,i)=>{
+    const age=daysSince(p.germDate);
+    const si=stageInfo[p.stage]||{label:p.stage,color:'var(--w3)',pct:0};
+    const col=cols[i%cols.length];
+    return`<div class="plant-mini" style="margin-bottom:8px">
+      <div style="width:28px;height:28px;border-radius:8px;background:rgba(0,0,0,.3);border:1px solid ${col};color:${col};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0">${p.name.slice(0,2).toUpperCase()}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:11px;font-weight:500;color:var(--w)">${p.name}</div>
+        <div style="font-size:9px;color:var(--w3);margin-top:1px;font-style:italic">${p.strain}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <span style="font-size:9px;padding:2px 7px;border-radius:20px;color:${si.color};background:rgba(0,0,0,.3);border:1px solid ${si.color}40">${si.label}</span>
+        <div style="font-size:10px;color:var(--w2);margin-top:4px;font-family:'IBM Plex Sans',sans-serif;font-weight:600">${fmtAge(age)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// PLANTS
+let plants=[];let editPlantId=null;
+const stageInfo={semente:{label:'Germinação',color:'var(--b)',pct:5},seedling:{label:'Seedling',color:'var(--pu)',pct:12},veg:{label:'Vegetativo',color:'var(--g)',pct:35},flor:{label:'Floração',color:'var(--a)',pct:65},colheita:{label:'Colheita',color:'var(--r)',pct:100}};
+function daysSince(d){if(!d)return null;return Math.floor((Date.now()-new Date(d))/(864e5))}
+function fmtAge(d){if(d===null)return'—';if(d<7)return d+'d';return Math.floor(d/7)+'sem'+(d%7?'+'+d%7+'d':'')}
+function harvestEst(p){if(!p.germDate||!p.floDays)return'—';const d=new Date(p.germDate);d.setDate(d.getDate()+parseInt(p.floDays)+21);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}
+function showPlantForm(){editPlantId=null;document.getElementById('plantFormTitle').textContent='Nova planta';document.getElementById('pGerm').valueAsDate=new Date();document.getElementById('plantFormWrap').style.display='block';document.getElementById('pName').focus()}
+function hidePlantForm(){document.getElementById('plantFormWrap').style.display='none';editPlantId=null;['pName','pStrain','pWeek','pPot','pFloDays','pNotes'].forEach(id=>document.getElementById(id).value='')}
+function savePlant(){const name=document.getElementById('pName').value.trim();if(!name)return;const p={id:editPlantId||(Date.now()+''),name,strain:document.getElementById('pStrain').value.trim()||'Desconhecida',germDate:document.getElementById('pGerm').value,stage:document.getElementById('pStage').value,week:parseInt(document.getElementById('pWeek').value)||1,substrate:document.getElementById('pSub').value,pot:document.getElementById('pPot').value,floDays:document.getElementById('pFloDays').value,seedType:document.getElementById('pSeedType').value,notes:document.getElementById('pNotes').value.trim()};if(editPlantId){const i=plants.findIndex(x=>x.id===editPlantId);if(i>=0)plants[i]=p;}else plants.unshift(p);hidePlantForm();renderPlants();renderHubPlants();toast('Planta salva ✓');saveState()}
+function deletePlant(id){plants=plants.filter(p=>p.id!==id);renderPlants();renderHubPlants();saveState()}
+function editPlant(id){const p=plants.find(x=>x.id===id);if(!p)return;editPlantId=id;document.getElementById('plantFormTitle').textContent='Editar planta';document.getElementById('pName').value=p.name;document.getElementById('pStrain').value=p.strain;document.getElementById('pGerm').value=p.germDate;document.getElementById('pStage').value=p.stage;document.getElementById('pWeek').value=p.week;document.getElementById('pSub').value=p.substrate;document.getElementById('pPot').value=p.pot;document.getElementById('pFloDays').value=p.floDays;document.getElementById('pSeedType').value=p.seedType;document.getElementById('pNotes').value=p.notes;document.getElementById('plantFormWrap').style.display='block';window.scrollTo(0,0)}
+function advStage(id){const p=plants.find(x=>x.id===id);if(!p)return;const o=['semente','seedling','veg','flor','colheita'];const i=o.indexOf(p.stage);if(i<o.length-1){p.stage=o[i+1];p.week=1;}renderPlants();renderHubPlants();saveState()}
+function buildPhaseline(p){const phases=[{k:'semente',w:5},{k:'seedling',w:8},{k:'veg',w:30},{k:'flor',w:40},{k:'colheita',w:17}];const o=['semente','seedling','veg','flor','colheita'];const cur=o.indexOf(p.stage);return phases.map((ph,i)=>{const active=i===cur,done=i<cur;const bg=active?stageInfo[ph.k].color:done?'var(--g3)':'var(--bg5)';const col=active?'var(--bg)':done?'rgba(255,255,255,.5)':'var(--w4)';return`<div class="phase-seg" style="flex:${ph.w};background:${bg};color:${col}">${ph.k.slice(0,3)}</div>`}).join('')}
+function setPlantView(v,el){document.getElementById('plantCards').style.display=v==='cards'?'block':'none';document.getElementById('plantTable').style.display=v==='table'?'block':'none';['vCards','vTable'].forEach(id=>{const b=document.getElementById(id);if(b)b.style.cssText=b.id==='v'+v.charAt(0).toUpperCase()+v.slice(1)?'padding:6px 10px;background:var(--gd);border:none;color:var(--g);font-size:9px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;font-family:inherit':'padding:6px 10px;background:transparent;border:none;color:var(--w3);font-size:9px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;font-family:inherit'})}
+function renderPlants(){
+  const empty=document.getElementById('plantEmpty'),cards=document.getElementById('plantCards'),tbody=document.getElementById('plantTBody');
+  document.getElementById('plantCount').textContent=plants.length+' planta'+(plants.length!==1?'s':'');
+  document.getElementById('psTot').textContent=plants.length;
+  document.getElementById('psVeg').textContent=plants.filter(p=>p.stage==='veg').length;
+  document.getElementById('psFlor').textContent=plants.filter(p=>p.stage==='flor').length;
+  document.getElementById('psStr').textContent=new Set(plants.map(p=>p.strain.toLowerCase())).size;
+  if(!plants.length){empty.style.display='block';cards.innerHTML='';if(tbody)tbody.innerHTML='';return;}
+  empty.style.display='none';
+  const cols=['var(--g)','var(--a)','var(--b)','var(--pu)','#fb923c','#f472b6'];
+  cards.innerHTML=plants.map((p,idx)=>{const age=daysSince(p.germDate);const si=stageInfo[p.stage]||{label:p.stage,color:'var(--w3)',pct:0};const col=cols[idx%cols.length];return`<div class="plant-card"><div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px"><div style="width:32px;height:32px;border-radius:9px;background:rgba(0,0,0,.3);border:1px solid ${col};color:${col};display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0">${p.name.slice(0,2).toUpperCase()}</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--w)">${p.name}</div><div style="font-size:9px;color:var(--w3);margin-top:1px;font-style:italic">${p.strain} · ${p.seedType}</div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px"><span style="font-size:9px;padding:2px 7px;border-radius:20px;color:${si.color};background:rgba(0,0,0,.3);border:1px solid ${si.color}40">${si.label}</span><span class="badge off-st">${p.substrate}</span></div></div><div style="text-align:right;flex-shrink:0"><div style="font-size:18px;font-weight:600;color:var(--w);font-family:'IBM Plex Sans',sans-serif">${fmtAge(age)}</div><div style="font-size:8px;color:var(--w3)">de vida</div></div></div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px"><div class="sm" style="text-align:center;padding:7px"><div class="fl" style="margin-bottom:2px">Semana</div><div style="font-size:14px;font-weight:500">${p.week}</div></div><div class="sm" style="text-align:center;padding:7px"><div class="fl" style="margin-bottom:2px">Dias</div><div style="font-size:14px;font-weight:500">${age!==null?age:'—'}</div></div><div class="sm" style="text-align:center;padding:7px"><div class="fl" style="margin-bottom:2px">Vaso</div><div style="font-size:14px;font-weight:500">${p.pot||'—'}${p.pot?'L':''}</div></div><div class="sm" style="text-align:center;padding:7px"><div class="fl" style="margin-bottom:2px">Colheita</div><div style="font-size:11px;font-weight:500;color:var(--a)">${harvestEst(p)}</div></div></div><div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:9px;color:var(--w3);margin-bottom:3px"><span>Ciclo</span><span style="color:var(--w)">${si.pct}%</span></div><div class="prog-bar"><div class="prog-fill" style="width:${si.pct}%;background:${si.color}"></div></div></div><div class="phase-tl">${buildPhaseline(p)}</div>${p.notes?`<div style="font-size:9px;color:var(--w3);padding:6px 8px;background:var(--bg3);border-radius:var(--rad);margin-top:4px;line-height:1.5">${p.notes}</div>`:''}<div style="display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--bdr)"><button class="btn" onclick="advStage('${p.id}')" style="font-size:8px;padding:5px 10px">Próximo estágio</button><button class="btn btn-g" onclick="editPlant('${p.id}')" style="font-size:8px;padding:5px 10px">Editar</button><button class="btn btn-r" onclick="deletePlant('${p.id}')" style="font-size:8px;padding:5px 10px;margin-left:auto">Remover</button></div></div>`}).join('');
+  if(tbody)tbody.innerHTML=plants.map(p=>{const age=daysSince(p.germDate);const si=stageInfo[p.stage]||{label:p.stage,color:'var(--w3)',pct:0};return`<tr style="border-bottom:1px solid var(--bdr)"><td style="padding:8px;color:var(--w);font-weight:500">${p.name}</td><td style="padding:8px;color:var(--w2);font-style:italic">${p.strain}</td><td style="padding:8px">${fmtAge(age)}</td><td style="padding:8px"><span style="font-size:9px;padding:2px 7px;border-radius:20px;color:${si.color};background:rgba(0,0,0,.3)">${si.label}</span></td><td style="padding:8px;color:var(--w2)">Sem ${p.week}</td><td style="padding:8px;color:var(--a)">${harvestEst(p)}</td><td style="padding:8px;min-width:80px"><div class="prog-bar" style="height:4px"><div class="prog-fill" style="width:${si.pct}%;background:${si.color}"></div></div><div style="font-size:8px;color:var(--w3);margin-top:2px">${si.pct}%</div></td><td style="padding:8px"><div style="display:flex;gap:4px"><button class="btn btn-g" onclick="editPlant('${p.id}')" style="font-size:8px;padding:4px 8px">Edit</button><button class="btn btn-r" onclick="deletePlant('${p.id}')" style="font-size:8px;padding:4px 8px">Del</button></div></td></tr>`}).join('');
+}
+
+// CALENDAR
+let curDate=new Date(),calPhase='veg';
+const months=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const taskDays=[3,7,10,14,17,21,24,28];
+function buildCal(){
+  const d=new Date(curDate.getFullYear(),curDate.getMonth(),1),today=new Date();
+  document.getElementById('moLbl').textContent=months[curDate.getMonth()].slice(0,3)+' '+curDate.getFullYear();
+  document.getElementById('calSub').textContent='Semana 5 · '+(calPhase==='veg'?'Vegetativo':'Floração');
+  document.getElementById('tDate').textContent=today.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  let c='';for(let i=0;i<d.getDay();i++)c+='<div></div>';
+  const dim=new Date(curDate.getFullYear(),curDate.getMonth()+1,0).getDate();
+  for(let i=1;i<=dim;i++){const isT=i===today.getDate()&&curDate.getMonth()===today.getMonth()&&curDate.getFullYear()===today.getFullYear();c+=`<div class="cal-d${isT?' today':''}${taskDays.includes(i)?' has':''}">${i}</div>`;}
+  document.getElementById('calGrid').innerHTML=c;buildTimeline();
+}
+function chMo(d){curDate.setMonth(curDate.getMonth()+d);buildCal()}
+function setPhase(p,el){calPhase=p;['phVeg','phFlor'].forEach(id=>document.getElementById(id).classList.remove('on'));el.classList.add('on');buildCal()}
+function togT2(el){el.classList.toggle('done');const c=el.querySelector('.tchk');if(c)c.textContent=el.classList.contains('done')?'✓':''}
+function addPlanTask(){const inp=document.getElementById('nPlanTask'),v=inp.value.trim();if(!v)return;const d=document.createElement('div');d.style.cssText='display:flex;align-items:flex-start;gap:8px;padding:8px 0;cursor:pointer';d.className='task';d.onclick=function(){togT2(this)};d.innerHTML=`<div class="tchk" style="width:14px;height:14px;border:1px solid var(--bdr2);border-radius:3px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:9px"></div><div><div style="font-size:10px;color:var(--w2)">${v}</div></div>`;document.getElementById('planTasks').appendChild(d);inp.value=''}
+function buildTimeline(){
+  const veg=[{l:'Sem 1–2 · Propagação',s:'18/6h · VPD 0.4–0.8',done:true,active:false},{l:'Sem 3–6 · Vegetativo',s:'18/6h · VPD 0.8–1.2',done:true,active:true},{l:'Sem 7–14 · Floração',s:'12/12h',done:false,active:false},{l:'Colheita',s:'Cura 2 sem',done:false,active:false}];
+  const flor=[{l:'Sem 1–6 · Vegetativo',s:'Concluído',done:true,active:false},{l:'Sem 7–10 · Floração inicial',s:'12/12h',done:true,active:true},{l:'Sem 11–14 · Floração plena',s:'VPD 1.2–1.6',done:false,active:false},{l:'Colheita',s:'Cura',done:false,active:false}];
+  const items=calPhase==='veg'?veg:flor;
+  const w=document.getElementById('tlBox');w.innerHTML='<div style="position:absolute;left:5px;top:0;bottom:0;width:1px;background:var(--bdr2)"></div>';
+  items.forEach(it=>{const c=it.active?'var(--g)':it.done?'var(--g3)':'var(--bdr2)';const tc=it.active?'var(--g)':it.done?'var(--w2)':'var(--w3)';const div=document.createElement('div');div.style.cssText='position:relative;margin-bottom:14px';div.innerHTML=`<div style="position:absolute;left:-12px;top:3px;width:8px;height:8px;border-radius:50%;background:${c};border:2px solid var(--bg2)"></div><div style="font-size:10px;color:${tc}">${it.l}${it.active?' ← AGORA':''}</div><div style="font-size:9px;color:var(--w3);margin-top:1px">${it.s}</div>`;w.appendChild(div);});
+}
+
+// AUTO ENGINE
+function autoUpdPhase(){const p=document.getElementById('aCfgPhase').value;const ranges={prop:[0.4,0.8],veg:[0.8,1.2],flor:[1.0,1.5]};if(p!=='custom'&&ranges[p]){document.getElementById('aCfgMin').value=ranges[p][0];document.getElementById('aCfgMax').value=ranges[p][1];}autoUpdOverlay()}
+function autoUpdOverlay(){const mn=parseFloat(document.getElementById('aCfgMin').value)||0.8,mx=parseFloat(document.getElementById('aCfgMax').value)||1.2;if(document.getElementById('aRangeOv')){document.getElementById('aRangeOv').style.left=(mn/2*100)+'%';document.getElementById('aRangeOv').style.right=(100-mx/2*100)+'%';}if(document.getElementById('aRangeMinL'))document.getElementById('aRangeMinL').textContent=mn.toFixed(2);if(document.getElementById('aRangeMaxL'))document.getElementById('aRangeMaxL').textContent=mx.toFixed(2);}
+
+let autoRunning=false,autoTries=0,autoState='idle';
+let autoWaitTimer=null,autoCountdownTimer=null,autoCountdownTotal=0,autoCountdownLeft=0;
+
+const autoCfg=()=>({
+  vpdMin:secagemActive?null:parseFloat(document.getElementById('aCfgMin')?.value||'0.8'),
+  vpdMax:secagemActive?null:parseFloat(document.getElementById('aCfgMax')?.value||'1.2'),
+  waitAdj:parseInt(document.getElementById('aCfgWaitAdj')?.value||'600'),
+  waitChk1:parseInt(document.getElementById('aCfgChk1')?.value||'1200'),
+  waitChk2:parseInt(document.getElementById('aCfgChk2')?.value||'2400'),
+  maxTries:parseInt(document.getElementById('aCfgMaxTries')?.value||'3'),
+  turboRH:parseFloat(document.getElementById('aCfgTurboRH')?.value||'75'),
+  nightStart:document.getElementById('aCfgNightStart')?.value||'00:00',
+  nightEnd:document.getElementById('aCfgNightEnd')?.value||'06:00',
+  nightMax:parseFloat(document.getElementById('aCfgNightMax')?.value||'1.0'),
+  sensorInt:parseInt(document.getElementById('aCfgSensorInt')?.value||'60'),
+});
+
+function autoIsNight(){
+  const c=autoCfg();const now=new Date(),cur=now.getHours()*60+now.getMinutes();
+  const[sh,sm]=c.nightStart.split(':').map(Number),[eh,em]=c.nightEnd.split(':').map(Number);
+  const s=sh*60+sm,e=eh*60+em;return s>e?cur>=s||cur<e:cur>=s&&cur<e;
+}
+function autoEffMax(){const c=autoCfg();if(secagemActive)return 999;return autoIsNight()?Math.min(c.vpdMax,c.nightMax):c.vpdMax}
+function autoEffMin(){if(secagemActive)return 0;return autoCfg().vpdMin}
+
+function toggleAutoEngine(){
+  if(autoRunning){
+    autoRunning=false;clearTimeout(autoWaitTimer);clearInterval(autoCountdownTimer);
+    autoWaitTimer=null;autoCountdownTimer=null;
+    setAutoUI(false);autoLog('Automação pausada','warn');
+  } else {
+    autoRunning=true;autoTries=0;setAutoUI(true);
+    autoLog('Automação iniciada'+(secagemActive?' — MODO SECAGEM ATIVO':''),'ok');
+    autoRunCycle();
+  }
+}
+
+async function autoRunCycle(){
+  if(!autoRunning)return;
+  autoSetState('reading');autoLogStep('s0','running','Buscando dados do Inkbird...');
+  try{
+    const res=await fetch(WORKER+'/sensor');const d=await res.json();
+    if(!d.ok)throw new Error(d.error||'Worker falhou');
+    liveTemp=d.temp;liveHum=d.humidity;liveVPD=d.vpd;
+    updHubTiles(d.temp,d.humidity,d.vpd);
+    document.getElementById('liveDot').className='dot on';
+    document.getElementById('lastRead').textContent='Atualizado: '+new Date().toLocaleTimeString('pt-BR');
+    if(document.getElementById('aVPDLive')){
+      document.getElementById('aVPDLive').textContent=d.vpd.toFixed(2);
+      document.getElementById('aTempLive').textContent=d.temp.toFixed(1);
+      document.getElementById('aHumLive').textContent=d.humidity.toFixed(1);
+      document.getElementById('aLastReadTime').textContent=new Date().toLocaleTimeString('pt-BR');
+      document.getElementById('aVPDPin').style.left=(Math.min(d.vpd/2,1)*100)+'%';
+      const nb=document.getElementById('aNightBadge');if(nb)nb.style.display=autoIsNight()?'inline':'none';
+    }
+    logSensorData(d.temp,d.humidity,d.vpd);
+    autoLogStep('s0','done','T='+d.temp+'°C · UR='+d.humidity+'% · VPD='+d.vpd+' kPa');
+    autoLog('📡 T='+d.temp+'°C UR='+d.humidity+'% VPD='+d.vpd+(autoIsNight()?' 🌙':'')+(secagemActive?' ❄':''),'info');
+    await autoAnalyze(d.temp,d.humidity,d.vpd);
+  }catch(e){
+    autoLogStep('s0','error','Erro: '+e.message);autoLog('❌ Erro: '+e.message,'err');
+    autoScheduleNext(60);
+  }
+}
+
+async function autoAnalyze(temp,hum,vpd){
+  if(!autoRunning)return;
+  autoSetState('analyzing');
+
+  // MODO SECAGEM — lógica especial
+  if(secagemActive){
+    autoLogStep('s1','running','Modo Secagem: UR='+hum+'% alvo≤65%');
+    await new Promise(r=>setTimeout(r,500));
+    if(hum>65){
+      autoLogStep('s1','active','UR '+hum+'% > 65% → Resfriar ao máximo');
+      autoLog('❄ Secagem: UR '+hum+'% → enviando Resfriar','warn');
+      await autoDoAdjust('cool');
+    } else if(hum>55){
+      autoLogStep('s1','active','UR '+hum+'% → Turbo');
+      autoLog('⚡ Secagem: UR '+hum+'% → Turbo','warn');
+      await autoDoAdjust('turbo');
+    } else {
+      autoLogStep('s1','done','UR '+hum+'% ≤ 65% ✓');
+      autoLog('✅ Secagem: UR dentro do alvo ('+hum+'%)','ok');
+      autoTries=0;updAutoTries();autoDoOKConfirm();
+    }
+    return;
+  }
+
+  const c=autoCfg();const mn=autoEffMin(),mx=autoEffMax(),night=autoIsNight();
+  autoLogStep('s1','running','VPD='+vpd+' · Range='+mn+'–'+mx+(night?' [noite]':''));
+  await new Promise(r=>setTimeout(r,600));
+
+  if(vpd>=mn&&vpd<=mx){
+    autoLogStep('s1','done','VPD '+vpd+' OK ✓');
+    autoLog('✅ VPD dentro do range'+(night?' [noite]':''),'ok');
+    autoTries=0;updAutoTries();autoDoOKConfirm();
+  } else if(vpd>mx){
+    const reason='VPD '+vpd+' > max '+mx+(night?' [noite]':'')+' → temp_down';
+    autoLogStep('s1','active',reason);autoLog('🌡 '+reason,'warn');
+    await autoDoAdjust('temp_down');
+  } else {
+    if(hum>=c.turboRH){
+      const reason='VPD baixo + UR '+hum+'% → Turbo';
+      autoLogStep('s1','active',reason);autoLog('💧 '+reason,'warn');
+      await autoDoAdjust('turbo');
+    } else {
+      const reason='VPD '+vpd+' < min '+mn+' → temp_up';
+      autoLogStep('s1','active',reason);autoLog('🌡 '+reason,'warn');
+      await autoDoAdjust('temp_up');
+    }
+  }
+  const ac=document.getElementById('aVPDAction');
+  if(ac)ac.textContent=vpd<mn?'↑ temp_up':vpd>mx?'↓ temp_down':'✓ Manter';
+}
+
+async function autoDoAdjust(cmd){
+  if(!autoRunning)return;
+  const c=autoCfg();
+  if(!secagemActive&&autoTries>=c.maxTries){autoLog('⚠ Máx tentativas — monitorando','warn');autoTries=0;updAutoTries();autoDoOKConfirm();return;}
+  autoTries++;updAutoTries();
+  autoSetState('adjusting');
+  autoLogStep('s2','running','IR → '+cmd.toUpperCase()+(secagemActive?'':' ('+autoTries+'/'+c.maxTries+')'));
+  try{
+    const res=await fetch(WORKER+'/ir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command:cmd})});
+    const d=await res.json();
+    if(d.ok){
+      autoLogStep('s2','done',cmd.toUpperCase()+' ✓');
+      autoLog('📡 IR → '+cmd.toUpperCase()+(secagemActive?'':' ('+autoTries+'/'+c.maxTries+')'),'ok');
+      addIRLog(cmd,'ok','Auto: '+cmd);
+      if(document.getElementById('lastCmdDisplay'))document.getElementById('lastCmdDisplay').textContent=cmd.toUpperCase()+' · '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      const wt=secagemActive?300:c.waitAdj;
+      autoLog('⏳ Aguardando '+Math.round(wt/60)+'min...','info');
+      await autoWait(wt,'Estabilizando — '+Math.round(wt/60)+'min','var(--a)','s3');
+      await autoRunCycle();
+    } else {
+      autoLogStep('s2','error','Falha');autoLog('❌ Falha IR '+cmd,'err');autoScheduleNext(60);
+    }
+  }catch(e){autoLogStep('s2','error',e.message);autoLog('❌ Erro IR: '+e.message,'err');autoScheduleNext(60);}
+}
+
+function autoDoOKConfirm(){
+  if(!autoRunning)return;
+  const c=autoCfg();
+  const w1=secagemActive?300:c.waitChk1,w2=secagemActive?600:c.waitChk2;
+  autoSetState('ok_check');
+  autoLogStep('s4','running','Confirmação em '+Math.round(w1/60)+'min');
+  autoLog('🔍 Estável — confirmação em '+Math.round(w1/60)+'min e '+Math.round(w2/60)+'min','ok');
+  autoWait(w1,'Confirmação 1ª — '+Math.round(w1/60)+'min','var(--b)','s4').then(async()=>{
+    if(!autoRunning)return;
+    const res=await fetch(WORKER+'/sensor').then(r=>r.json()).catch(()=>null);
+    if(res&&res.ok){
+      liveTemp=res.temp;liveHum=res.humidity;liveVPD=res.vpd;
+      updHubTiles(res.temp,res.humidity,res.vpd);
+      logSensorData(res.temp,res.humidity,res.vpd);
+      autoLog('📡 Confirmação 1ª: VPD='+res.vpd+' UR='+res.humidity+'%','info');
+      const ok=secagemActive?res.humidity<=65:(res.vpd>=autoEffMin()&&res.vpd<=autoEffMax());
+      if(ok){
+        autoLog('✅ Ainda OK — confirmação final em '+Math.round(w2/60)+'min','ok');
+        await autoWait(w2,'Confirmação 2ª — '+Math.round(w2/60)+'min','var(--b)','s4');
+        if(autoRunning)await autoRunCycle();
+      } else {
+        autoLog('⚠ Saiu do range — novo ciclo','warn');await autoRunCycle();
+      }
+    } else autoScheduleNext(60);
+  });
+}
+
+function autoWait(secs,label,color,stepId){
+  return new Promise(resolve=>{
+    if(!autoRunning){resolve();return;}
+    autoSetState('waiting');autoCountdownTotal=secs;autoCountdownLeft=secs;
+    const sid=stepId.replace('s','');
+    const bar=document.getElementById('aBars'+sid),fill=document.getElementById('aFills'+sid);
+    const timerEl=document.getElementById('aTimer');
+    if(bar){bar.style.display='block';if(fill){fill.style.width='0%';fill.style.background=color;}}
+    autoLogStep(stepId,'running',label);
+    if(timerEl)timerEl.textContent=autoFmt(secs);
+    if(document.getElementById('aNextRead'))document.getElementById('aNextRead').textContent=autoFmt(secs);
+    autoCountdownTimer=setInterval(()=>{
+      if(!autoRunning){clearInterval(autoCountdownTimer);resolve();return;}
+      autoCountdownLeft--;
+      const pct=(autoCountdownTotal-autoCountdownLeft)/autoCountdownTotal*100;
+      if(fill)fill.style.width=pct.toFixed(1)+'%';
+      if(timerEl)timerEl.textContent=autoFmt(autoCountdownLeft);
+      if(document.getElementById('aNextRead'))document.getElementById('aNextRead').textContent=autoFmt(autoCountdownLeft);
+      if(autoCountdownLeft<=0){clearInterval(autoCountdownTimer);if(bar)bar.style.display='none';autoLogStep(stepId,'done',label+' ✓');resolve();}
+    },1000);
+  });
+}
+
+function autoScheduleNext(secs){
+  if(document.getElementById('aNextRead'))document.getElementById('aNextRead').textContent=autoFmt(secs);
+  autoWaitTimer=setTimeout(()=>{if(autoRunning)autoRunCycle();},secs*1000);
+}
+function autoFmt(s){if(s<=0)return'0:00';return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+
+function autoSetState(s){
+  autoState=s;const el=document.getElementById('aStateBadge');if(!el)return;
+  const lbs={idle:'IDLE',reading:'LENDO',analyzing:'ANALISANDO',adjusting:'AJUSTANDO',waiting:'AGUARDANDO',ok_check:'CONFIRMANDO'};
+  const cls={idle:'off-st',reading:'info',analyzing:'info',adjusting:'warn',waiting:'warn',ok_check:'ok'};
+  el.textContent=lbs[s]||s.toUpperCase();el.className='badge '+(cls[s]||'off-st');
+}
+function autoLogStep(id,status,desc){
+  const sid=id.replace('s','');
+  const el=document.getElementById('aSteps'+sid);if(!el)return;
+  const cls={running:'running',done:'done',error:'error',active:'active'};
+  el.className='sm-step '+(cls[status]||'');
+  const b=document.getElementById('aBadges'+sid);
+  if(b){const bc={running:'warn',done:'ok',error:'danger',active:'warn'};b.className='badge '+(bc[status]||'off-st');b.textContent=status==='running'?'...':status==='done'?'OK':status==='error'?'ERRO':status==='active'?'AÇÃO':'—';}
+  const d=document.getElementById('aDescs'+sid);if(d&&desc)d.textContent=desc;
+}
+function updAutoTries(){const el=document.getElementById('aTriesDisplay');if(!el)return;const mx=autoCfg().maxTries;el.textContent=autoTries+' / '+mx;el.style.color=autoTries>=mx?'var(--r)':autoTries>0?'var(--a)':'var(--w)';}
+function autoLog(msg,type){
+  const list=document.getElementById('autoEngineLog');if(!list)return;
+  const empty=list.querySelector('[data-empty]');if(empty)empty.remove();
+  const colors={ok:'var(--g)',warn:'var(--a)',err:'var(--r)',info:'var(--b)'};
+  const d=document.createElement('div');d.className='log-e';
+  d.innerHTML=`<div class="ld" style="background:${colors[type]||'var(--g)'}"></div><div style="flex:1"><div style="font-size:10px;color:${colors[type]||'var(--g)'};line-height:1.4">${msg}</div><div style="font-size:8px;color:var(--w4);margin-top:1px">${new Date().toLocaleTimeString('pt-BR')}</div></div>`;
+  list.insertBefore(d,list.firstChild);if(list.children.length>60)list.removeChild(list.lastChild);
+}
+function setAutoUI(on){
+  const btn=document.getElementById('aMainBtn'),dot=document.getElementById('aDot'),st=document.getElementById('aMainStatus');
+  if(on){if(btn){btn.textContent='Parar automação';btn.className='btn btn-r';}if(dot){dot.style.background='var(--g)';dot.style.animation='blink 2s infinite';}if(st)st.textContent='Rodando';}
+  else{if(btn){btn.textContent='Ligar automação';btn.className='btn';}if(dot){dot.style.background='var(--w4)';dot.style.animation='none';}if(st)st.textContent='Desligado';autoSetState('idle');
+    ['0','1','2','3','4'].forEach(i=>{const el=document.getElementById('aSteps'+i);if(el)el.className='sm-step';const b=document.getElementById('aBadges'+i);if(b){b.className='badge off-st';b.textContent='aguardando';}const bar=document.getElementById('aBars'+i);if(bar)bar.style.display='none';});}
+}
+
+// CLOCK
+function clock(){document.getElementById('liveClock').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});updLight()}
+
+// STATE
+function saveState(){
+  try{localStorage.setItem('growos_v4',JSON.stringify({
+    lOn:document.getElementById('lOn').value,lOff:document.getElementById('lOff').value,
+    blmMin:document.getElementById('blmMin').value,blmMax:document.getElementById('blmMax').value,
+    aCfgMin:document.getElementById('aCfgMin').value,aCfgMax:document.getElementById('aCfgMax').value,
+    aCfgNightStart:document.getElementById('aCfgNightStart').value,aCfgNightEnd:document.getElementById('aCfgNightEnd').value,
+    aCfgNightMax:document.getElementById('aCfgNightMax').value,
+    growStage,secagemActive,plants,
+    sensorLog:sensorLog.slice(-500),blmLog:blmLog.slice(-500),
+  }));}catch(e){}
+}
+function loadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem('growos_v4')||'{}');
+    if(s.lOn)document.getElementById('lOn').value=s.lOn;
+    if(s.lOff)document.getElementById('lOff').value=s.lOff;
+    if(s.blmMin)document.getElementById('blmMin').value=s.blmMin;
+    if(s.blmMax)document.getElementById('blmMax').value=s.blmMax;
+    if(s.aCfgMin)document.getElementById('aCfgMin').value=s.aCfgMin;
+    if(s.aCfgMax)document.getElementById('aCfgMax').value=s.aCfgMax;
+    if(s.aCfgNightStart)document.getElementById('aCfgNightStart').value=s.aCfgNightStart;
+    if(s.aCfgNightEnd)document.getElementById('aCfgNightEnd').value=s.aCfgNightEnd;
+    if(s.aCfgNightMax)document.getElementById('aCfgNightMax').value=s.aCfgNightMax;
+    if(s.plants&&s.plants.length)plants=s.plants;
+    if(s.sensorLog)sensorLog=s.sensorLog;
+    if(s.blmLog)blmLog=s.blmLog;
+    if(s.growStage){growStage=s.growStage;const btn=document.querySelector(`.stage-btn[onclick*="'${growStage}'"]`);if(btn){document.querySelectorAll('.stage-btn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');const r=stageRanges[growStage];if(r)document.getElementById('stageVPDHint').textContent=r.hint;}}
+    if(s.secagemActive){secagemActive=s.secagemActive;if(secagemActive){document.getElementById('secagemToggle').checked=true;document.getElementById('secagemCfg').style.display='block';document.getElementById('secagemBanner').style.display='flex';}}
+  }catch(e){}
+}
+
+// DEMO PLANTS
+function initDemoPlants(){if(!plants.length){plants=[{id:'demo1',name:'Planta A',strain:'White Widow',germDate:new Date(Date.now()-35*864e5).toISOString().slice(0,10),stage:'veg',week:5,substrate:'Terra',pot:'20',floDays:'63',seedType:'Feminizada',notes:'LST iniciado na semana 3.'},{id:'demo2',name:'Planta B',strain:'OG Kush',germDate:new Date(Date.now()-56*864e5).toISOString().slice(0,10),stage:'flor',week:3,substrate:'Coco',pot:'15',floDays:'56',seedType:'Feminizada',notes:''}];}}
+
+// INIT
+Chart.defaults.color='#666';
+Chart.defaults.borderColor='rgba(255,255,255,0.06)';
+loadState();updLight();updBlumat();buildCal();autoUpdOverlay();
+initDemoPlants();renderPlants();renderHubPlants();clock();
+fetchSensor();
+setInterval(fetchSensor,60000);
+setInterval(clock,10000);
+setInterval(saveState,30000);
+</script>
+</body>
+</html>
