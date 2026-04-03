@@ -137,13 +137,13 @@ input[type=time]{color-scheme:dark}
 
 /* ── PAINEL LATERAL EDITAR ── */
 #editPanel{
-  position:fixed;top:0;right:0;bottom:0;width:380px;max-width:100vw;
+  position:fixed;top:0;right:-420px;bottom:0;width:380px;max-width:100vw;
   background:var(--bg2);border-left:1px solid var(--bdr2);
   z-index:600;overflow-y:auto;
-  transform:translateX(110%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  transition:right .3s cubic-bezier(.4,0,.2,1);
   padding-bottom:calc(20px + var(--safe-bot));
 }
-#editPanel.open{transform:translateX(0)}
+#editPanel.open{right:0}
 #editOverlay{
   position:fixed;inset:0;background:rgba(0,0,0,.5);
   z-index:498;opacity:0;pointer-events:none;transition:opacity .3s;
@@ -234,31 +234,14 @@ tr.hl{background:rgba(163,230,53,.04)}
 #dashboard>*:nth-child(4){animation-delay:.12s}
 #dashboard>*:nth-child(5){animation-delay:.16s}
 
-/* ── GRID LAYOUT ── */
-/* Coluna 1: Ciclo + Controles IR (spaneia 2 rows no grid grande) */
-#cCiclo{grid-column:1;grid-row:1/3}
-/* Coluna 2: VPD + Auto State */
-#cVpd{grid-column:2;grid-row:1}
-#cAutoState{grid-column:2;grid-row:2}
-/* Coluna 3: Temp + Hum */
-
-
-/* Coluna 4: Luz + Blumat */
-#cClima{grid-column:3/5;grid-row:1}
-  #cLuz{grid-column:3;grid-row:2}
-
-/* Row 3 */
-#cControles{grid-column:1;grid-row:3}
-#cEnergia{grid-column:2;grid-row:3}
-
-
-/* Responsive */
+/* ── GRID LAYOUT — span dinâmico via data-cols/rows ── */
 @media(max-width:900px){
-  #dashboard{grid-template-columns:1fr 1fr}
-
+  #dashboard{grid-template-columns:repeat(2,1fr)}
+  .card[data-cols="3"],.card[data-cols="4"]{grid-column:span 2}
 }
 @media(max-width:600px){
   #dashboard{grid-template-columns:1fr}
+  .card[data-cols="2"],.card[data-cols="3"],.card[data-cols="4"]{grid-column:span 1}
   #editPanel{width:100vw}
 }
 
@@ -319,7 +302,7 @@ tr.hl{background:rgba(163,230,53,.04)}
   100%{transform:translate(-50%,-50%) scale(1);opacity:0}
 }
 .lp-ring{
-  position:fixed;width:60px;height:60px;border-radius:50%;
+  position:absolute;width:60px;height:60px;border-radius:50%;
   border:2px solid var(--g);pointer-events:none;z-index:9999;
   animation:lp-ring .7s ease-out forwards;
 }
