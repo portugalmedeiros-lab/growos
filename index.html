@@ -63,13 +63,13 @@ nav{
   max-width:1400px;
   margin:0 auto;
 }
-.card[data-cols="2"]{grid-column:span 2;}
-.card[data-cols="3"]{grid-column:span 3;}
-.card[data-cols="4"]{grid-column:span 4;}
-.card[data-rows="2"]{grid-row:span 2;}
-.card[data-cols="1"] .clima-wrap{flex-direction:column!important;}
-.card[data-cols="1"] .clima-wrap .dvdr{width:100%!important;height:1px!important;align-self:auto!important;}
-.card[data-cols="1"] .clima-num{font-size:30px!important;}
+.card[]{grid-column:span 2;}
+.card[]{grid-column:span 3;}
+.card[]{grid-column:span 4;}
+.card[]{grid-row:span 2;}
+.card[] .clima-wrap{flex-direction:column!important;}
+.card[] .clima-wrap .dvdr{width:100%!important;height:1px!important;align-self:auto!important;}
+.card[] .clima-num{font-size:30px!important;}
 
 /* ── CARDS ── */
 .card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad2);padding:14px;position:relative;overflow:hidden}
@@ -234,16 +234,21 @@ tr.hl{background:rgba(163,230,53,.04)}
 #dashboard>*:nth-child(4){animation-delay:.12s}
 #dashboard>*:nth-child(5){animation-delay:.16s}
 
-/* ── GRID LAYOUT — span dinâmico via data-cols/rows ── */
+/* ── GRID LAYOUT FIXO ── */
+#cCiclo    {grid-column:1;  grid-row:1/3}
+#cVpd      {grid-column:2;  grid-row:1}
+#cClima    {grid-column:3/5;grid-row:1}
+#cLuz      {grid-column:2;  grid-row:2}
+#cControles{grid-column:3;  grid-row:2}
+#cAutoState{grid-column:4;  grid-row:1/3}
 @media(max-width:900px){
   #dashboard{grid-template-columns:repeat(2,1fr)}
-  .card[data-cols="3"],.card[data-cols="4"]{grid-column:span 2}
+  #cCiclo,#cVpd,#cClima,#cLuz,#cControles,#cAutoState{grid-column:auto;grid-row:auto}
 }
 @media(max-width:600px){
   #dashboard{grid-template-columns:1fr}
-  .card[data-cols="2"],.card[data-cols="3"],.card[data-cols="4"]{grid-column:span 1}
   #editPanel{width:100vw}
-}
+}}
 
 /* Secagem banner */
 .banner-secagem{background:var(--pud);border:1px solid rgba(192,132,252,.3);border-radius:var(--rad);padding:8px 12px;display:none;margin-bottom:10px}
@@ -252,69 +257,7 @@ tr.hl{background:rgba(163,230,53,.04)}
 .mini-chart-wrap{height:48px;position:relative;margin-top:8px}
 
 @keyframes lightPulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.15)}50%{box-shadow:0 0 0 8px rgba(251,191,36,0)}}
-/* ── RESIZE BUTTON ── */
-.card-resize{
-  position:absolute;top:8px;right:8px;
-  width:20px;height:20px;border-radius:5px;
-  background:var(--bg3);border:1px solid var(--bdr2);
-  color:var(--w4);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;line-height:1;z-index:5;
-  opacity:0;transition:opacity .15s,color .15s,background .15s;
-  user-select:none;
-}
-.card:hover .card-resize{opacity:1;}
-.card-resize:hover{background:var(--gd);border-color:var(--g3);color:var(--g);}
 
-/* ── DRAG & DROP ── */
-#dashboard.drag-mode .card{
-  cursor:grab;
-  border-color:var(--bdr2);
-  transition:transform .15s,box-shadow .15s,opacity .15s,border-color .15s;
-}
-#dashboard.drag-mode .card::before{
-  content:'⠿';
-  position:absolute;top:8px;right:10px;
-  font-size:14px;color:var(--w4);
-  pointer-events:none;z-index:5;
-  transition:color .15s;
-}
-#dashboard.drag-mode .card:hover::before{color:var(--g);}
-#dashboard.drag-mode .card:hover{border-color:var(--g3);box-shadow:0 0 0 1px var(--g3);}
-
-.card.drag-source{
-  opacity:.35 !important;
-  transform:scale(.97);
-  border-color:var(--g3) !important;
-}
-.card.drag-ghost{
-  opacity:0 !important;
-}
-.card.drag-over{
-  border-color:var(--g) !important;
-  box-shadow:0 0 0 2px var(--g3) !important;
-  background:rgba(163,230,53,.04) !important;
-}
-
-/* long-press ripple */
-@keyframes lp-ring{
-  0%{transform:translate(-50%,-50%) scale(0);opacity:.6}
-  100%{transform:translate(-50%,-50%) scale(1);opacity:0}
-}
-.lp-ring{
-  position:absolute;width:60px;height:60px;border-radius:50%;
-  border:2px solid var(--g);pointer-events:none;z-index:9999;
-  animation:lp-ring .7s ease-out forwards;
-}
-
-/* drag mode badge na topbar */
-#dragModeBadge{
-  font-size:9px;padding:3px 10px;border-radius:20px;
-  background:var(--gd);border:1px solid var(--g3);color:var(--g);
-  display:none;letter-spacing:.5px;
-  animation:fadeUp .2s ease;
-}
-#dragModeBadge.show{display:inline-block;}
 </style>
 </head>
 <body>
@@ -325,11 +268,11 @@ tr.hl{background:rgba(163,230,53,.04)}
 <nav>
   <div class="logo">Grow<em>OS</em></div>
   <div class="nav-right">
-    <span id="dragModeBadge">↕ Arraste os cards</span>
     <div class="live-ind">
       <div class="dot" id="liveDot"></div>
       <span id="liveClock">--:--</span>
     </div>
+    <button class="btn-edit" id="btnRefresh" onclick="fetchSensor();toast('Atualizando...','ok')" title="Atualizar sensor" style="font-size:13px">↺</button>
     <button class="btn-edit" id="btnEdit" onclick="togglePanel()" title="Editar / Configurações">✎</button>
   </div>
 </nav>
@@ -338,7 +281,7 @@ tr.hl{background:rgba(163,230,53,.04)}
 <div id="dashboard">
 
   <!-- ① CICLO DE CULTIVO -->
-  <div class="card" id="cCiclo" data-cols="1" data-rows="2"><button class="card-resize" onclick="resizeCard('cCiclo',event)" title="Redimensionar">⊞</button>
+  <div class="card" id="cCiclo">
     <div class="sec">Ciclo de cultivo</div>
     <div class="banner-secagem" id="secBanner">🌬 Modo secagem ativo</div>
     <div id="plantCards" style="max-height:520px;overflow-y:auto"></div>
@@ -348,7 +291,7 @@ tr.hl{background:rgba(163,230,53,.04)}
   </div>
 
   <!-- ② VPD -->
-  <div class="card" id="cVpd" data-cols="2" data-rows="1"><button class="card-resize" onclick="resizeCard('cVpd',event)" title="Redimensionar">⊞</button>
+  <div class="card" id="cVpd">
   <div style="display:none" class="vpd-extra">>
     <div class="sec" style="justify-content:space-between;margin-bottom:14px">
       <span style="display:flex;align-items:center;gap:5px"><span style="width:3px;height:3px;border-radius:50%;background:var(--g);display:inline-block"></span>VPD — Inkbird</span>
@@ -376,7 +319,7 @@ tr.hl{background:rgba(163,230,53,.04)}
   </div>
 
   <!-- ③④ CLIMA -->
-  <div class="card" id="cClima" data-cols="2" data-rows="1"><button class="card-resize" onclick="resizeCard('cClima',event)" title="Redimensionar">⊞</button>
+  <div class="card" id="cClima" style="display:flex;flex-direction:row;align-items:stretch;padding:0">
     <div class="clima-wrap" style="display:flex;flex-direction:row;align-items:center;width:100%;height:100%;padding:14px;gap:0">
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 10px">
       <div class="tile-label" style="margin-bottom:0">Temperatura</div>
@@ -402,7 +345,7 @@ tr.hl{background:rgba(163,230,53,.04)}
   </div></div>
 
   <!-- ⑤ LUZ -->
-  <div class="card" id="cLuz" data-cols="1" data-rows="1" style="align-items:center;justify-content:center;padding:14px;gap:0"><button class="card-resize" onclick="resizeCard('cLuz',event)" title="Redimensionar">⊞</button>
+  <div class="card" id="cLuz" style="align-items:center;justify-content:center;padding:14px;gap:0">
     <div class="tile-label" style="position:absolute;top:12px;left:14px;margin-bottom:0">Luz</div>
     <div id="lightIconWrap" style="width:52px;height:52px;border-radius:50%;border:2px solid rgba(251,191,36,.3);display:flex;align-items:center;justify-content:center;margin-bottom:8px">
       <div id="lightCore" style="width:26px;height:26px;border-radius:50%;background:var(--a)"></div>
@@ -417,7 +360,7 @@ tr.hl{background:rgba(163,230,53,.04)}
 
 
   <!-- ⑦ CONTROLE IR -->
-  <div class="card" id="cControles" data-cols="1" data-rows="1"><button class="card-resize" onclick="resizeCard('cControles',event)" title="Redimensionar">⊞</button>
+  <div class="card" id="cControles">
     <div class="sec" style="margin-bottom:12px">Controle IR — Ekaza</div>
     <div class="ir-pad">
       <button class="btn" onclick="sendCmd('cool')">❄ Resfriar</button>
@@ -434,7 +377,7 @@ tr.hl{background:rgba(163,230,53,.04)}
   </div>
 
   <!-- ⑧ AUTOMAÇÃO STATE -->
-  <div class="card" id="cAutoState" data-cols="2" data-rows="2" style="position:relative"><button class="card-resize" onclick="resizeCard('cAutoState',event)" title="Redimensionar">⊞</button>
+  <div class="card" id="cAutoState" style="position:relative;display:flex;flex-direction:column">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
       <div class="sec" style="margin-bottom:0">Automação VPD</div>
       <div style="display:flex;align-items:center;gap:6px">
@@ -1128,227 +1071,6 @@ setInterval(saveState,30000);
 </script>
 
 
-<script>
-// ── RESIZE CARDS ──────────────────────────────────────────────────────────────
-const CARD_SIZE_KEY = 'growos_card_sizes';
-// Cycles: [cols, rows]
-const SIZE_CYCLE = [[1,1],[2,1],[1,2],[2,2]];
-
-function resizeCard(id, e){
-  if(e){e.stopPropagation();}
-  const card = document.getElementById(id);
-  if(!card) return;
-  const cols = parseInt(card.dataset.cols)||1;
-  const rows = parseInt(card.dataset.rows)||1;
-  // Find current index in cycle
-  const cur = SIZE_CYCLE.findIndex(s=>s[0]===cols&&s[1]===rows);
-  const next = SIZE_CYCLE[(cur+1) % SIZE_CYCLE.length];
-  card.dataset.cols = next[0];
-  card.dataset.rows = next[1];
-  // Show size briefly
-  const btn = card.querySelector('.card-resize');
-  if(btn){ btn.textContent = next[0]+'×'+next[1]; setTimeout(()=>{ btn.textContent='⊞'; },800); }
-  saveCardSizes();
-}
-
-function saveCardSizes(){
-  const sizes = {};
-  document.querySelectorAll('#dashboard .card[id]').forEach(c=>{
-    sizes[c.id] = {cols: c.dataset.cols||1, rows: c.dataset.rows||1};
-  });
-  try{ localStorage.setItem(CARD_SIZE_KEY, JSON.stringify(sizes)); }catch(e){}
-}
-
-function loadCardSizes(){
-  try{
-    const saved = JSON.parse(localStorage.getItem(CARD_SIZE_KEY)||'null');
-    if(!saved) return;
-    Object.entries(saved).forEach(([id,sz])=>{
-      const card = document.getElementById(id);
-      if(card){ card.dataset.cols = sz.cols; card.dataset.rows = sz.rows; }
-    });
-  }catch(e){}
-}
-
-</script>
-<!-- DRAG & DROP REORGANIZAÇÃO -->
-<script>
-const CARD_ORDER_KEY='growos_card_order';
-let dragMode=false,dragSrc=null,lpTimer=null,touchSrc=null,touchLastOver=null;
-
-// Strip fixed grid positions from all cards to allow free reorder
-function stripGridPos(){
-  document.querySelectorAll('#dashboard .card').forEach(c=>{
-    c.style.gridColumn='';
-    c.style.gridRow='';
-  });
-}
-
-// Inject a <style> that overrides the CSS-based grid positions when in drag mode
-// We do this by nullifying all #cX { grid-column/row } rules at runtime
-let overrideStyle=null;
-function injectGridOverride(){
-  if(overrideStyle)return;
-  overrideStyle=document.createElement('style');
-  overrideStyle.id='grid-override';
-  overrideStyle.textContent=`
-    #cCiclo,#cVpd,#cAutoState,#cClima,#cLuz,#cControles,#cEnergia,#cPlantas{
-      grid-column:auto!important;grid-row:auto!important;
-    }
-  `;
-  document.head.appendChild(overrideStyle);
-}
-function removeGridOverride(){
-  if(overrideStyle){overrideStyle.remove();overrideStyle=null;}
-}
-
-function saveCardOrder(){
-  const ids=[...document.querySelectorAll('#dashboard .card')].map(c=>c.id).filter(Boolean);
-  try{localStorage.setItem(CARD_ORDER_KEY,JSON.stringify(ids));}catch(e){}
-}
-
-function loadCardOrder(){
-  try{
-    const saved=JSON.parse(localStorage.getItem(CARD_ORDER_KEY)||'null');
-    if(!saved||!Array.isArray(saved))return;
-    // If order was saved, we already injected the override permanently
-    const dash=document.getElementById('dashboard');
-    saved.forEach(id=>{const el=document.getElementById(id);if(el)dash.appendChild(el);});
-    injectGridOverride();
-  }catch(e){}
-}
-
-function enterDragMode(){
-  if(dragMode)return;
-  dragMode=true;
-  injectGridOverride();
-  document.getElementById('dashboard').classList.add('drag-mode');
-  document.getElementById('dragModeBadge').classList.add('show');
-  document.getElementById('btnEdit').classList.add('active');
-
-  document.querySelectorAll('#dashboard .card').forEach(card=>{
-    card.setAttribute('draggable','true');
-    card.addEventListener('dragstart',onDragStart);
-    card.addEventListener('dragend',onDragEnd);
-    card.addEventListener('dragover',onDragOver);
-    card.addEventListener('drop',onDrop);
-    card.addEventListener('dragenter',onDragEnter);
-    card.addEventListener('dragleave',onDragLeave);
-    card.addEventListener('touchstart',onTouchStart,{passive:false});
-    card.addEventListener('touchmove',onTouchMove,{passive:false});
-    card.addEventListener('touchend',onTouchEnd);
-  });
-  setTimeout(()=>document.addEventListener('click',exitOnClickOutside),100);
-}
-
-function exitDragMode(){
-  if(!dragMode)return;
-  dragMode=false;
-  document.getElementById('dashboard').classList.remove('drag-mode');
-  document.getElementById('dragModeBadge').classList.remove('show');
-  document.getElementById('btnEdit').classList.remove('active');
-  document.querySelectorAll('#dashboard .card').forEach(c=>{
-    c.removeAttribute('draggable');
-    c.classList.remove('drag-over','drag-source');
-    c.removeEventListener('dragstart',onDragStart);
-    c.removeEventListener('dragend',onDragEnd);
-    c.removeEventListener('dragover',onDragOver);
-    c.removeEventListener('drop',onDrop);
-    c.removeEventListener('dragenter',onDragEnter);
-    c.removeEventListener('dragleave',onDragLeave);
-    c.removeEventListener('touchstart',onTouchStart);
-    c.removeEventListener('touchmove',onTouchMove);
-    c.removeEventListener('touchend',onTouchEnd);
-  });
-  document.removeEventListener('click',exitOnClickOutside);
-  saveCardOrder();
-}
-
-function exitOnClickOutside(e){
-  if(!e.target.closest('.card')&&!e.target.closest('#dragModeBadge')&&!e.target.closest('#editPanel'))exitDragMode();
-}
-
-function initLongPress(){
-  document.addEventListener('mousedown',e=>{
-    const card=e.target.closest('#dashboard .card');
-    if(!card||dragMode)return;
-    lpTimer=setTimeout(()=>{spawnRipple(card,e.clientX,e.clientY);navigator.vibrate&&navigator.vibrate(40);enterDragMode();},700);
-  });
-  document.addEventListener('mouseup',cancelLP);
-  document.addEventListener('mousemove',cancelLP);
-  document.addEventListener('touchstart',e=>{
-    const card=e.target.closest('#dashboard .card');
-    if(!card||dragMode)return;
-    const t=e.touches[0];
-    lpTimer=setTimeout(()=>{spawnRipple(card,t.clientX,t.clientY);navigator.vibrate&&navigator.vibrate(40);enterDragMode();},700);
-  },{passive:true});
-  document.addEventListener('touchend',cancelLP);
-  document.addEventListener('touchmove',cancelLP,{passive:true});
-}
-function cancelLP(){clearTimeout(lpTimer);lpTimer=null;}
-
-function spawnRipple(card,x,y){
-  const r=document.createElement('div');r.className='lp-ring';
-  const rect=card.getBoundingClientRect();
-  r.style.left=(x-rect.left)+'px';r.style.top=(y-rect.top)+'px';
-  card.appendChild(r);setTimeout(()=>r.remove(),750);
-}
-
-function onDragStart(e){dragSrc=this;this.classList.add('drag-source');e.dataTransfer.effectAllowed='move';}
-function onDragEnd(){document.querySelectorAll('#dashboard .card').forEach(c=>c.classList.remove('drag-over','drag-source'));dragSrc=null;}
-function onDragOver(e){e.preventDefault();}
-function onDragEnter(){if(this!==dragSrc)this.classList.add('drag-over');}
-function onDragLeave(){this.classList.remove('drag-over');}
-function onDrop(e){
-  e.stopPropagation();
-  if(dragSrc&&this!==dragSrc)swapCards(dragSrc,this);
-  document.querySelectorAll('#dashboard .card').forEach(c=>c.classList.remove('drag-over'));
-}
-
-let touchClone=null;
-function onTouchStart(e){
-  if(!dragMode)return;
-  touchSrc=this;this.classList.add('drag-source');
-  const rect=this.getBoundingClientRect(),t=e.touches[0];
-  touchClone=this.cloneNode(true);
-  touchClone.style.cssText=`position:fixed;z-index:9000;pointer-events:none;width:${rect.width}px;opacity:.85;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.6);border:1px solid #a3e635;left:${rect.left}px;top:${rect.top}px;background:#121212;`;
-  document.body.appendChild(touchClone);
-}
-function onTouchMove(e){
-  if(!touchSrc||!touchClone)return;
-  e.preventDefault();
-  const t=e.touches[0],rect=touchSrc.getBoundingClientRect();
-  touchClone.style.left=(t.clientX-rect.width/2)+'px';
-  touchClone.style.top=(t.clientY-rect.height/2)+'px';
-  touchClone.style.display='none';
-  const el=document.elementFromPoint(t.clientX,t.clientY);
-  touchClone.style.display='';
-  const over=el&&el.closest('#dashboard .card');
-  if(touchLastOver&&touchLastOver!==over)touchLastOver.classList.remove('drag-over');
-  if(over&&over!==touchSrc){over.classList.add('drag-over');touchLastOver=over;}
-}
-function onTouchEnd(){
-  if(!touchSrc)return;
-  if(touchClone){touchClone.remove();touchClone=null;}
-  if(touchLastOver&&touchLastOver!==touchSrc)swapCards(touchSrc,touchLastOver);
-  document.querySelectorAll('#dashboard .card').forEach(c=>c.classList.remove('drag-over','drag-source'));
-  touchSrc=null;touchLastOver=null;
-}
-
-function swapCards(a,b){
-  const dash=document.getElementById('dashboard');
-  const cards=[...dash.querySelectorAll('.card')];
-  const ia=cards.indexOf(a),ib=cards.indexOf(b);
-  if(ia<ib)dash.insertBefore(a,b.nextSibling);else dash.insertBefore(a,b);
-  b.classList.add('dropping');
-  setTimeout(()=>b.classList.remove('dropping'),280);
-  saveCardOrder();
-}
-
-loadCardOrder();
-loadCardSizes();
-initLongPress();
-</script>
 
 </body>
 </html>
