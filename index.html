@@ -1145,6 +1145,7 @@ setInterval(saveState,30000);
 </script>
 
 
+<script>
 // ── RESIZE CARDS ──────────────────────────────────────────────────────────────
 const CARD_SIZE_KEY = 'growos_card_sizes';
 // Cycles: [cols, rows]
@@ -1186,6 +1187,7 @@ function loadCardSizes(){
   }catch(e){}
 }
 
+</script>
 <!-- DRAG & DROP REORGANIZAÇÃO -->
 <script>
 const CARD_ORDER_KEY='growos_card_order';
@@ -1363,7 +1365,6 @@ function swapCards(a,b){
 loadCardOrder();
 loadCardSizes();
 initLongPress();
-</script>
 </script>
 
 </body>
