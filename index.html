@@ -372,7 +372,7 @@ tr.hl{background:rgba(163,230,53,.04)}
   </div>
 
   <!-- ③④ CLIMA -->
-  <div class="card" id="cClima" style="grid-column:3/5;grid-row:1;display:flex;flex-direction:row;align-items:center;padding:16px;gap:0">
+  <div class="card" id="cClima" data-col="3/5" data-row="1" style="display:flex;flex-direction:row;align-items:center;padding:16px;gap:0">
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 10px">
       <div class="tile-label" style="margin-bottom:0">Temperatura</div>
       <div style="display:flex;align-items:baseline;gap:4px">
@@ -1124,245 +1124,181 @@ setInterval(saveState,30000);
 
 <!-- DRAG & DROP REORGANIZAÇÃO -->
 <script>
-// ── DRAG & DROP ENGINE ─────────────────────────────────────────────────────────
-// Ordem dos cards salva no localStorage, restaurada no init.
-// Ativação: long press (700ms) em qualquer card.
-// Desktop: HTML5 drag. Mobile: touch drag.
+const CARD_ORDER_KEY='growos_card_order';
+let dragMode=false,dragSrc=null,lpTimer=null,touchSrc=null,touchLastOver=null;
 
-const CARD_ORDER_KEY = 'growos_card_order';
-let dragMode = false;
-let dragSrc = null;
-let lpTimer = null;
-let lpActive = false;
-
-// IDs dos cards em ordem padrão
-const DEFAULT_ORDER = ['cCiclo','cVpd','cTemp','cHum','cLuz','cBlumat','cControles','cAutoState','cPlantas'];
-
-function getCards(){
-  return Array.from(document.querySelectorAll('#dashboard .card'));
+// Strip fixed grid positions from all cards to allow free reorder
+function stripGridPos(){
+  document.querySelectorAll('#dashboard .card').forEach(c=>{
+    c.style.gridColumn='';
+    c.style.gridRow='';
+  });
 }
 
-// ── Salvar/Carregar ordem ──────────────────────────────────────────────────────
+// Inject a <style> that overrides the CSS-based grid positions when in drag mode
+// We do this by nullifying all #cX { grid-column/row } rules at runtime
+let overrideStyle=null;
+function injectGridOverride(){
+  if(overrideStyle)return;
+  overrideStyle=document.createElement('style');
+  overrideStyle.id='grid-override';
+  overrideStyle.textContent=`
+    #cCiclo,#cVpd,#cAutoState,#cClima,#cLuz,#cControles,#cEnergia,#cPlantas{
+      grid-column:auto!important;grid-row:auto!important;
+    }
+  `;
+  document.head.appendChild(overrideStyle);
+}
+function removeGridOverride(){
+  if(overrideStyle){overrideStyle.remove();overrideStyle=null;}
+}
+
 function saveCardOrder(){
-  const ids = getCards().map(c => c.id).filter(Boolean);
-  try{ localStorage.setItem(CARD_ORDER_KEY, JSON.stringify(ids)); }catch(e){}
+  const ids=[...document.querySelectorAll('#dashboard .card')].map(c=>c.id).filter(Boolean);
+  try{localStorage.setItem(CARD_ORDER_KEY,JSON.stringify(ids));}catch(e){}
 }
 
 function loadCardOrder(){
   try{
-    const saved = JSON.parse(localStorage.getItem(CARD_ORDER_KEY) || 'null');
-    if(!saved || !Array.isArray(saved)) return;
-    const dash = document.getElementById('dashboard');
-    saved.forEach(id => {
-      const el = document.getElementById(id);
-      if(el) dash.appendChild(el);
-    });
+    const saved=JSON.parse(localStorage.getItem(CARD_ORDER_KEY)||'null');
+    if(!saved||!Array.isArray(saved))return;
+    // If order was saved, we already injected the override permanently
+    const dash=document.getElementById('dashboard');
+    saved.forEach(id=>{const el=document.getElementById(id);if(el)dash.appendChild(el);});
+    injectGridOverride();
   }catch(e){}
 }
 
-// ── Ativar / Desativar drag mode ───────────────────────────────────────────────
-function enterDragMode(fromCard){
-  if(dragMode) return;
-  dragMode = true;
+function enterDragMode(){
+  if(dragMode)return;
+  dragMode=true;
+  injectGridOverride();
   document.getElementById('dashboard').classList.add('drag-mode');
   document.getElementById('dragModeBadge').classList.add('show');
+  document.getElementById('btnEdit').classList.add('active');
 
-  // Habilita drag em todos os cards
-  getCards().forEach(card => {
-    card.setAttribute('draggable', 'true');
-    card.addEventListener('dragstart', onDragStart);
-    card.addEventListener('dragend',   onDragEnd);
-    card.addEventListener('dragover',  onDragOver);
-    card.addEventListener('drop',      onDrop);
-    card.addEventListener('dragenter', onDragEnter);
-    card.addEventListener('dragleave', onDragLeave);
-    // Touch
-    card.addEventListener('touchstart', onTouchStart, {passive:false});
-    card.addEventListener('touchmove',  onTouchMove,  {passive:false});
-    card.addEventListener('touchend',   onTouchEnd);
+  document.querySelectorAll('#dashboard .card').forEach(card=>{
+    card.setAttribute('draggable','true');
+    card.addEventListener('dragstart',onDragStart);
+    card.addEventListener('dragend',onDragEnd);
+    card.addEventListener('dragover',onDragOver);
+    card.addEventListener('drop',onDrop);
+    card.addEventListener('dragenter',onDragEnter);
+    card.addEventListener('dragleave',onDragLeave);
+    card.addEventListener('touchstart',onTouchStart,{passive:false});
+    card.addEventListener('touchmove',onTouchMove,{passive:false});
+    card.addEventListener('touchend',onTouchEnd);
   });
-
-  // Clique fora de card sai do modo
-  setTimeout(() => {
-    document.addEventListener('click', exitOnClickOutside);
-  }, 100);
+  setTimeout(()=>document.addEventListener('click',exitOnClickOutside),100);
 }
 
 function exitDragMode(){
-  if(!dragMode) return;
-  dragMode = false;
+  if(!dragMode)return;
+  dragMode=false;
   document.getElementById('dashboard').classList.remove('drag-mode');
   document.getElementById('dragModeBadge').classList.remove('show');
-  getCards().forEach(card => {
-    card.removeAttribute('draggable');
-    card.removeEventListener('dragstart', onDragStart);
-    card.removeEventListener('dragend',   onDragEnd);
-    card.removeEventListener('dragover',  onDragOver);
-    card.removeEventListener('drop',      onDrop);
-    card.removeEventListener('dragenter', onDragEnter);
-    card.removeEventListener('dragleave', onDragLeave);
-    card.removeEventListener('touchstart', onTouchStart);
-    card.removeEventListener('touchmove',  onTouchMove);
-    card.removeEventListener('touchend',   onTouchEnd);
-    card.classList.remove('drag-over','drag-source');
+  document.getElementById('btnEdit').classList.remove('active');
+  document.querySelectorAll('#dashboard .card').forEach(c=>{
+    c.removeAttribute('draggable');
+    c.classList.remove('drag-over','drag-source');
+    c.removeEventListener('dragstart',onDragStart);
+    c.removeEventListener('dragend',onDragEnd);
+    c.removeEventListener('dragover',onDragOver);
+    c.removeEventListener('drop',onDrop);
+    c.removeEventListener('dragenter',onDragEnter);
+    c.removeEventListener('dragleave',onDragLeave);
+    c.removeEventListener('touchstart',onTouchStart);
+    c.removeEventListener('touchmove',onTouchMove);
+    c.removeEventListener('touchend',onTouchEnd);
   });
-  document.removeEventListener('click', exitOnClickOutside);
+  document.removeEventListener('click',exitOnClickOutside);
   saveCardOrder();
 }
 
 function exitOnClickOutside(e){
-  if(!e.target.closest('.card') && !e.target.closest('#dragModeBadge')){
-    exitDragMode();
-  }
+  if(!e.target.closest('.card')&&!e.target.closest('#dragModeBadge'))exitDragMode();
 }
 
-// ── Long press ─────────────────────────────────────────────────────────────────
 function initLongPress(){
-  document.addEventListener('mousedown', e => {
-    const card = e.target.closest('#dashboard .card');
-    if(!card || dragMode) return;
-    lpActive = false;
-    lpTimer = setTimeout(() => {
-      lpActive = true;
-      spawnRipple(e.clientX, e.clientY);
-      navigator.vibrate && navigator.vibrate(40);
-      enterDragMode(card);
-    }, 700);
+  document.addEventListener('mousedown',e=>{
+    const card=e.target.closest('#dashboard .card');
+    if(!card||dragMode)return;
+    lpTimer=setTimeout(()=>{spawnRipple(card,e.clientX,e.clientY);navigator.vibrate&&navigator.vibrate(40);enterDragMode();},700);
   });
-  document.addEventListener('mouseup',   cancelLP);
-  document.addEventListener('mousemove', cancelLP);
-
-  document.addEventListener('touchstart', e => {
-    const card = e.target.closest('#dashboard .card');
-    if(!card || dragMode) return;
-    lpActive = false;
-    const t = e.touches[0];
-    lpTimer = setTimeout(() => {
-      lpActive = true;
-      spawnRipple(t.clientX, t.clientY);
-      navigator.vibrate && navigator.vibrate(40);
-      enterDragMode(card);
-    }, 700);
-  }, {passive:true});
-  document.addEventListener('touchend',  cancelLP);
-  document.addEventListener('touchmove', cancelLP, {passive:true});
+  document.addEventListener('mouseup',cancelLP);
+  document.addEventListener('mousemove',cancelLP);
+  document.addEventListener('touchstart',e=>{
+    const card=e.target.closest('#dashboard .card');
+    if(!card||dragMode)return;
+    const t=e.touches[0];
+    lpTimer=setTimeout(()=>{spawnRipple(card,t.clientX,t.clientY);navigator.vibrate&&navigator.vibrate(40);enterDragMode();},700);
+  },{passive:true});
+  document.addEventListener('touchend',cancelLP);
+  document.addEventListener('touchmove',cancelLP,{passive:true});
 }
+function cancelLP(){clearTimeout(lpTimer);lpTimer=null;}
 
-function cancelLP(){
-  if(lpTimer){ clearTimeout(lpTimer); lpTimer = null; }
+function spawnRipple(card,x,y){
+  const r=document.createElement('div');r.className='lp-ring';
+  const rect=card.getBoundingClientRect();
+  r.style.left=(x-rect.left)+'px';r.style.top=(y-rect.top)+'px';
+  card.appendChild(r);setTimeout(()=>r.remove(),750);
 }
 
-function spawnRipple(x, y){
-  const r = document.createElement('div');
-  r.className = 'lp-ring';
-  r.style.left = x + 'px';
-  r.style.top  = y + 'px';
-  document.body.appendChild(r);
-  setTimeout(() => r.remove(), 750);
-}
-
-// ── Desktop Drag Events ────────────────────────────────────────────────────────
-function onDragStart(e){
-  dragSrc = this;
-  this.classList.add('drag-source');
-  e.dataTransfer.effectAllowed = 'move';
-  e.dataTransfer.setData('text/plain', this.id);
-}
-function onDragEnd(e){
-  getCards().forEach(c => c.classList.remove('drag-over','drag-source'));
-  dragSrc = null;
-}
-function onDragOver(e){
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-  return false;
-}
-function onDragEnter(e){
-  if(this !== dragSrc) this.classList.add('drag-over');
-}
-function onDragLeave(e){
-  this.classList.remove('drag-over');
-}
+function onDragStart(e){dragSrc=this;this.classList.add('drag-source');e.dataTransfer.effectAllowed='move';}
+function onDragEnd(){document.querySelectorAll('#dashboard .card').forEach(c=>c.classList.remove('drag-over','drag-source'));dragSrc=null;}
+function onDragOver(e){e.preventDefault();}
+function onDragEnter(){if(this!==dragSrc)this.classList.add('drag-over');}
+function onDragLeave(){this.classList.remove('drag-over');}
 function onDrop(e){
   e.stopPropagation();
-  if(dragSrc && this !== dragSrc){
-    swapCards(dragSrc, this);
-  }
-  getCards().forEach(c => c.classList.remove('drag-over'));
-  return false;
+  if(dragSrc&&this!==dragSrc)swapCards(dragSrc,this);
+  document.querySelectorAll('#dashboard .card').forEach(c=>c.classList.remove('drag-over'));
 }
 
-// ── Touch Drag ────────────────────────────────────────────────────────────────
-let touchClone = null, touchSrc = null, touchLastOver = null;
-
+let touchClone=null;
 function onTouchStart(e){
-  if(!dragMode) return;
-  touchSrc = this;
-  this.classList.add('drag-source');
-  // Cria clone visual flutuante
-  const rect = this.getBoundingClientRect();
-  touchClone = this.cloneNode(true);
-  touchClone.style.cssText = `
-    position:fixed;z-index:9000;pointer-events:none;
-    width:${rect.width}px;opacity:.85;
-    border-radius:var(--rad2);
-    box-shadow:0 8px 32px rgba(0,0,0,.6);
-    border:1px solid var(--g);
-    left:${rect.left}px;top:${rect.top}px;
-    background:var(--bg2);transition:none;
-  `;
+  if(!dragMode)return;
+  touchSrc=this;this.classList.add('drag-source');
+  const rect=this.getBoundingClientRect(),t=e.touches[0];
+  touchClone=this.cloneNode(true);
+  touchClone.style.cssText=`position:fixed;z-index:9000;pointer-events:none;width:${rect.width}px;opacity:.85;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.6);border:1px solid #a3e635;left:${rect.left}px;top:${rect.top}px;background:#121212;`;
   document.body.appendChild(touchClone);
 }
-
 function onTouchMove(e){
-  if(!touchSrc || !touchClone) return;
+  if(!touchSrc||!touchClone)return;
   e.preventDefault();
-  const t = e.touches[0];
-  const rect = touchSrc.getBoundingClientRect();
-  touchClone.style.left = (t.clientX - rect.width/2) + 'px';
-  touchClone.style.top  = (t.clientY - rect.height/2) + 'px';
-
-  // Detecta card sob o dedo
-  touchClone.style.display = 'none';
-  const el = document.elementFromPoint(t.clientX, t.clientY);
-  touchClone.style.display = '';
-  const overCard = el && el.closest('#dashboard .card');
-
-  if(touchLastOver && touchLastOver !== overCard){
-    touchLastOver.classList.remove('drag-over');
-  }
-  if(overCard && overCard !== touchSrc){
-    overCard.classList.add('drag-over');
-    touchLastOver = overCard;
-  }
+  const t=e.touches[0],rect=touchSrc.getBoundingClientRect();
+  touchClone.style.left=(t.clientX-rect.width/2)+'px';
+  touchClone.style.top=(t.clientY-rect.height/2)+'px';
+  touchClone.style.display='none';
+  const el=document.elementFromPoint(t.clientX,t.clientY);
+  touchClone.style.display='';
+  const over=el&&el.closest('#dashboard .card');
+  if(touchLastOver&&touchLastOver!==over)touchLastOver.classList.remove('drag-over');
+  if(over&&over!==touchSrc){over.classList.add('drag-over');touchLastOver=over;}
+}
+function onTouchEnd(){
+  if(!touchSrc)return;
+  if(touchClone){touchClone.remove();touchClone=null;}
+  if(touchLastOver&&touchLastOver!==touchSrc)swapCards(touchSrc,touchLastOver);
+  document.querySelectorAll('#dashboard .card').forEach(c=>c.classList.remove('drag-over','drag-source'));
+  touchSrc=null;touchLastOver=null;
 }
 
-function onTouchEnd(e){
-  if(!touchSrc) return;
-  if(touchClone){ touchClone.remove(); touchClone = null; }
-  if(touchLastOver && touchLastOver !== touchSrc){
-    swapCards(touchSrc, touchLastOver);
-  }
-  getCards().forEach(c => c.classList.remove('drag-over','drag-source'));
-  touchSrc = null; touchLastOver = null;
-}
-
-// ── Swap ──────────────────────────────────────────────────────────────────────
-function swapCards(a, b){
-  const dash = document.getElementById('dashboard');
-  const cards = getCards();
-  const ia = cards.indexOf(a), ib = cards.indexOf(b);
-  if(ia < ib){
-    dash.insertBefore(a, b.nextSibling);
-  } else {
-    dash.insertBefore(a, b);
-  }
+function swapCards(a,b){
+  const dash=document.getElementById('dashboard');
+  const cards=[...dash.querySelectorAll('.card')];
+  const ia=cards.indexOf(a),ib=cards.indexOf(b);
+  if(ia<ib)dash.insertBefore(a,b.nextSibling);else dash.insertBefore(a,b);
+  b.classList.add('dropping');
+  setTimeout(()=>b.classList.remove('dropping'),280);
   saveCardOrder();
 }
 
-// ── INIT ─────────────────────────────────────────────────────────────────────
 loadCardOrder();
 initLongPress();
+</script>
 </script>
 
 </body>
