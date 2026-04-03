@@ -56,13 +56,20 @@ nav{
 #dashboard{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  grid-template-rows:auto;
+  grid-auto-rows:minmax(160px,auto);
   gap:10px;
   padding:12px;
   padding-bottom:calc(12px + var(--safe-bot));
   max-width:1400px;
   margin:0 auto;
 }
+.card[data-cols="2"]{grid-column:span 2;}
+.card[data-cols="3"]{grid-column:span 3;}
+.card[data-cols="4"]{grid-column:span 4;}
+.card[data-rows="2"]{grid-row:span 2;}
+.card[data-cols="1"] .clima-wrap{flex-direction:column!important;}
+.card[data-cols="1"] .clima-wrap .dvdr{width:100%!important;height:1px!important;align-self:auto!important;}
+.card[data-cols="1"] .clima-num{font-size:30px!important;}
 
 /* ── CARDS ── */
 .card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad2);padding:14px;position:relative;overflow:hidden}
@@ -248,8 +255,7 @@ tr.hl{background:rgba(163,230,53,.04)}
 /* Responsive */
 @media(max-width:900px){
   #dashboard{grid-template-columns:1fr 1fr}
-  #cCiclo{grid-column:1;grid-row:auto}
-  #cVpd,#cAutoState,#cTemp,#cHum,#cLuz,#cBlumat,#cControles,#cEnergia,#cPlantas{grid-column:auto;grid-row:auto}
+
 }
 @media(max-width:600px){
   #dashboard{grid-template-columns:1fr}
@@ -263,6 +269,20 @@ tr.hl{background:rgba(163,230,53,.04)}
 .mini-chart-wrap{height:48px;position:relative;margin-top:8px}
 
 @keyframes lightPulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.15)}50%{box-shadow:0 0 0 8px rgba(251,191,36,0)}}
+/* ── RESIZE BUTTON ── */
+.card-resize{
+  position:absolute;top:8px;right:8px;
+  width:20px;height:20px;border-radius:5px;
+  background:var(--bg3);border:1px solid var(--bdr2);
+  color:var(--w4);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;line-height:1;z-index:5;
+  opacity:0;transition:opacity .15s,color .15s,background .15s;
+  user-select:none;
+}
+.card:hover .card-resize{opacity:1;}
+.card-resize:hover{background:var(--gd);border-color:var(--g3);color:var(--g);}
+
 /* ── DRAG & DROP ── */
 #dashboard.drag-mode .card{
   cursor:grab;
@@ -335,7 +355,7 @@ tr.hl{background:rgba(163,230,53,.04)}
 <div id="dashboard">
 
   <!-- ① CICLO DE CULTIVO -->
-  <div class="card" id="cCiclo">
+  <div class="card" id="cCiclo" data-cols="1" data-rows="2"><button class="card-resize" onclick="resizeCard('cCiclo',event)" title="Redimensionar">⊞</button>
     <div class="sec">Ciclo de cultivo</div>
     <div class="banner-secagem" id="secBanner">🌬 Modo secagem ativo</div>
     <div id="plantCards" style="max-height:520px;overflow-y:auto"></div>
@@ -345,7 +365,8 @@ tr.hl{background:rgba(163,230,53,.04)}
   </div>
 
   <!-- ② VPD -->
-  <div class="card" id="cVpd">
+  <div class="card" id="cVpd" data-cols="2" data-rows="1"><button class="card-resize" onclick="resizeCard('cVpd',event)" title="Redimensionar">⊞</button>
+  <div style="display:none" class="vpd-extra">>
     <div class="sec" style="justify-content:space-between;margin-bottom:14px">
       <span style="display:flex;align-items:center;gap:5px"><span style="width:3px;height:3px;border-radius:50%;background:var(--g);display:inline-block"></span>VPD — Inkbird</span>
       <span class="badge off-st" id="hVPDBadge">—</span>
@@ -372,11 +393,12 @@ tr.hl{background:rgba(163,230,53,.04)}
   </div>
 
   <!-- ③④ CLIMA -->
-  <div class="card" id="cClima" data-col="3/5" data-row="1" style="display:flex;flex-direction:row;align-items:center;padding:16px;gap:0">
+  <div class="card" id="cClima" data-cols="2" data-rows="1"><button class="card-resize" onclick="resizeCard('cClima',event)" title="Redimensionar">⊞</button>
+    <div class="clima-wrap" style="display:flex;flex-direction:row;align-items:center;width:100%;height:100%;padding:14px;gap:0">
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 10px">
       <div class="tile-label" style="margin-bottom:0">Temperatura</div>
       <div style="display:flex;align-items:baseline;gap:4px">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:42px;font-weight:600;line-height:1;letter-spacing:-1px" id="hTemp">—</div>
+        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:42px;font-weight:600;line-height:1;letter-spacing:-1px" id="hTemp" class="clima-num">—</div>
         <div style="font-size:13px;color:var(--w3)">°C</div>
       </div>
       <div class="tile-badge off-st" id="hTempBadge">—</div>
@@ -387,17 +409,17 @@ tr.hl{background:rgba(163,230,53,.04)}
     <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 10px">
       <div class="tile-label" style="margin-bottom:0">Umidade</div>
       <div style="display:flex;align-items:baseline;gap:4px">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:42px;font-weight:600;line-height:1;letter-spacing:-1px" id="hHum">—</div>
+        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:42px;font-weight:600;line-height:1;letter-spacing:-1px" id="hHum" class="clima-num">—</div>
         <div style="font-size:13px;color:var(--w3)">%</div>
       </div>
       <div class="tile-badge off-st" id="hHumBadge">—</div>
       <div class="mini-chart-wrap" style="width:100%"><canvas id="chartHum"></canvas></div>
       <div class="tile-accent" id="hHumAcc" style="background:var(--b);opacity:.4"></div>
     </div>
-  </div>
+  </div></div>
 
   <!-- ⑤ LUZ -->
-  <div class="card" id="cLuz" style="align-items:center;justify-content:center;padding:14px;gap:0">
+  <div class="card" id="cLuz" data-cols="1" data-rows="1"><button class="card-resize" onclick="resizeCard('cLuz',event)" title="Redimensionar">⊞</button> style="align-items:center;justify-content:center;padding:14px;gap:0">
     <div class="tile-label" style="position:absolute;top:12px;left:14px;margin-bottom:0">Luz</div>
     <div id="lightIconWrap" style="width:52px;height:52px;border-radius:50%;border:2px solid rgba(251,191,36,.3);display:flex;align-items:center;justify-content:center;margin-bottom:8px">
       <div id="lightCore" style="width:26px;height:26px;border-radius:50%;background:var(--a)"></div>
@@ -412,7 +434,7 @@ tr.hl{background:rgba(163,230,53,.04)}
 
 
   <!-- ⑦ CONTROLE IR -->
-  <div class="card" id="cControles">
+  <div class="card" id="cControles" data-cols="1" data-rows="1"><button class="card-resize" onclick="resizeCard('cControles',event)" title="Redimensionar">⊞</button>
     <div class="sec" style="margin-bottom:12px">Controle IR — Ekaza</div>
     <div class="ir-pad">
       <button class="btn" onclick="sendCmd('cool')">❄ Resfriar</button>
@@ -429,7 +451,7 @@ tr.hl{background:rgba(163,230,53,.04)}
   </div>
 
   <!-- ⑧ AUTOMAÇÃO STATE -->
-  <div class="card" id="cAutoState" style="position:relative">
+  <div class="card" id="cAutoState" data-cols="2" data-rows="2" style="position:relative"><button class="card-resize" onclick="resizeCard('cAutoState',event)" title="Redimensionar">⊞</button>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
       <div class="sec" style="margin-bottom:0">Automação VPD</div>
       <div style="display:flex;align-items:center;gap:6px">
@@ -1122,6 +1144,48 @@ setInterval(clock,10000);
 setInterval(saveState,30000);
 </script>
 
+
+// ── RESIZE CARDS ──────────────────────────────────────────────────────────────
+const CARD_SIZE_KEY = 'growos_card_sizes';
+// Cycles: [cols, rows]
+const SIZE_CYCLE = [[1,1],[2,1],[1,2],[2,2]];
+
+function resizeCard(id, e){
+  if(e){e.stopPropagation();}
+  const card = document.getElementById(id);
+  if(!card) return;
+  const cols = parseInt(card.dataset.cols)||1;
+  const rows = parseInt(card.dataset.rows)||1;
+  // Find current index in cycle
+  const cur = SIZE_CYCLE.findIndex(s=>s[0]===cols&&s[1]===rows);
+  const next = SIZE_CYCLE[(cur+1) % SIZE_CYCLE.length];
+  card.dataset.cols = next[0];
+  card.dataset.rows = next[1];
+  // Show size briefly
+  const btn = card.querySelector('.card-resize');
+  if(btn){ btn.textContent = next[0]+'×'+next[1]; setTimeout(()=>{ btn.textContent='⊞'; },800); }
+  saveCardSizes();
+}
+
+function saveCardSizes(){
+  const sizes = {};
+  document.querySelectorAll('#dashboard .card[id]').forEach(c=>{
+    sizes[c.id] = {cols: c.dataset.cols||1, rows: c.dataset.rows||1};
+  });
+  try{ localStorage.setItem(CARD_SIZE_KEY, JSON.stringify(sizes)); }catch(e){}
+}
+
+function loadCardSizes(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(CARD_SIZE_KEY)||'null');
+    if(!saved) return;
+    Object.entries(saved).forEach(([id,sz])=>{
+      const card = document.getElementById(id);
+      if(card){ card.dataset.cols = sz.cols; card.dataset.rows = sz.rows; }
+    });
+  }catch(e){}
+}
+
 <!-- DRAG & DROP REORGANIZAÇÃO -->
 <script>
 const CARD_ORDER_KEY='growos_card_order';
@@ -1297,6 +1361,7 @@ function swapCards(a,b){
 }
 
 loadCardOrder();
+loadCardSizes();
 initLongPress();
 </script>
 </script>
