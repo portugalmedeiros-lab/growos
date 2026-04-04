@@ -52,16 +52,15 @@ nav{display:flex;align-items:center;justify-content:space-between;border-bottom:
   padding-bottom:calc(12px + var(--safe-bot));
   max-width:1400px;margin:0 auto;
 }
-#cCiclo    {grid-column:1;grid-row:1/3}
-#cVpd      {grid-column:2;grid-row:1}
-#cClima    {grid-column:2;grid-row:2}
-#cLuz      {grid-column:3;grid-row:1}
-#cControles{grid-column:3;grid-row:2}
+#cSensors  {grid-column:1;grid-row:1/3}
+#cLuz      {grid-column:2;grid-row:1}
+#cControles{grid-column:2;grid-row:2}
+#cCiclo    {grid-column:3;grid-row:1/3}
 #cAutoState{grid-column:4;grid-row:1/3}
 
 @media(max-width:960px){
   #dashboard{grid-template-columns:1fr 1fr;grid-template-rows:auto}
-  #cCiclo,#cVpd,#cClima,#cLuz,#cControles,#cAutoState{grid-column:auto;grid-row:auto}
+  #cCiclo,#cSensors,#cLuz,#cControles,#cAutoState{grid-column:auto;grid-row:auto}
 }
 @media(max-width:540px){
   #dashboard{grid-template-columns:1fr}
@@ -178,61 +177,60 @@ input[type=time]{color-scheme:dark}
 <!-- DASHBOARD -->
 <div id="dashboard">
 
-  <!-- ① CICLO DE CULTIVO — col1 rows1+2 -->
-  <div class="card" id="cCiclo">
-    <div class="sec">Ciclo de cultivo</div>
-    <div id="plantCards" style="flex:1;overflow-y:auto"></div>
-    <div id="plantEmpty" style="display:none;font-size:10px;color:var(--w3);text-align:center;padding:24px 12px;border:1px dashed var(--bdr2);border-radius:var(--rad2);line-height:1.8">
-      Sem plantas.<br>Abra ✎ para adicionar.
-    </div>
-    <button class="btn btn-g" onclick="openPanel()" style="margin-top:10px;font-size:8px;padding:5px 10px;flex-shrink:0">+ Gerenciar plantas</button>
-  </div>
+  <!-- ② SENSORES (VPD + Temp + Umidade) — col3 rows1+2 -->
+  <div class="card" id="cSensors">
 
-  <!-- ② VPD — col2 row1 -->
-  <div class="card" id="cVpd">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-shrink:0">
-      <div class="sec" style="margin-bottom:0">VPD — Inkbird</div>
-      <span class="badge off-st" id="hVPDBadge">—</span>
-    </div>
-    <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px">
-      <div style="font-family:'IBM Plex Sans',sans-serif;font-size:48px;font-weight:600;line-height:1;letter-spacing:-1px;color:var(--g)" id="hVPD">—</div>
-      <div style="font-size:13px;color:var(--w3)">kPa</div>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--w3);margin-bottom:3px"><span>0.0</span><span>0.5</span><span>1.0</span><span>1.5</span><span>2.0</span></div>
-    <div class="vpd-bar">
-      <div class="range-ov" id="aRangeOv" style="left:40%;right:40%"></div>
-      <div class="vpd-pin" id="vpdPin" style="left:0%"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:8px;margin-top:4px;margin-bottom:8px">
-      <span style="color:var(--g)" id="aRangeMinL">0.8</span>
-      <span style="color:var(--w3)" id="vpdDiag">—</span>
-      <span style="color:var(--a)" id="aRangeMaxL">1.2</span>
-    </div>
-    <div style="padding:9px;background:var(--bg3);border-radius:var(--rad);font-size:9px;color:var(--w3);line-height:1.7;flex:1" id="vpdAdv">Aguardando leitura...</div>
-    <div style="font-size:8px;color:var(--w4);margin-top:6px" id="lastRead">—</div>
-  </div>
-
-  <!-- ③ CLIMA (Temp + Umidade) — col2 row2 -->
-  <div class="card" id="cClima" style="flex-direction:row;padding:0;align-items:stretch">
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px">
-      <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w3)">Temperatura</div>
-      <div style="display:flex;align-items:baseline;gap:4px">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:44px;font-weight:600;line-height:1;letter-spacing:-1px" id="hTemp">—</div>
-        <div style="font-size:13px;color:var(--w3)">°C</div>
+    <!-- VPD section -->
+    <div style="flex-shrink:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="sec" style="margin-bottom:0">VPD — Inkbird</div>
+        <span class="badge off-st" id="hVPDBadge">—</span>
       </div>
-      <span class="badge off-st" id="hTempBadge">—</span>
-    </div>
-    <div style="width:1px;background:var(--bdr);margin:16px 0;flex-shrink:0"></div>
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px">
-      <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w3)">Umidade</div>
-      <div style="display:flex;align-items:baseline;gap:4px">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:44px;font-weight:600;line-height:1;letter-spacing:-1px" id="hHum">—</div>
-        <div style="font-size:13px;color:var(--w3)">%</div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px">
+        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:52px;font-weight:600;line-height:1;letter-spacing:-2px;color:var(--g)" id="hVPD">—</div>
+        <div style="font-size:14px;color:var(--w3)">kPa</div>
       </div>
-      <span class="badge off-st" id="hHumBadge">—</span>
+      <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--w3);margin-bottom:3px"><span>0.0</span><span>0.5</span><span>1.0</span><span>1.5</span><span>2.0</span></div>
+      <div class="vpd-bar">
+        <div class="range-ov" id="aRangeOv" style="left:40%;right:40%"></div>
+        <div class="vpd-pin" id="vpdPin" style="left:0%"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:8px;margin-top:4px;margin-bottom:8px">
+        <span style="color:var(--g)" id="aRangeMinL">0.8</span>
+        <span style="color:var(--w3)" id="vpdDiag">—</span>
+        <span style="color:var(--a)" id="aRangeMaxL">1.2</span>
+      </div>
+      <div style="padding:9px;background:var(--bg3);border-radius:var(--rad);font-size:9px;color:var(--w3);line-height:1.7" id="vpdAdv">Aguardando leitura...</div>
+      <div style="font-size:8px;color:var(--w4);margin-top:5px" id="lastRead">—</div>
     </div>
+
+    <!-- Divider -->
+    <div style="height:1px;background:var(--bdr);margin:14px 0;flex-shrink:0"></div>
+
+    <!-- Temp + Umidade section -->
+    <div style="display:flex;flex:1;align-items:center;gap:0">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+        <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w3)">Temperatura</div>
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <div style="font-family:'IBM Plex Sans',sans-serif;font-size:44px;font-weight:600;line-height:1;letter-spacing:-1px" id="hTemp">—</div>
+          <div style="font-size:13px;color:var(--w3)">°C</div>
+        </div>
+        <span class="badge off-st" id="hTempBadge">—</span>
+      </div>
+      <div style="width:1px;background:var(--bdr);align-self:stretch;flex-shrink:0;margin:0"></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px">
+        <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w3)">Umidade</div>
+        <div style="display:flex;align-items:baseline;gap:4px">
+          <div style="font-family:'IBM Plex Sans',sans-serif;font-size:44px;font-weight:600;line-height:1;letter-spacing:-1px" id="hHum">—</div>
+          <div style="font-size:13px;color:var(--w3)">%</div>
+        </div>
+        <span class="badge off-st" id="hHumBadge">—</span>
+      </div>
+    </div>
+
   </div>
 
+  <!-- ④ LUZ
   <!-- ④ LUZ — col3 row1 -->
   <div class="card" id="cLuz" style="align-items:center;justify-content:center;padding:14px 14px 32px;gap:6px">
     <div class="sec" style="position:absolute;top:12px;left:14px;margin-bottom:0">Luz</div>
@@ -247,9 +245,12 @@ input[type=time]{color-scheme:dark}
 
   <!-- ⑤ CONTROLE IR — col3 row2 -->
   <div class="card" id="cControles">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-shrink:0">
       <div class="sec" style="margin-bottom:0">Controle IR — Ekaza</div>
-      <span class="badge off-st" id="irStatusBadge">—</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="btn btn-g" onclick="checkIRStatus()" style="font-size:8px;padding:3px 8px">Verificar hub</button>
+        <span class="badge off-st" id="irStatusBadge">—</span>
+      </div>
     </div>
     <!-- IR diagnose strip -->
     <div id="irDiag" style="font-size:9px;color:var(--w3);padding:7px 9px;background:var(--bg3);border-radius:var(--rad);margin-bottom:8px;line-height:1.6;flex-shrink:0">Teste IR: clique em qualquer botão para verificar.</div>
@@ -264,6 +265,16 @@ input[type=time]{color-scheme:dark}
     <div id="irLog" style="margin-top:8px;max-height:80px;overflow-y:auto;flex-shrink:0">
       <div style="font-size:9px;color:var(--w4);text-align:center;padding:6px 0">Nenhum sinal enviado.</div>
     </div>
+  </div>
+
+  <!-- ① CICLO DE CULTIVO — col1 rows1+2 -->
+  <div class="card" id="cCiclo">
+    <div class="sec">Ciclo de cultivo</div>
+    <div id="plantCards" style="flex:1;overflow-y:auto"></div>
+    <div id="plantEmpty" style="display:none;font-size:10px;color:var(--w3);text-align:center;padding:24px 12px;border:1px dashed var(--bdr2);border-radius:var(--rad2);line-height:1.8">
+      Sem plantas.<br>Abra ✎ para adicionar.
+    </div>
+    <button class="btn btn-g" onclick="openPanel()" style="margin-top:10px;font-size:8px;padding:5px 10px;flex-shrink:0">+ Gerenciar plantas</button>
   </div>
 
   <!-- ⑥ AUTOMAÇÃO VPD — col4 rows1+2 -->
@@ -531,16 +542,25 @@ async function sendCmd(cmd){
     const res = await fetch(WORKER+'/ir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command:cmd})});
     const d = await res.json();
     if(d.ok){
-      if(diag){diag.textContent='✓ IR recebido: '+cmd.toUpperCase()+' às '+new Date().toLocaleTimeString('pt-BR');diag.style.color='var(--g)';}
+      if(diag){diag.textContent='✓ '+cmd.toUpperCase()+' confirmado pelo hub ('+d.endpoint+')';diag.style.color='var(--g)';}
       if(badge){badge.className='badge ok';badge.textContent='OK';}
-      addIRLog(cmd,'ok','Recebido pelo hub Ekaza ✓');
+      addIRLog(cmd,'ok','✓ Confirmado via '+d.endpoint);
       toast('IR → '+cmd.toUpperCase()+' ✓','ok');
     } else {
-      const reason = d.response ? JSON.stringify(d.response).slice(0,60) : 'Sem resposta do hub';
-      if(diag){diag.textContent='✗ IR falhou: '+reason;diag.style.color='var(--r)';}
+      // Extract detailed Tuya error from tried responses
+      let reason = 'Sem resposta do hub';
+      let detail = '';
+      if(d.tried && Array.isArray(d.tried)){
+        const codes = d.tried.map(r=>r&&r.code?r.code+': '+(r.msg||''):'').filter(Boolean);
+        if(codes.length) detail = codes.join(' | ');
+        reason = detail || 'Tuya rejeitou todos os endpoints';
+      } else if(d.response){
+        reason = (d.response.code||'')+' '+(d.response.msg||JSON.stringify(d.response).slice(0,60));
+      }
+      if(diag){diag.textContent='✗ '+cmd.toUpperCase()+' falhou — '+reason;diag.style.color='var(--r)';}
       if(badge){badge.className='badge danger';badge.textContent='Falha';}
-      addIRLog(cmd,'err','Falha: '+reason);
-      toast('Falha no IR','err');
+      addIRLog(cmd,'err',reason);
+      toast('Falha IR: '+reason.slice(0,40),'err');
     }
     return d.ok;
   } catch(e) {
@@ -549,6 +569,28 @@ async function sendCmd(cmd){
     addIRLog(cmd,'err','Erro: '+e.message);
     toast('Erro IR','err');
     return false;
+  }
+}
+
+async function checkIRStatus(){
+  const diag=document.getElementById('irDiag');
+  const badge=document.getElementById('irStatusBadge');
+  if(diag){diag.textContent='Verificando hub IR...';diag.style.color='var(--a)';}
+  try{
+    const res = await fetch(WORKER+'/status');
+    const d = await res.json();
+    if(d.ok){
+      const irOnline = d.ir?.online;
+      const irName = d.ir?.name||'Ekaza IR';
+      const msg = irOnline ? '✓ Hub "'+irName+'" online e pronto' : '✗ Hub "'+irName+'" OFFLINE — verifique alimentação';
+      const color = irOnline ? 'var(--g)' : 'var(--r)';
+      if(diag){diag.textContent=msg;diag.style.color=color;}
+      if(badge){badge.className='badge '+(irOnline?'ok':'danger');badge.textContent=irOnline?'Online':'Offline';}
+    } else {
+      if(diag){diag.textContent='Erro ao verificar status: '+JSON.stringify(d).slice(0,60);diag.style.color='var(--r)';}
+    }
+  }catch(e){
+    if(diag){diag.textContent='Erro de rede: '+e.message;diag.style.color='var(--r)';}
   }
 }
 
@@ -804,6 +846,16 @@ function loadState(){
     if(s.aCfgNightEnd){const el=document.getElementById('aCfgNightEnd');if(el)el.value=s.aCfgNightEnd;}
     if(s.aCfgNightMax){const el=document.getElementById('aCfgNightMax');if(el)el.value=s.aCfgNightMax;}
   }catch(e){}
+  // Preserve plants from screenshots if none saved
+  if(!plants.length){
+    plants=[
+      {id:'eb1',name:'EB1',strain:'English Breakfast',germDate:'2026-03-23',stage:'seedling',week:2,substrate:'Terra',notes:''},
+      {id:'eb2',name:'EB2',strain:'English Breakfast',germDate:'2026-03-28',stage:'seedling',week:1,substrate:'Terra',notes:''},
+      {id:'bs3',name:'BS3',strain:'Bloodsport',germDate:'2026-03-16',stage:'veg',week:3,substrate:'Terra',notes:''},
+      {id:'bs2',name:'BS2',strain:'Bloodsport',germDate:'2026-03-16',stage:'veg',week:3,substrate:'Terra',notes:''},
+      {id:'bs1',name:'BS1',strain:'Bloodsport',germDate:'2026-04-04',stage:'veg',week:3,substrate:'Terra',notes:''}
+    ];
+  }
 }
 
 // ── AUTO LOG TOGGLE ─────────────────────────────────────────────────────────
@@ -952,10 +1004,12 @@ async function autoDoAdjust(cmd){
       await autoWait(c.waitAdj,'Aguardando estabilização ('+Math.round(c.waitAdj/60)+'min)','var(--a)','s3');
       await autoRunCycle();
     } else {
-      const reason=d.response?JSON.stringify(d.response).slice(0,80):'Sem resposta';
+      let reason='Sem resposta do hub Tuya';
+      if(d.tried&&Array.isArray(d.tried)){const codes=d.tried.map(r=>r&&r.code?'['+r.code+'] '+(r.msg||''):'').filter(Boolean);if(codes.length)reason=codes.join(' | ');}
+      else if(d.response){reason=(d.response.code||'')+' '+(d.response.msg||'');}
       autoLogStep('s2','error','IR falhou: '+reason);
-      autoLog('❌ IR → '+cmd.toUpperCase()+' FALHOU: '+reason,'err');
-      if(irTxt){irTxt.textContent='✗ Falha: '+reason;irTxt.style.color='var(--r)';}
+      autoLog('❌ IR → '+cmd.toUpperCase()+' FALHOU — '+reason,'err');
+      if(irTxt){irTxt.textContent='✗ '+reason;irTxt.style.color='var(--r)';}
       autoScheduleNext(60);
     }
   }catch(e){
@@ -1104,6 +1158,7 @@ autoUpdOverlay();
 renderPlants();
 clock();
 fetchSensor();
+checkIRStatus();
 setInterval(fetchSensor, 60000);
 setInterval(clock, 10000);
 setInterval(saveState, 30000);
