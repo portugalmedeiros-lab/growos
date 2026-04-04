@@ -9,7 +9,6 @@
 <meta name="theme-color" content="#0d0d0d">
 <title>GrowOS</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
@@ -25,7 +24,7 @@
 }
 html,body{height:100%;background:var(--bg);color:var(--w);font-family:'IBM Plex Mono',monospace;font-size:12px;overflow-x:hidden}
 
-/* NAV */
+/* ── NAV ── */
 nav{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr);background:var(--bg);position:sticky;top:0;z-index:200;padding:10px 14px;padding-top:calc(10px + var(--safe-top))}
 .logo{font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:14px;color:var(--g)}
 .logo em{color:var(--w3);font-style:normal;font-weight:400}
@@ -35,25 +34,30 @@ nav{display:flex;align-items:center;justify-content:space-between;border-bottom:
 .dot.on{background:var(--g);animation:blink 2s infinite}
 .dot.err{background:var(--r)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-.btn-icon{width:32px;height:32px;border-radius:var(--rad);background:var(--bg3);border:1px solid var(--bdr2);color:var(--w3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s}
+.btn-icon{width:32px;height:32px;border-radius:var(--rad);background:var(--bg3);border:1px solid var(--bdr2);color:var(--w3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s}
 .btn-icon:hover{background:var(--bdr2);color:var(--w)}
-.btn-icon.active{background:var(--gd);border-color:var(--g3);color:var(--g)}
+.btn-icon.on{background:var(--gd);border-color:var(--g3);color:var(--g)}
 
-/* GRID */
+/* ── GRID ──
+   Col 1 (240px): Ciclo
+   Col 2 (1fr):   VPD / Clima empilhados
+   Col 3 (1fr):   Luz / IR empilhados
+   Col 4 (1fr):   Automação (altura total)
+*/
 #dashboard{
   display:grid;
-  grid-template-columns:220px 1fr 1fr 1fr;
-  grid-template-rows:repeat(2,minmax(200px,auto));
+  grid-template-columns:240px 1fr 1fr 1fr;
+  grid-template-rows:minmax(220px,auto) minmax(220px,auto);
   gap:10px;padding:12px;
   padding-bottom:calc(12px + var(--safe-bot));
   max-width:1400px;margin:0 auto;
 }
-#cCiclo    {grid-column:1;  grid-row:1/3}
-#cVpd      {grid-column:2;  grid-row:1}
-#cClima    {grid-column:3/5;grid-row:1}
-#cLuz      {grid-column:2;  grid-row:2}
-#cControles{grid-column:3;  grid-row:2}
-#cAutoState{grid-column:4;  grid-row:1/3}
+#cCiclo    {grid-column:1;grid-row:1/3}
+#cVpd      {grid-column:2;grid-row:1}
+#cClima    {grid-column:2;grid-row:2}
+#cLuz      {grid-column:3;grid-row:1}
+#cControles{grid-column:3;grid-row:2}
+#cAutoState{grid-column:4;grid-row:1/3}
 
 @media(max-width:960px){
   #dashboard{grid-template-columns:1fr 1fr;grid-template-rows:auto}
@@ -64,11 +68,11 @@ nav{display:flex;align-items:center;justify-content:space-between;border-bottom:
   #editPanel{width:100vw}
 }
 
-/* CARD */
+/* ── CARD ── */
 .card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad2);padding:14px;position:relative;overflow:hidden;display:flex;flex-direction:column}
 .sec{font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:var(--w3);margin-bottom:10px;display:flex;align-items:center;gap:5px;flex-shrink:0}
 .sec::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--g);flex-shrink:0}
-.sm{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:11px}
+.sm{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:10px}
 .badge{font-size:9px;padding:2px 8px;border-radius:20px;display:inline-block;white-space:nowrap}
 .ok{color:var(--g);background:var(--gd)}
 .warn{color:var(--a);background:var(--ad)}
@@ -77,43 +81,19 @@ nav{display:flex;align-items:center;justify-content:space-between;border-bottom:
 .off-st{color:var(--w3);background:var(--bg4)}
 .fl{font-size:8px;color:var(--w3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
 
-/* PLANTS */
-.plant-item{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:10px;margin-bottom:8px}
-.prog-bar{height:4px;border-radius:2px;background:var(--bg5);overflow:hidden;margin-top:5px}
-.prog-fill{height:100%;border-radius:2px;transition:width .5s}
-.phase-tl{display:flex;gap:2px;height:8px;border-radius:3px;overflow:hidden;margin-top:5px}
-.ph{flex:1}
-
-/* VPD BAR */
+/* ── VPD BAR ── */
 .vpd-bar{position:relative;height:12px;border-radius:6px;background:linear-gradient(to right,#1e3a8a 0%,#2563eb 15%,#15803d 30%,#4ade80 48%,#ca8a04 70%,#c2410c 85%,#dc2626 100%)}
 .vpd-pin{position:absolute;top:-4px;width:2px;height:20px;background:var(--w);border-radius:1px;transform:translateX(-50%);transition:left .8s ease}
 .vpd-pin::before{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--w);border:2px solid var(--bg)}
 .range-ov{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.12);border-left:2px solid rgba(255,255,255,.5);border-right:2px solid rgba(255,255,255,.5);pointer-events:none}
 
-/* LUZ */
+/* ── LUZ ── */
 @keyframes lightPulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.2)}50%{box-shadow:0 0 0 10px rgba(251,191,36,0)}}
 .sun-ring{width:52px;height:52px;border-radius:50%;border:2px solid rgba(251,191,36,.35);display:flex;align-items:center;justify-content:center}
 .sun-ring.on{animation:lightPulse 3s ease-in-out infinite}
 .sun-core{width:26px;height:26px;border-radius:50%}
-.light-bar-wrap{position:absolute;bottom:10px;left:12px;right:12px;display:grid;grid-template-columns:repeat(24,1fr);gap:1px;height:4px}
 
-/* INPUTS */
-input,select,textarea{background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rad);color:var(--w);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:7px 9px;outline:none;transition:border-color .15s;width:100%}
-input:focus,select:focus,textarea:focus{border-color:var(--g3)}
-select option{background:var(--bg3)}
-textarea{resize:vertical;min-height:60px}
-input[type=time]{color-scheme:dark}
-
-/* BUTTONS */
-.btn{background:var(--gd);border:1px solid var(--g3);color:var(--g);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.8px;padding:7px 12px;border-radius:var(--rad);cursor:pointer;transition:all .15s;text-transform:uppercase}
-.btn:hover{background:var(--g3);color:var(--bg)}
-.btn:active{transform:scale(.97)}
-.btn-g{background:transparent;border:1px solid var(--bdr2);color:var(--w3)}
-.btn-g:hover{color:var(--w2);background:var(--bg3)}
-.btn-r{background:var(--rd);border:1px solid rgba(248,113,113,.25);color:var(--r)}
-.btn-w{background:var(--ad);border:1px solid rgba(251,191,36,.25);color:var(--a)}
-
-/* STATE MACHINE */
+/* ── STATE MACHINE ── */
 .sm-step{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr)}
 .sm-step:last-child{border-bottom:none}
 .sm-num{width:20px;height:20px;border-radius:50%;background:var(--bg4);border:1px solid var(--bdr2);color:var(--w3);font-size:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
@@ -124,20 +104,41 @@ input[type=time]{color-scheme:dark}
 .t-bar{height:3px;border-radius:2px;background:var(--bg5);overflow:hidden;margin-top:5px}
 .t-fill{height:100%;border-radius:2px;transition:width 1s linear}
 
-/* LOG */
+/* ── LOG OVERLAY ── */
+.log-ov{position:absolute;inset:0;background:rgba(10,10,10,.95);border-radius:var(--rad2);z-index:10;display:none;flex-direction:column;padding:12px;gap:6px}
+.log-ov.open{display:flex}
 .log-e{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)}
 .log-e:last-child{border-bottom:none}
 .ld{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.log-ov{position:absolute;inset:0;background:rgba(10,10,10,.93);border-radius:var(--rad2);z-index:10;display:none;flex-direction:column;padding:12px;gap:6px}
-.log-ov.open{display:flex}
 
-/* PANEL */
+/* ── PLANTS ── */
+.plant-item{background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rad);padding:10px;margin-bottom:8px}
+.prog-bar{height:4px;border-radius:2px;background:var(--bg5);overflow:hidden;margin-top:5px}
+.prog-fill{height:100%;border-radius:2px;transition:width .5s}
+.phase-tl{display:flex;gap:2px;height:7px;border-radius:2px;overflow:hidden;margin-top:5px}
+
+/* ── INPUTS ── */
+input,select,textarea{background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rad);color:var(--w);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:7px 9px;outline:none;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--g3)}
+select option{background:var(--bg3)}
+textarea{resize:vertical;min-height:60px}
+input[type=time]{color-scheme:dark}
+
+/* ── BUTTONS ── */
+.btn{background:var(--gd);border:1px solid var(--g3);color:var(--g);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.8px;padding:7px 12px;border-radius:var(--rad);cursor:pointer;transition:all .15s;text-transform:uppercase}
+.btn:hover{background:var(--g3);color:var(--bg)}
+.btn:active{transform:scale(.97)}
+.btn-g{background:transparent;border:1px solid var(--bdr2);color:var(--w3)}
+.btn-g:hover{color:var(--w2);background:var(--bg3)}
+.btn-r{background:var(--rd);border:1px solid rgba(248,113,113,.25);color:var(--r)}
+.btn-w{background:var(--ad);border:1px solid rgba(251,191,36,.25);color:var(--a)}
+
+/* ── PANEL ── */
 #editPanel{position:fixed;top:0;right:-420px;bottom:0;width:380px;max-width:100vw;background:var(--bg2);border-left:1px solid var(--bdr2);z-index:600;overflow-y:auto;transition:right .3s cubic-bezier(.4,0,.2,1);padding-bottom:calc(20px + var(--safe-bot))}
 #editPanel.open{right:0}
 #editOverlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:498;opacity:0;pointer-events:none;transition:opacity .3s}
 #editOverlay.open{opacity:1;pointer-events:all}
 .panel-top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bdr);position:sticky;top:0;background:var(--bg2);z-index:1}
-.panel-top .title{font-size:13px;font-weight:500}
 .panel-close{width:28px;height:28px;border-radius:var(--rad);background:var(--bg3);border:1px solid var(--bdr);color:var(--w3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s}
 .panel-close:hover{background:var(--rd);border-color:var(--r);color:var(--r)}
 .panel-section{padding:14px 16px;border-bottom:1px solid var(--bdr)}
@@ -146,31 +147,22 @@ input[type=time]{color-scheme:dark}
 .panel-sec-title::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--g);flex-shrink:0}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 
-/* TASKS */
-.task{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr);cursor:pointer}
-.task:last-child{border-bottom:none}
-.task.done{opacity:.35}
-.tchk{width:14px;height:14px;border:1px solid var(--bdr2);border-radius:3px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:9px}
-.task.done .tchk{background:var(--g3);border-color:var(--g3);color:var(--bg)}
-
-/* MISC */
-.plant-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad2);padding:14px;margin-bottom:8px}
-.blm-g{height:6px;border-radius:3px;background:var(--bg5);overflow:hidden;margin:4px 0}
-.blm-f{height:100%;border-radius:3px;transition:width .5s}
+/* ── MISC ── */
 .toast{position:fixed;bottom:calc(20px + var(--safe-bot));left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rad2);padding:10px 18px;font-size:11px;color:var(--w2);transition:transform .3s ease;z-index:999;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .toast.ok-t{border-color:var(--g3);color:var(--g)}
 .toast.err-t{border-color:rgba(248,113,113,.3);color:var(--r)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-#dashboard>.card{animation:fadeUp .2s ease both}
+#dashboard>.card{animation:fadeUp .25s ease both}
 </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
 <div id="editOverlay" onclick="closePanel()"></div>
 
+<!-- NAV -->
 <nav>
   <div class="logo">Grow<em>OS</em></div>
   <div class="nav-right">
@@ -178,82 +170,89 @@ input[type=time]{color-scheme:dark}
       <div class="dot" id="liveDot"></div>
       <span id="liveClock">--:--</span>
     </div>
-    <button class="btn-icon" onclick="fetchSensor();toast('Atualizando...','ok')" title="Atualizar" style="font-size:15px">↺</button>
-    <button class="btn-icon active" id="btnEdit" onclick="togglePanel()" title="Configurações">✎</button>
+    <button class="btn-icon" onclick="doRefresh()" title="Atualizar sensor" style="font-size:16px">↺</button>
+    <button class="btn-icon" id="btnEdit" onclick="togglePanel()" title="Configurações">✎</button>
   </div>
 </nav>
 
+<!-- DASHBOARD -->
 <div id="dashboard">
 
-  <!-- ① CICLO — col1 rows1-2 -->
+  <!-- ① CICLO DE CULTIVO — col1 rows1+2 -->
   <div class="card" id="cCiclo">
     <div class="sec">Ciclo de cultivo</div>
-    <div id="plantCards" style="overflow-y:auto;flex:1"></div>
-    <div id="plantEmpty" style="display:none;font-size:10px;color:var(--w3);text-align:center;padding:24px 0;border:1px dashed var(--bdr2);border-radius:var(--rad2)">
-      Sem plantas. Abra ✎ para adicionar.
+    <div id="plantCards" style="flex:1;overflow-y:auto"></div>
+    <div id="plantEmpty" style="display:none;font-size:10px;color:var(--w3);text-align:center;padding:24px 12px;border:1px dashed var(--bdr2);border-radius:var(--rad2);line-height:1.8">
+      Sem plantas.<br>Abra ✎ para adicionar.
     </div>
+    <button class="btn btn-g" onclick="openPanel()" style="margin-top:10px;font-size:8px;padding:5px 10px;flex-shrink:0">+ Gerenciar plantas</button>
   </div>
 
   <!-- ② VPD — col2 row1 -->
   <div class="card" id="cVpd">
-    <div class="sec" style="justify-content:space-between;margin-bottom:8px">
-      <span style="display:flex;align-items:center;gap:5px"><span style="width:3px;height:3px;border-radius:50%;background:var(--g);display:inline-block"></span>VPD — Inkbird</span>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-shrink:0">
+      <div class="sec" style="margin-bottom:0">VPD — Inkbird</div>
       <span class="badge off-st" id="hVPDBadge">—</span>
     </div>
-    <div style="display:flex;align-items:baseline;gap:5px;margin-bottom:10px">
-      <div style="font-family:'IBM Plex Sans',sans-serif;font-size:44px;font-weight:600;line-height:1;letter-spacing:-1px;color:var(--g)" id="hVPD">—</div>
-      <div style="font-size:12px;color:var(--w3)">kPa</div>
+    <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:10px">
+      <div style="font-family:'IBM Plex Sans',sans-serif;font-size:48px;font-weight:600;line-height:1;letter-spacing:-1px;color:var(--g)" id="hVPD">—</div>
+      <div style="font-size:13px;color:var(--w3)">kPa</div>
     </div>
     <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--w3);margin-bottom:3px"><span>0.0</span><span>0.5</span><span>1.0</span><span>1.5</span><span>2.0</span></div>
     <div class="vpd-bar">
       <div class="range-ov" id="aRangeOv" style="left:40%;right:40%"></div>
       <div class="vpd-pin" id="vpdPin" style="left:0%"></div>
     </div>
-    <div style="display:flex;justify-content:space-between;font-size:8px;margin-top:4px">
+    <div style="display:flex;justify-content:space-between;font-size:8px;margin-top:4px;margin-bottom:8px">
       <span style="color:var(--g)" id="aRangeMinL">0.8</span>
       <span style="color:var(--w3)" id="vpdDiag">—</span>
       <span style="color:var(--a)" id="aRangeMaxL">1.2</span>
     </div>
-    <div style="margin-top:10px;padding:9px;background:var(--bg3);border-radius:var(--rad);font-size:9px;color:var(--w3);line-height:1.6;flex:1" id="vpdAdv">Aguardando leitura...</div>
-    <div style="font-size:9px;color:var(--w4);margin-top:8px" id="lastRead">—</div>
+    <div style="padding:9px;background:var(--bg3);border-radius:var(--rad);font-size:9px;color:var(--w3);line-height:1.7;flex:1" id="vpdAdv">Aguardando leitura...</div>
+    <div style="font-size:8px;color:var(--w4);margin-top:6px" id="lastRead">—</div>
   </div>
 
-  <!-- ③ CLIMA — col3+4 row1 -->
-  <div class="card" id="cClima" style="flex-direction:row;padding:0">
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:6px">
+  <!-- ③ CLIMA (Temp + Umidade) — col2 row2 -->
+  <div class="card" id="cClima" style="flex-direction:row;padding:0;align-items:stretch">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px">
       <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w3)">Temperatura</div>
       <div style="display:flex;align-items:baseline;gap:4px">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:48px;font-weight:600;line-height:1;letter-spacing:-1px" id="hTemp">—</div>
-        <div style="font-size:14px;color:var(--w3)">°C</div>
+        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:44px;font-weight:600;line-height:1;letter-spacing:-1px" id="hTemp">—</div>
+        <div style="font-size:13px;color:var(--w3)">°C</div>
       </div>
-      <div class="badge off-st" id="hTempBadge">—</div>
+      <span class="badge off-st" id="hTempBadge">—</span>
     </div>
-    <div style="width:1px;background:var(--bdr);align-self:stretch;flex-shrink:0;margin:16px 0"></div>
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:6px">
+    <div style="width:1px;background:var(--bdr);margin:16px 0;flex-shrink:0"></div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px">
       <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w3)">Umidade</div>
       <div style="display:flex;align-items:baseline;gap:4px">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:48px;font-weight:600;line-height:1;letter-spacing:-1px" id="hHum">—</div>
-        <div style="font-size:14px;color:var(--w3)">%</div>
+        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:44px;font-weight:600;line-height:1;letter-spacing:-1px" id="hHum">—</div>
+        <div style="font-size:13px;color:var(--w3)">%</div>
       </div>
-      <div class="badge off-st" id="hHumBadge">—</div>
+      <span class="badge off-st" id="hHumBadge">—</span>
     </div>
   </div>
 
-  <!-- ④ LUZ — col2 row2 -->
-  <div class="card" id="cLuz" style="align-items:center;justify-content:center;padding:14px 14px 28px">
+  <!-- ④ LUZ — col3 row1 -->
+  <div class="card" id="cLuz" style="align-items:center;justify-content:center;padding:14px 14px 32px;gap:6px">
     <div class="sec" style="position:absolute;top:12px;left:14px;margin-bottom:0">Luz</div>
-    <div id="lightIconWrap" class="sun-ring on" style="margin-bottom:8px">
+    <div id="lightIconWrap" class="sun-ring on" style="margin-bottom:4px">
       <div id="lightCore" class="sun-core" style="background:var(--a)"></div>
     </div>
-    <div style="font-size:13px;font-weight:500;letter-spacing:1px" id="lightTxt">—</div>
-    <div style="font-size:9px;color:var(--w3);margin-top:3px" id="lightCycle">—</div>
-    <div style="font-size:9px;color:var(--w3);margin-top:2px" id="lightNext">—</div>
-    <div class="light-bar-wrap" id="lightBar"></div>
+    <div style="font-size:14px;font-weight:500;letter-spacing:1px" id="lightTxt">—</div>
+    <div style="font-size:9px;color:var(--w3)" id="lightCycle">—</div>
+    <div style="font-size:9px;color:var(--w3)" id="lightNext">—</div>
+    <div style="position:absolute;bottom:10px;left:12px;right:12px;display:grid;grid-template-columns:repeat(24,1fr);gap:1px;height:4px" id="lightBar"></div>
   </div>
 
   <!-- ⑤ CONTROLE IR — col3 row2 -->
   <div class="card" id="cControles">
-    <div class="sec">Controle IR — Ekaza</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0">
+      <div class="sec" style="margin-bottom:0">Controle IR — Ekaza</div>
+      <span class="badge off-st" id="irStatusBadge">—</span>
+    </div>
+    <!-- IR diagnose strip -->
+    <div id="irDiag" style="font-size:9px;color:var(--w3);padding:7px 9px;background:var(--bg3);border-radius:var(--rad);margin-bottom:8px;line-height:1.6;flex-shrink:0">Teste IR: clique em qualquer botão para verificar.</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;align-content:center">
       <button class="btn" onclick="sendCmd('cool')">❄ Resfriar</button>
       <button class="btn btn-w" onclick="sendCmd('turbo')">⚡ Turbo</button>
@@ -262,132 +261,122 @@ input[type=time]{color-scheme:dark}
       <button class="btn btn-g" onclick="sendCmd('temp_down')">↓ Temp</button>
       <button class="btn btn-g" onclick="sendCmd('temp_up')">↑ Temp</button>
     </div>
-    <div class="sec" style="margin-top:10px;margin-bottom:6px">Log IR</div>
-    <div id="irLog" style="max-height:90px;overflow-y:auto">
-      <div style="font-size:9px;color:var(--w4);text-align:center;padding:8px 0">Nenhum sinal enviado.</div>
+    <div id="irLog" style="margin-top:8px;max-height:80px;overflow-y:auto;flex-shrink:0">
+      <div style="font-size:9px;color:var(--w4);text-align:center;padding:6px 0">Nenhum sinal enviado.</div>
     </div>
   </div>
 
-  <!-- ⑥ AUTOMAÇÃO VPD — col4 rows1-2 -->
+  <!-- ⑥ AUTOMAÇÃO VPD — col4 rows1+2 -->
   <div class="card" id="cAutoState" style="position:relative">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;flex-shrink:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0;flex-wrap:wrap;gap:6px">
       <div class="sec" style="margin-bottom:0">Automação VPD</div>
       <div style="display:flex;align-items:center;gap:6px">
-        <div style="width:7px;height:7px;border-radius:50%;background:var(--w4)" id="aDot"></div>
+        <div style="width:7px;height:7px;border-radius:50%;background:var(--w4);flex-shrink:0" id="aDot"></div>
         <span style="font-size:9px;color:var(--w3)" id="aMainStatus">Desligado</span>
-        <button class="btn btn-g" onclick="toggleAutoLog()" style="font-size:8px;padding:4px 9px">Log ↗</button>
+        <button class="btn btn-g" onclick="toggleAutoLog()" style="font-size:8px;padding:3px 8px">Log</button>
         <button class="btn" id="aMainBtn" onclick="toggleAutoEngine()">Ligar</button>
       </div>
     </div>
-    <div id="aStateFlow" style="flex:1;overflow-y:auto">
-      <div class="sm-step" id="aSteps0"><div class="sm-num">1</div><div style="flex:1"><div style="font-size:10px">Leitura sensor</div><div style="font-size:9px;color:var(--w3)" id="aDescs0">—</div><div class="t-bar" id="aBars0" style="display:none"><div class="t-fill" id="aFills0" style="width:0%"></div></div></div><span class="badge off-st" id="aBadges0">—</span></div>
-      <div class="sm-step" id="aSteps1"><div class="sm-num">2</div><div style="flex:1"><div style="font-size:10px">Análise VPD</div><div style="font-size:9px;color:var(--w3)" id="aDescs1">—</div></div><span class="badge off-st" id="aBadges1">—</span></div>
-      <div class="sm-step" id="aSteps2"><div class="sm-num">3</div><div style="flex:1"><div style="font-size:10px">Comando IR</div><div style="font-size:9px;color:var(--w3)" id="aDescs2">—</div></div><span class="badge off-st" id="aBadges2">—</span></div>
+    <!-- Steps -->
+    <div style="flex-shrink:0">
+      <div class="sm-step" id="aSteps0"><div class="sm-num">1</div><div style="flex:1"><div style="font-size:10px">Leitura sensor</div><div style="font-size:9px;color:var(--w3)" id="aDescs0">Aguardando...</div><div class="t-bar" id="aBars0" style="display:none"><div class="t-fill" id="aFills0" style="width:0%"></div></div></div><span class="badge off-st" id="aBadges0">—</span></div>
+      <div class="sm-step" id="aSteps1"><div class="sm-num">2</div><div style="flex:1"><div style="font-size:10px">Análise VPD</div><div style="font-size:9px;color:var(--w3)" id="aDescs1">Aguardando...</div></div><span class="badge off-st" id="aBadges1">—</span></div>
+      <div class="sm-step" id="aSteps2"><div class="sm-num">3</div><div style="flex:1"><div style="font-size:10px">Envio IR</div><div style="font-size:9px;color:var(--w3)" id="aDescs2">Aguardando...</div></div><span class="badge off-st" id="aBadges2">—</span></div>
       <div class="sm-step" id="aSteps3"><div class="sm-num">4</div><div style="flex:1"><div style="font-size:10px">Aguardando</div><div style="font-size:9px;color:var(--a);font-weight:500" id="aTimer"></div><div class="t-bar" id="aBars3" style="display:none"><div class="t-fill" id="aFills3" style="width:0%;background:var(--a)"></div></div></div><span class="badge off-st" id="aBadges3">—</span></div>
-      <div class="sm-step" id="aSteps4"><div class="sm-num">5</div><div style="flex:1"><div style="font-size:10px">Confirmação</div><div style="font-size:9px;color:var(--w3)" id="aDescs4">—</div><div class="t-bar" id="aBars4" style="display:none"><div class="t-fill" id="aFills4" style="width:0%;background:var(--b)"></div></div></div><span class="badge off-st" id="aBadges4">—</span></div>
+      <div class="sm-step" id="aSteps4"><div class="sm-num">5</div><div style="flex:1"><div style="font-size:10px">Confirmação</div><div style="font-size:9px;color:var(--w3)" id="aDescs4">Aguardando...</div><div class="t-bar" id="aBars4" style="display:none"><div class="t-fill" id="aFills4" style="width:0%;background:var(--b)"></div></div></div><span class="badge off-st" id="aBadges4">—</span></div>
     </div>
+    <!-- Stats -->
     <div class="g3" style="gap:6px;margin-top:10px;flex-shrink:0">
       <div class="sm" style="text-align:center;padding:8px"><div class="fl" style="margin-bottom:2px">Tentativas</div><div style="font-size:16px;font-weight:500" id="aTriesDisplay">0/3</div></div>
       <div class="sm" style="text-align:center;padding:8px"><div class="fl" style="margin-bottom:2px">Cmd</div><div style="font-size:10px;color:var(--w3)" id="lastCmdDisplay">—</div></div>
       <div class="sm" style="text-align:center;padding:8px"><div class="fl" style="margin-bottom:2px">Próx.</div><div style="font-size:10px;color:var(--w3)" id="aNextRead">—</div></div>
     </div>
+    <!-- IR status inside auto card -->
+    <div style="margin-top:8px;padding:8px 10px;background:var(--bg3);border-radius:var(--rad);flex-shrink:0" id="autoIRStatus">
+      <div style="font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--w3);margin-bottom:3px">Status IR</div>
+      <div style="font-size:10px" id="autoIRStatusTxt">—</div>
+    </div>
+    <!-- Inline log (last 3 entries visible) -->
+    <div style="margin-top:8px;flex:1;overflow-y:auto" id="autoLogInline">
+      <div style="font-size:9px;color:var(--w4);padding:6px 0">—</div>
+    </div>
     <!-- Log overlay -->
     <div class="log-ov" id="autoLogOverlay">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
-        <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--g)">Log de automação</div>
-        <button onclick="toggleAutoLog()" style="width:20px;height:20px;border-radius:5px;background:var(--bg3);border:1px solid var(--bdr2);color:var(--w3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:inherit">✕</button>
+        <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--g)">Log completo de automação</div>
+        <button onclick="toggleAutoLog()" style="width:20px;height:20px;border-radius:5px;background:var(--bg3);border:1px solid var(--bdr2);color:var(--w3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:inherit">✕</button>
       </div>
       <div id="autoEngineLog" style="flex:1;overflow-y:auto;display:flex;flex-direction:column">
-        <div data-empty style="font-size:9px;color:var(--w4);text-align:center;padding:12px 0">—</div>
+        <div data-empty style="font-size:9px;color:var(--w4);text-align:center;padding:12px 0">Nenhum evento ainda.</div>
       </div>
     </div>
   </div>
 
 </div><!-- /dashboard -->
 
-
-
+<!-- EDIT PANEL -->
 <div id="editPanel">
   <div class="panel-top">
-    <div class="title">✎ &nbsp;Editar / Configurações</div>
+    <div style="font-size:13px;font-weight:500">✎ &nbsp;Configurações</div>
     <button class="panel-close" onclick="event.stopPropagation();closePanel()">✕</button>
   </div>
 
   <!-- PLANTAS -->
-  <div class="panel-section" id="panelPlantas">
+  <div class="panel-section">
     <div class="panel-sec-title">🌱 Plantas</div>
-    <div class="g4" style="gap:6px;margin-bottom:12px">
-      <div class="sm" style="text-align:center"><div class="fl">Total</div><div style="font-size:16px;font-weight:500" id="psTot">0</div></div>
-      <div class="sm" style="text-align:center"><div class="fl">Veg</div><div style="font-size:16px;color:var(--g)" id="psVeg">0</div></div>
-      <div class="sm" style="text-align:center"><div class="fl">Flor</div><div style="font-size:16px;color:var(--a)" id="psFlor">0</div></div>
-      <div class="sm" style="text-align:center"><div class="fl">Strains</div><div style="font-size:16px;color:var(--b)" id="psStr">0</div></div>
+    <div class="g4" style="margin-bottom:12px">
+      <div class="sm" style="text-align:center;padding:8px"><div class="fl">Total</div><div style="font-size:16px;font-weight:500" id="psTot">0</div></div>
+      <div class="sm" style="text-align:center;padding:8px"><div class="fl">Vega</div><div style="font-size:16px;color:var(--g)" id="psVeg">0</div></div>
+      <div class="sm" style="text-align:center;padding:8px"><div class="fl">Flora</div><div style="font-size:16px;color:var(--a)" id="psFlor">0</div></div>
+      <div class="sm" style="text-align:center;padding:8px"><div class="fl">Strains</div><div style="font-size:16px;color:var(--b)" id="psStr">0</div></div>
     </div>
-    <!-- Form nova/editar planta -->
-    <div id="plantFormWrap" style="margin-bottom:12px">
-      <div style="font-size:10px;font-weight:500;margin-bottom:10px;color:var(--w2)" id="plantFormTitle">Nova planta</div>
-      <div class="g2" style="gap:8px;margin-bottom:8px">
-        <div><div class="fl">Nome</div><input type="text" id="pName" placeholder="Planta A..."></div>
-        <div><div class="fl">Strain</div><input type="text" id="pStrain" placeholder="White Widow..."></div>
+    <!-- Form -->
+    <div style="font-size:10px;font-weight:500;color:var(--w2);margin-bottom:10px" id="plantFormTitle">Nova planta</div>
+    <div class="g2" style="margin-bottom:8px">
+      <div><div class="fl">Nome</div><input type="text" id="pName" placeholder="Planta A..."></div>
+      <div><div class="fl">Strain</div><input type="text" id="pStrain" placeholder="White Widow..."></div>
+    </div>
+    <div class="g2" style="margin-bottom:8px">
+      <div><div class="fl">Germinação</div><input type="date" id="pGerm"></div>
+      <div><div class="fl">Semana</div><input type="number" id="pWeek" min="1" value="1"></div>
+    </div>
+    <div class="g2" style="margin-bottom:8px">
+      <div><div class="fl">Estágio</div>
+        <select id="pStage">
+          <option value="semente">Germinação</option>
+          <option value="seedling">Seedling</option>
+          <option value="veg">Vega</option>
+          <option value="flor">Flora</option>
+          <option value="flush">Flush</option>
+          <option value="colheita">Colheita</option>
+        </select>
       </div>
-      <div class="g2" style="gap:8px;margin-bottom:8px">
-        <div><div class="fl">Germinação</div><input type="date" id="pGerm"></div>
-        <div><div class="fl">Semana</div><input type="number" id="pWeek" min="1" value="1"></div>
-      </div>
-      <div class="g2" style="gap:8px;margin-bottom:8px">
-        <div><div class="fl">Estágio</div>
-          <select id="pStage">
-            <option value="semente">Germinação</option>
-            <option value="seedling">Seedling</option>
-            <option value="veg">Vega</option>
-            <option value="flor">Flora</option>
-            <option value="flush">Flush</option>
-            <option value="colheita">Colheita</option>
-          </select>
-        </div>
-        <div><div class="fl">Floração (dias)</div><input type="number" id="pFloDays" placeholder="63"></div>
-      </div>
-      <div class="g3" style="gap:8px;margin-bottom:8px">
-        <div><div class="fl">Substrato</div><select id="pSub"><option>Terra</option><option>Coco</option><option>Hidro</option></select></div>
-        <div><div class="fl">Vaso (L)</div><input type="number" id="pPot" placeholder="20"></div>
-        <div><div class="fl">Semente</div><select id="pSeedType"><option>Feminizada</option><option>Auto-flower</option><option>Regular</option></select></div>
-      </div>
-      <div style="margin-bottom:8px"><div class="fl">Notas</div><textarea id="pNotes" placeholder="Observações..."></textarea></div>
-      <div style="display:flex;gap:6px">
-        <button class="btn" onclick="savePlant()" style="flex:1">Salvar planta</button>
-        <button class="btn btn-g" onclick="resetPlantForm()">Limpar</button>
+      <div><div class="fl">Substrato</div>
+        <select id="pSub"><option>Terra</option><option>Coco</option><option>Hidro</option></select>
       </div>
     </div>
-    <!-- Lista de plantas no painel -->
-    <div id="panelPlantList" style="margin-top:4px"></div>
+    <div style="margin-bottom:8px"><div class="fl">Notas</div><textarea id="pNotes" placeholder="Observações..."></textarea></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" onclick="savePlant()" style="flex:1">Salvar planta</button>
+      <button class="btn btn-g" onclick="resetPlantForm()">Limpar</button>
+    </div>
+    <!-- Lista de plantas cadastradas -->
+    <div id="panelPlantList" style="margin-top:12px"></div>
   </div>
 
   <!-- TIMER DE LUZ -->
   <div class="panel-section">
     <div class="panel-sec-title">💡 Timer de luz</div>
-    <div class="g2" style="gap:8px;margin-bottom:10px">
+    <div class="g2">
       <div><div class="fl">Acende</div><input type="time" id="lOn" value="06:00" oninput="updLight()"></div>
       <div><div class="fl">Apaga</div><input type="time" id="lOff" value="00:00" oninput="updLight()"></div>
-    </div>
-  </div>
-
-  <!-- BLUMAT CONFIG -->
-  <div class="panel-section">
-    <div class="panel-sec-title">💧 Blumat — Solo</div>
-    <div class="g2" style="gap:8px;margin-bottom:10px">
-      <div><div class="fl">Leitura atual (mbar)</div><input type="number" id="blmCur" value="40" min="0" max="200" oninput="updBlumat()"></div>
-      <div></div>
-    </div>
-    <div class="g2" style="gap:8px">
-      <div><div class="fl">Target mín</div><input type="number" id="blmMin" value="30" oninput="updBlumat()"></div>
-      <div><div class="fl">Target máx</div><input type="number" id="blmMax" value="60" oninput="updBlumat()"></div>
     </div>
   </div>
 
   <!-- AUTOMAÇÃO VPD CONFIG -->
   <div class="panel-section">
     <div class="panel-sec-title">⚙ Automação VPD</div>
-    <div style="margin-bottom:10px">
-      <div class="fl">Fase</div>
+    <div style="margin-bottom:8px"><div class="fl">Fase</div>
       <select id="aCfgPhase" onchange="autoUpdPhase()">
         <option value="veg">Vega (0.8–1.2)</option>
         <option value="flor">Flora (1.0–1.5)</option>
@@ -395,46 +384,35 @@ input[type=time]{color-scheme:dark}
         <option value="custom">Personalizado</option>
       </select>
     </div>
-    <div class="g2" style="gap:8px;margin-bottom:10px">
+    <div class="g2" style="margin-bottom:8px">
       <div><div class="fl">VPD mín (kPa)</div><input type="number" id="aCfgMin" value="0.8" step="0.05" oninput="autoUpdOverlay()"></div>
       <div><div class="fl">VPD máx (kPa)</div><input type="number" id="aCfgMax" value="1.2" step="0.05" oninput="autoUpdOverlay()"></div>
     </div>
-    <div class="g2" style="gap:8px;margin-bottom:10px">
+    <div class="g2" style="margin-bottom:8px">
       <div><div class="fl">Espera após ajuste</div>
-        <select id="aCfgWaitAdj">
-          <option value="600">10 min</option><option value="900">15 min</option><option value="1200">20 min</option>
-        </select>
+        <select id="aCfgWaitAdj"><option value="600">10 min</option><option value="900">15 min</option><option value="1200">20 min</option></select>
       </div>
       <div><div class="fl">Máx tentativas</div>
-        <select id="aCfgMaxTries">
-          <option value="3">3</option><option value="5">5</option><option value="2">2</option>
-        </select>
+        <select id="aCfgMaxTries"><option value="3">3</option><option value="5">5</option><option value="2">2</option></select>
       </div>
     </div>
-    <div class="g2" style="gap:8px;margin-bottom:10px">
-      <div><div class="fl">Confirm. 1ª</div>
-        <select id="aCfgChk1">
-          <option value="1200">20 min</option><option value="1800">30 min</option><option value="2400">40 min</option>
-        </select>
+    <div class="g2" style="margin-bottom:8px">
+      <div><div class="fl">Confirmação 1ª</div>
+        <select id="aCfgChk1"><option value="1200">20 min</option><option value="1800">30 min</option><option value="2400">40 min</option></select>
       </div>
-      <div><div class="fl">Confirm. 2ª</div>
-        <select id="aCfgChk2">
-          <option value="2400">40 min</option><option value="3600">60 min</option><option value="1800">30 min</option>
-        </select>
+      <div><div class="fl">Confirmação 2ª</div>
+        <select id="aCfgChk2"><option value="2400">40 min</option><option value="3600">60 min</option><option value="1800">30 min</option></select>
       </div>
     </div>
-    <div class="g2" style="gap:8px;margin-bottom:12px">
+    <div class="g2">
       <div><div class="fl">Turbo se UR ≥</div><input type="number" id="aCfgTurboRH" value="75"></div>
       <div><div class="fl">Intervalo sensor</div>
-        <select id="aCfgSensorInt">
-          <option value="60">1 min</option><option value="120">2 min</option><option value="300">5 min</option>
-        </select>
+        <select id="aCfgSensorInt"><option value="60">1 min</option><option value="120">2 min</option><option value="300">5 min</option></select>
       </div>
     </div>
-    <!-- Perfil noturno -->
-    <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:10px">
+    <div style="background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:10px;margin-top:10px">
       <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--pu);margin-bottom:8px">🌙 Perfil noturno</div>
-      <div class="g3" style="gap:8px">
+      <div class="g3">
         <div><div class="fl">Início</div><input type="time" id="aCfgNightStart" value="00:00"></div>
         <div><div class="fl">Fim</div><input type="time" id="aCfgNightEnd" value="06:00"></div>
         <div><div class="fl">VPD máx</div><input type="number" id="aCfgNightMax" value="1.0" step="0.05"></div>
@@ -444,514 +422,691 @@ input[type=time]{color-scheme:dark}
 
   <!-- DIÁRIO -->
   <div class="panel-section">
-    <div class="panel-sec-title">📓 Diário de cultivo</div>
+    <div class="panel-sec-title">📓 Diário</div>
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:10px">
-      <div class="g2" style="gap:8px">
-        <div><div class="fl">Semana</div><input type="number" value="5" id="dW"></div>
+      <div class="g2">
+        <div><div class="fl">Semana</div><input type="number" value="1" id="dW"></div>
         <div><div class="fl">Fase</div><select id="dPh"><option>Vega</option><option>Flora</option><option>Propagação</option><option>Flush</option></select></div>
       </div>
-      <div class="g2" style="gap:8px">
-        <div><div class="fl">pH</div><input type="number" step="0.1" id="dPH" placeholder="6.2"></div>
-        <div><div class="fl">mbar</div><input type="number" id="dMB"></div>
-      </div>
-      <div><div class="fl">Tipo</div><select id="dType"><option>Observação</option><option>Rega / Nutrição</option><option>LST / Técnica</option><option>Problema</option><option>Mudança de fase</option><option>Aplicação de produto</option></select></div>
-      <div><div class="fl">Notas</div><textarea id="dNotes" placeholder="Descreva o que observou..."></textarea></div>
+      <div><div class="fl">Tipo</div><select id="dType"><option>Observação</option><option>Rega</option><option>LST / Técnica</option><option>Problema</option><option>Mudança de fase</option></select></div>
+      <div><div class="fl">Notas</div><textarea id="dNotes" placeholder="Descreva..."></textarea></div>
       <button class="btn" onclick="addLog()">Salvar entrada</button>
     </div>
-    <div class="panel-sec-title">Histórico</div>
-    <div id="logList" style="max-height:260px;overflow-y:auto">
-      <div class="log-e"><div class="ld" style="background:var(--g)"></div><div><div style="font-size:10px;color:var(--w2)">Sem. 5 · Veg — LST ajustado.</div><div style="font-size:9px;color:var(--w3);margin-top:2px">Hoje · 26.2°C · 63%RH · pH 6.1</div></div></div>
-    </div>
-  </div>
-
-  <!-- TAREFAS -->
-  <div class="panel-section">
-    <div class="panel-sec-title">✓ Tarefas de hoje</div>
-    <div id="todayTasks">
-      <div class="task done" onclick="togT(this)"><div class="tchk">✓</div><div><div style="font-size:10px;color:var(--w2)">Verificar VPD</div></div><span class="badge ok" style="margin-left:auto">Diário</span></div>
-      <div class="task" onclick="togT(this)"><div class="tchk"></div><div><div style="font-size:10px;color:var(--w2)">Rega — Blumat</div></div><span class="badge ok" style="margin-left:auto">Irrigação</span></div>
-    </div>
-    <div style="display:flex;gap:6px;margin-top:10px">
-      <input type="text" placeholder="Nova tarefa..." id="newTask" onkeydown="if(event.key==='Enter')addTask()" style="flex:1;font-size:10px">
-      <button class="btn" onclick="addTask()">+</button>
+    <div id="logList" style="max-height:200px;overflow-y:auto">
+      <div class="log-e"><div class="ld" style="background:var(--g)"></div><div><div style="font-size:10px;color:var(--w2)">Sem. 1 · Vega — Início do cultivo.</div><div style="font-size:9px;color:var(--w3);margin-top:2px">Hoje</div></div></div>
     </div>
   </div>
 
 </div><!-- /editPanel -->
 
 <script>
-const WORKER="https://keep.portugalmedeiros.workers.dev";
-let liveTemp=null,liveHum=null,liveVPD=null;
-let sensorHistory=[];
+const WORKER = "https://keep.portugalmedeiros.workers.dev";
+let liveTemp=null, liveHum=null, liveVPD=null;
 
-// ── PAINEL EDITAR ──────────────────────────────────────────
+// ── PANEL ──────────────────────────────────────────────────────────────────
 function togglePanel(){
-  const p=document.getElementById('editPanel'),o=document.getElementById('editOverlay'),b=document.getElementById('btnEdit');
-  const open=p.classList.toggle('open');
-  o.classList.toggle('open',open);
-  b.classList.toggle('active',open);
+  const p=document.getElementById('editPanel'), o=document.getElementById('editOverlay'), b=document.getElementById('btnEdit');
+  const open = p.classList.toggle('open');
+  o.classList.toggle('open', open);
+  b.classList.toggle('on', open);
+}
+function openPanel(){
+  document.getElementById('editPanel').classList.add('open');
+  document.getElementById('editOverlay').classList.add('open');
+  document.getElementById('btnEdit').classList.add('on');
 }
 function closePanel(){
   document.getElementById('editPanel').classList.remove('open');
   document.getElementById('editOverlay').classList.remove('open');
-  document.getElementById('btnEdit').classList.remove('active');
+  document.getElementById('btnEdit').classList.remove('on');
 }
-function openPanelSection(sec){
-  togglePanel();
-  if(sec==='plantas'){
-    setTimeout(()=>{const el=document.getElementById('panelPlantas');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},350);
+
+// ── TOAST ──────────────────────────────────────────────────────────────────
+function toast(msg, type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast '+(type==='ok'?'ok-t':'err-t');
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2800);
+}
+
+// ── REFRESH ────────────────────────────────────────────────────────────────
+async function doRefresh(){
+  toast('Atualizando...','ok');
+  await fetchSensor();
+}
+
+// ── SENSOR ─────────────────────────────────────────────────────────────────
+async function fetchSensor(){
+  try {
+    const res = await fetch(WORKER+'/sensor');
+    const d = await res.json();
+    if(!d.ok) throw new Error(d.error||'Falhou');
+    liveTemp=d.temp; liveHum=d.humidity; liveVPD=d.vpd;
+    updHubTiles(d.temp, d.humidity, d.vpd);
+    document.getElementById('liveDot').className = 'dot on';
+    document.getElementById('lastRead').textContent = '↺ '+new Date().toLocaleTimeString('pt-BR');
+    // feed auto engine display
+    const av=document.getElementById('aVPDLive'); if(av) av.textContent=d.vpd.toFixed(2);
+    const ap=document.getElementById('aVPDPin'); if(ap) ap.style.left=(Math.min(d.vpd/2,1)*100)+'%';
+    return d;
+  } catch(e) {
+    document.getElementById('liveDot').className = 'dot err';
+    document.getElementById('lastRead').textContent = 'Erro: '+e.message;
+    return null;
   }
 }
 
-// ── TOAST ──────────────────────────────────────────────────
-function toast(msg,type='ok'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+(type==='ok'?'ok-t':'err-t');t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
-
-// ── MINI CHARTS ───────────────────────────────────────────
-let chartTemp=null,chartHum=null;
-function initCharts(){if(!document.getElementById('chartTemp'))return;
-  const cfg=(id,color,label)=>{
-    const ctx=document.getElementById(id).getContext('2d');
-    return new Chart(ctx,{type:'line',data:{labels:[],datasets:[{data:[],borderColor:color,borderWidth:1.5,pointRadius:0,fill:true,backgroundColor:color.replace(')',',0.08)')}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{display:false},y:{display:false}},animation:false}});
-  };
-  chartTemp=cfg('chartTemp','rgb(251,191,36)','Temp');
-  chartHum=cfg('chartHum','rgb(96,165,250)','Hum');
-}
-function pushChartData(t,h){
-  const MAX=20;
-  const pushTo=(chart,val)=>{chart.data.labels.push('');chart.data.datasets[0].data.push(val);if(chart.data.labels.length>MAX){chart.data.labels.shift();chart.data.datasets[0].data.shift();}chart.update('none');};
-  if(chartTemp)pushTo(chartTemp,t);
-  if(chartHum)pushTo(chartHum,h);
-}
-
-// ── SENSOR ────────────────────────────────────────────────
-async function fetchSensor(){
-  try{
-    const res=await fetch(WORKER+'/sensor');const d=await res.json();
-    if(!d.ok)throw new Error(d.error||'Falhou');
-    liveTemp=d.temp;liveHum=d.humidity;liveVPD=d.vpd;
-    updHubTiles(d.temp,d.humidity,d.vpd);
-    pushChartData(d.temp,d.humidity);
-    document.getElementById('liveDot').className='dot on';
-    document.getElementById('lastRead').textContent='↺ '+new Date().toLocaleTimeString('pt-BR');
-    return d;
-  }catch(e){document.getElementById('liveDot').className='dot err';return null;}
-}
-
-function updHubTiles(t,h,v){
+function updHubTiles(t, h, v){
   // VPD
-  document.getElementById('hVPD').textContent=v.toFixed(2);
+  const vEl=document.getElementById('hVPD');
+  if(vEl) vEl.textContent = v.toFixed(2);
   let vc,vt,va;
-  if(v<0.4){vc='var(--b)';vt='Muito baixo';va='Risco de pythium. Reduzir umidade.'}
+  if(v<0.4){vc='var(--b)';vt='Muito baixo';va='Risco de pythium. Reduza umidade.'}
   else if(v<0.8){vc='var(--g)';vt='Propagação OK';va='Ideal para mudas e seedlings.'}
-  else if(v<1.2){vc='var(--g)';vt='Vegetativo ✓';va='Range ideal para veg.'}
-  else if(v<1.6){vc='var(--a)';vt='Floração OK';va='Considere reduzir umidade.'}
-  else{vc='var(--r)';vt='VPD Alto — Stress';va='Aumente umidade imediatamente.'}
-  document.getElementById('hVPD').style.color=vc;
-  const vb=document.getElementById('hVPDBadge');if(vb){vb.className='badge '+(v>=0.8&&v<1.6?'ok':v>=1.6?'danger':'warn');vb.textContent=vt;}
-  document.getElementById('vpdPin').style.left=(Math.min(v/2,1)*100)+'%';
-  document.getElementById('vpdDiag').textContent=vt;document.getElementById('vpdDiag').style.color=vc;
-  document.getElementById('vpdAdv').textContent=va;
+  else if(v<1.2){vc='var(--g)';vt='Vega ✓';va='Range ideal para vegetativo.'}
+  else if(v<1.6){vc='var(--a)';vt='Flora OK';va='Considere reduzir umidade.'}
+  else{vc='var(--r)';vt='Alto — Stress';va='Aumente umidade imediatamente.'}
+  if(vEl) vEl.style.color = vc;
+  const vb=document.getElementById('hVPDBadge');
+  if(vb){vb.className='badge '+(v>=0.8&&v<1.6?'ok':v>=1.6?'danger':'warn');vb.textContent=vt;}
+  const vPin=document.getElementById('vpdPin'); if(vPin) vPin.style.left=(Math.min(v/2,1)*100)+'%';
+  const vDiag=document.getElementById('vpdDiag'); if(vDiag){vDiag.textContent=vt;vDiag.style.color=vc;}
+  const vAdv=document.getElementById('vpdAdv'); if(vAdv) vAdv.textContent=va;
   // Temp
-  document.getElementById('hTemp').textContent=t.toFixed(1);
-  const tb=document.getElementById('hTempBadge');tb.className='badge '+(t>28?'danger':t>26?'warn':'ok');tb.textContent=t>28?'↑ Alto':t>26?'↑ Atenção':'✓ Ideal';
-  const ta=document.getElementById('hTempAcc');if(ta)ta.style.background=t>28?'var(--r)':t>26?'var(--a)':'var(--g)';
+  const tEl=document.getElementById('hTemp'); if(tEl) tEl.textContent=t.toFixed(1);
+  const tb=document.getElementById('hTempBadge');
+  if(tb){tb.className='badge '+(t>28?'danger':t>26?'warn':'ok');tb.textContent=t>28?'↑ Alto':t>26?'↑ Atenção':'✓ Ideal';}
   // Hum
-  document.getElementById('hHum').textContent=h.toFixed(1);
-  const hb=document.getElementById('hHumBadge');hb.className='badge '+(h>75||h<40?'warn':'ok');hb.textContent=h>75?'↑ Alta':h<40?'↓ Baixa':'✓ Ideal';
-  const ha=document.getElementById('hHumAcc');if(ha)ha.style.background=h>75?'var(--r)':h<40?'var(--a)':'var(--b)';
-  // auto aba
-  if(document.getElementById('aVPDLive')){document.getElementById('aVPDLive').textContent=v.toFixed(2);document.getElementById('aVPDLive').style.color=vc;}
-  if(document.getElementById('aTempLive'))document.getElementById('aTempLive').textContent=t.toFixed(1);
-  if(document.getElementById('aHumLive'))document.getElementById('aHumLive').textContent=h.toFixed(1);
-  if(document.getElementById('aVPDPin'))document.getElementById('aVPDPin').style.left=(Math.min(v/2,1)*100)+'%';
+  const hEl=document.getElementById('hHum'); if(hEl) hEl.textContent=h.toFixed(1);
+  const hb=document.getElementById('hHumBadge');
+  if(hb){hb.className='badge '+(h>75||h<40?'warn':'ok');hb.textContent=h>75?'↑ Alta':h<40?'↓ Baixa':'✓ Ideal';}
 }
 
-// ── IR MANUAL ──────────────────────────────────────────────
+// ── IR ──────────────────────────────────────────────────────────────────────
 async function sendCmd(cmd){
-  try{
-    const res=await fetch(WORKER+'/ir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command:cmd})});
-    const d=await res.json();
-    addIRLog(cmd,d.ok?'ok':'err',d.ok?'Enviado ✓':'Falha: '+JSON.stringify(d.response));
-    toast(d.ok?'IR → '+cmd.toUpperCase()+' ✓':'Falha IR',d.ok?'ok':'err');
+  const diag=document.getElementById('irDiag');
+  const badge=document.getElementById('irStatusBadge');
+  if(diag){diag.textContent='Enviando '+cmd.toUpperCase()+'...';diag.style.color='var(--a)';}
+  if(badge){badge.className='badge warn';badge.textContent='Enviando...';}
+  try {
+    const res = await fetch(WORKER+'/ir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command:cmd})});
+    const d = await res.json();
+    if(d.ok){
+      if(diag){diag.textContent='✓ IR recebido: '+cmd.toUpperCase()+' às '+new Date().toLocaleTimeString('pt-BR');diag.style.color='var(--g)';}
+      if(badge){badge.className='badge ok';badge.textContent='OK';}
+      addIRLog(cmd,'ok','Recebido pelo hub Ekaza ✓');
+      toast('IR → '+cmd.toUpperCase()+' ✓','ok');
+    } else {
+      const reason = d.response ? JSON.stringify(d.response).slice(0,60) : 'Sem resposta do hub';
+      if(diag){diag.textContent='✗ IR falhou: '+reason;diag.style.color='var(--r)';}
+      if(badge){badge.className='badge danger';badge.textContent='Falha';}
+      addIRLog(cmd,'err','Falha: '+reason);
+      toast('Falha no IR','err');
+    }
     return d.ok;
-  }catch(e){addIRLog(cmd,'err',e.message);toast('Erro IR','err');return false;}
-}
-function addIRLog(cmd,type,detail){
-  const list=document.getElementById('irLog');if(!list)return;
-  const empty=list.querySelector('[style*="color:var(--w4)"]');if(empty)empty.remove();
-  const icons={cool:'❄',turbo:'⚡',fan:'💨',off:'⏻',temp_down:'↓T',temp_up:'↑T'};
-  const colors={ok:'var(--g)',err:'var(--r)',warn:'var(--a)',info:'var(--b)'};
-  const d=document.createElement('div');d.className='log-e';
-  d.innerHTML=`<div style="width:16px;text-align:center;flex-shrink:0;font-size:10px;margin-top:2px">${icons[cmd]||'📡'}</div><div><div style="font-size:9px;color:${colors[type]||'var(--g)'}">${cmd.toUpperCase()}</div><div style="font-size:8px;color:var(--w3);margin-top:1px">${detail}</div><div style="font-size:8px;color:var(--w4)">${new Date().toLocaleTimeString('pt-BR')}</div></div>`;
-  list.insertBefore(d,list.firstChild);if(list.children.length>15)list.removeChild(list.lastChild);
+  } catch(e) {
+    if(diag){diag.textContent='✗ Erro de rede: '+e.message;diag.style.color='var(--r)';}
+    if(badge){badge.className='badge danger';badge.textContent='Erro';}
+    addIRLog(cmd,'err','Erro: '+e.message);
+    toast('Erro IR','err');
+    return false;
+  }
 }
 
-// ── LUZ ───────────────────────────────────────────────────
+function addIRLog(cmd,type,detail){
+  const list=document.getElementById('irLog'); if(!list)return;
+  const empty=list.querySelector('[style*="color:var(--w4)"]'); if(empty)empty.remove();
+  const icons={cool:'❄',turbo:'⚡',fan:'💨',off:'⏻',temp_down:'↓T',temp_up:'↑T'};
+  const colors={ok:'var(--g)',err:'var(--r)'};
+  const d=document.createElement('div');
+  d.style.cssText='display:flex;gap:6px;padding:4px 0;border-bottom:1px solid var(--bdr);font-size:9px;';
+  d.innerHTML=`<span style="color:${colors[type]||'var(--g)'}">${icons[cmd]||'📡'} ${cmd.toUpperCase()}</span><span style="color:var(--w3);flex:1">${detail}</span><span style="color:var(--w4)">${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>`;
+  list.insertBefore(d,list.firstChild);
+  if(list.children.length>8)list.removeChild(list.lastChild);
+}
+
+// ── LUZ ────────────────────────────────────────────────────────────────────
 function updLight(){
-  const on=document.getElementById('lOn').value||'06:00',off=document.getElementById('lOff').value||'00:00';
+  const on=document.getElementById('lOn')?.value||'06:00';
+  const off=document.getElementById('lOff')?.value||'00:00';
   const[oh,om]=on.split(':').map(Number),[fh,fm]=off.split(':').map(Number);
   const now=new Date(),cur=now.getHours()*60+now.getMinutes(),onMin=oh*60+om;
-  let offMin=fh*60+fm;const cross=offMin<=onMin;if(cross)offMin+=1440;
+  let offMin=fh*60+fm;
+  const cross=offMin<=onMin; if(cross)offMin+=1440;
   const lightOn=cross?(cur>=onMin||cur<fh*60+fm):(cur>=onMin&&cur<offMin);
-  const lightH=cross?(1440-onMin+fh*60+fm)/60:(offMin-onMin)/60,darkH=24-lightH;
-  document.getElementById('lightCycle').textContent=Math.round(lightH)+'/'+Math.round(darkH)+'h';
-  const ltxt=document.getElementById('lightTxt'),lnxt=document.getElementById('lightNext'),la=null;
+  const lightH=cross?(1440-onMin+fh*60+fm)/60:(offMin-onMin)/60;
+  const darkH=24-lightH;
+  const ltxt=document.getElementById('lightTxt');
+  const lnxt=document.getElementById('lightNext');
+  const lcyc=document.getElementById('lightCycle');
+  const wrap=document.getElementById('lightIconWrap');
+  const core=document.getElementById('lightCore');
+  if(lcyc) lcyc.textContent=Math.round(lightH)+'/'+Math.round(darkH)+'h';
   if(lightOn){
-    ltxt.textContent='ACESA';ltxt.style.color='var(--a)';
-    const wrap=document.getElementById('lightIconWrap'),core=document.getElementById('lightCore');
+    if(ltxt){ltxt.textContent='ACESA';ltxt.style.color='var(--a)';}
     if(wrap){wrap.classList.add('on');wrap.style.borderColor='rgba(251,191,36,.35)';}
     if(core){core.style.background='var(--a)';core.style.border='';}
-    let ml=offMin-cur;if(ml<0)ml+=1440;lnxt.textContent='Apaga em '+Math.floor(ml/60)+'h '+ml%60+'min';
-  }else{
-    ltxt.textContent='APAGADA';ltxt.style.color='var(--w3)';
-    const wrap2=document.getElementById('lightIconWrap'),core2=document.getElementById('lightCore');
-    if(wrap2){wrap2.classList.remove('on');wrap2.style.borderColor='rgba(255,255,255,.1)';}
-    if(core2){core2.style.background='transparent';core2.style.border='2px solid var(--w3)';}
-    let ml=onMin-cur;if(ml<0)ml+=1440;lnxt.textContent='Acende em '+Math.floor(ml/60)+'h '+ml%60+'min';
+    let ml=offMin-cur; if(ml<0)ml+=1440;
+    if(lnxt) lnxt.textContent='Apaga em '+Math.floor(ml/60)+'h '+String(ml%60).padStart(2,'0')+'min';
+  } else {
+    if(ltxt){ltxt.textContent='APAGADA';ltxt.style.color='var(--w3)';}
+    if(wrap){wrap.classList.remove('on');wrap.style.borderColor='rgba(255,255,255,.1)';}
+    if(core){core.style.background='transparent';core.style.border='2px solid var(--w3)';}
+    let ml=onMin-cur; if(ml<0)ml+=1440;
+    if(lnxt) lnxt.textContent='Acende em '+Math.floor(ml/60)+'h '+String(ml%60).padStart(2,'0')+'min';
   }
-  const bar=document.getElementById('lightBar');let html='';
-  for(let i=0;i<24;i++){const sm=i*60;let son=cross?(sm>=onMin||sm<fh*60+fm):(sm>=onMin&&sm<offMin);const isCur=sm<=cur&&cur<sm+60;html+=`<div style="border-radius:1px;height:100%;background:${son?'rgba(251,191,36,'+(isCur?'1':'.45')+')':'rgba(255,255,255,.06)'};${isCur?'outline:1px solid rgba(251,191,36,.8);':''}"></div>`;}
+  const bar=document.getElementById('lightBar'); if(!bar)return;
+  let html='';
+  for(let i=0;i<24;i++){
+    const sm=i*60;
+    const son=cross?(sm>=onMin||sm<fh*60+fm):(sm>=onMin&&sm<offMin);
+    const isCur=sm<=cur&&cur<sm+60;
+    html+=`<div style="border-radius:1px;height:100%;background:${son?'rgba(251,191,36,'+(isCur?'1':'.4')+')':'rgba(255,255,255,.06)'};${isCur?'outline:1px solid rgba(251,191,36,.8);':''}"></div>`;
+  }
   bar.innerHTML=html;
 }
 
-// ── BLUMAT ────────────────────────────────────────────────
-function updBlumat(){
-  const cur=parseInt(document.getElementById('blmCur').value)||0,mn=parseInt(document.getElementById('blmMin').value)||30,mx=parseInt(document.getElementById('blmMax').value)||60;
-  document.getElementById('blmValDisp').textContent=cur;
-  const fill=document.getElementById('blmFill');fill.style.width=Math.min(cur/200,1)*100+'%';fill.style.background=cur<mn?'var(--b)':cur<=mx?'var(--g)':'var(--r)';
-  const d=document.getElementById('blmDiag');
-  if(cur<mn){d.textContent='↓ Solo úmido';d.style.color='var(--b)'}
-  else if(cur<=mx){d.textContent='✓ Umidade ideal';d.style.color='var(--g)'}
-  else{d.textContent='⚠ Solo seco — regar!';d.style.color='var(--r)'}
+// ── PLANTS ─────────────────────────────────────────────────────────────────
+let plants=[], editPlantId=null;
+const stageInfo={
+  semente:{label:'Germinação',color:'var(--b)',pct:5},
+  seedling:{label:'Seedling',color:'var(--pu)',pct:12},
+  veg:{label:'Vega',color:'var(--g)',pct:35},
+  flor:{label:'Flora',color:'var(--a)',pct:65},
+  flush:{label:'Flush',color:'#fb923c',pct:90},
+  colheita:{label:'Colheita',color:'var(--r)',pct:100}
+};
+
+function daysSince(d){if(!d)return null;return Math.floor((Date.now()-new Date(d))/(864e5));}
+function fmtAge(d){if(d===null||d===undefined)return'—';if(d<7)return d+'d';return Math.floor(d/7)+'sem'+(d%7?'+'+d%7+'d':'');}
+
+function resetPlantForm(){
+  editPlantId=null;
+  document.getElementById('plantFormTitle').textContent='Nova planta';
+  ['pName','pStrain','pWeek','pNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const germ=document.getElementById('pGerm');
+  if(germ) germ.valueAsDate=new Date();
+  const week=document.getElementById('pWeek');
+  if(week) week.value='1';
 }
 
-// ── TASKS ─────────────────────────────────────────────────
-function togT(el){el.classList.toggle('done');el.querySelector('.tchk').textContent=el.classList.contains('done')?'✓':''}
-function addTask(){const inp=document.getElementById('newTask'),v=inp.value.trim();if(!v)return;const d=document.createElement('div');d.className='task';d.onclick=function(){togT(this)};d.innerHTML=`<div class="tchk"></div><div><div style="font-size:10px;color:var(--w2)">${v}</div></div><span class="badge off-st" style="margin-left:auto">Manual</span>`;document.getElementById('todayTasks').appendChild(d);inp.value=''}
-
-// ── LOG DIÁRIO ────────────────────────────────────────────
-function addLog(){
-  const n=document.getElementById('dNotes').value.trim();if(!n)return;
-  const types={Observação:'var(--g)','Rega / Nutrição':'var(--b)','LST / Técnica':'var(--w2)',Problema:'var(--a)','Mudança de fase':'var(--g)','Aplicação de produto':'var(--a)'};
-  const tp=document.getElementById('dType').value;
-  const t=liveTemp?.toFixed(1)||'—',h=liveHum?.toFixed(1)||'—';
-  const e=document.createElement('div');e.className='log-e';
-  e.innerHTML=`<div class="ld" style="background:${types[tp]||'var(--g)'}"></div><div><div style="font-size:10px;color:var(--w2)">Sem. ${document.getElementById('dW').value} · ${document.getElementById('dPh').value} — ${n}</div><div style="font-size:9px;color:var(--w3);margin-top:2px">${new Date().toLocaleTimeString('pt-BR')} · ${t}°C · ${h}%RH · pH ${document.getElementById('dPH').value||'—'}</div></div>`;
-  document.getElementById('logList').insertBefore(e,document.getElementById('logList').firstChild);
-  document.getElementById('dNotes').value='';toast('Entrada salva ✓');
-}
-
-// ── PLANTAS ───────────────────────────────────────────────
-let plants=[];let editPlantId=null;
-const stageInfo={semente:{label:'Germinação',color:'var(--b)',pct:5},seedling:{label:'Seedling',color:'var(--pu)',pct:12},veg:{label:'Vega',color:'var(--g)',pct:35},flor:{label:'Flora',color:'var(--a)',pct:65},flush:{label:'Flush',color:'#fb923c',pct:90},colheita:{label:'Colheita',color:'var(--r)',pct:100}};
-function daysSince(d){if(!d)return null;return Math.floor((Date.now()-new Date(d))/(864e5))}
-function fmtAge(d){if(d===null)return'—';if(d<7)return d+'d';return Math.floor(d/7)+'sem'}
-function harvestEst(p){if(!p.germDate||!p.floDays)return'—';const d=new Date(p.germDate);d.setDate(d.getDate()+parseInt(p.floDays)+21);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}
-function resetPlantForm(){editPlantId=null;document.getElementById('plantFormTitle').textContent='Nova planta';['pName','pStrain','pWeek','pPot','pFloDays','pNotes'].forEach(id=>document.getElementById(id).value='');document.getElementById('pGerm').valueAsDate=new Date();}
 function savePlant(){
-  const name=document.getElementById('pName').value.trim();if(!name)return;
-  const p={id:editPlantId||(Date.now()+''),name,strain:document.getElementById('pStrain').value.trim()||'Desconhecida',germDate:document.getElementById('pGerm').value,stage:document.getElementById('pStage').value,week:parseInt(document.getElementById('pWeek').value)||1,substrate:document.getElementById('pSub').value,pot:document.getElementById('pPot').value,floDays:document.getElementById('pFloDays').value,seedType:document.getElementById('pSeedType').value,notes:document.getElementById('pNotes').value.trim()};
-  if(editPlantId){const i=plants.findIndex(x=>x.id===editPlantId);if(i>=0)plants[i]=p;}else plants.unshift(p);
-  resetPlantForm();renderPlants();toast('Planta salva ✓');
+  const nameEl=document.getElementById('pName');
+  if(!nameEl){toast('Erro: campo nome não encontrado','err');return;}
+  const name=nameEl.value.trim();
+  if(!name){toast('Informe o nome da planta','err');return;}
+  const p={
+    id: editPlantId||(Date.now()+''),
+    name,
+    strain: (document.getElementById('pStrain')?.value||'').trim()||'Desconhecida',
+    germDate: document.getElementById('pGerm')?.value||new Date().toISOString().slice(0,10),
+    stage: document.getElementById('pStage')?.value||'veg',
+    week: parseInt(document.getElementById('pWeek')?.value)||1,
+    substrate: document.getElementById('pSub')?.value||'Terra',
+    notes: (document.getElementById('pNotes')?.value||'').trim()
+  };
+  if(editPlantId){
+    const i=plants.findIndex(x=>x.id===editPlantId);
+    if(i>=0) plants[i]=p; else plants.unshift(p);
+  } else {
+    plants.unshift(p);
+  }
+  resetPlantForm();
+  renderPlants();
+  saveState();
+  toast('Planta "'+p.name+'" salva ✓','ok');
 }
-function deletePlant(id){plants=plants.filter(p=>p.id!==id);renderPlants()}
+
+function deletePlant(id){
+  plants=plants.filter(p=>p.id!==id);
+  renderPlants();
+  saveState();
+  toast('Planta removida','ok');
+}
+
 function editPlant(id){
-  const p=plants.find(x=>x.id===id);if(!p)return;
-  editPlantId=id;document.getElementById('plantFormTitle').textContent='Editar planta';
-  document.getElementById('pName').value=p.name;document.getElementById('pStrain').value=p.strain;document.getElementById('pGerm').value=p.germDate;
-  document.getElementById('pStage').value=p.stage;document.getElementById('pWeek').value=p.week;document.getElementById('pSub').value=p.substrate;
-  document.getElementById('pPot').value=p.pot;document.getElementById('pFloDays').value=p.floDays;document.getElementById('pSeedType').value=p.seedType;document.getElementById('pNotes').value=p.notes;
-  // abre painel e scrolla pro form
-  if(!document.getElementById('editPanel').classList.contains('open'))togglePanel();
-  setTimeout(()=>{document.getElementById('plantFormTitle').scrollIntoView({behavior:'smooth',block:'start'});},350);
+  const p=plants.find(x=>x.id===id); if(!p)return;
+  editPlantId=id;
+  document.getElementById('plantFormTitle').textContent='Editar: '+p.name;
+  document.getElementById('pName').value=p.name;
+  document.getElementById('pStrain').value=p.strain;
+  document.getElementById('pGerm').value=p.germDate;
+  document.getElementById('pStage').value=p.stage;
+  document.getElementById('pWeek').value=p.week;
+  document.getElementById('pSub').value=p.substrate||'Terra';
+  document.getElementById('pNotes').value=p.notes||'';
+  document.getElementById('plantFormTitle').scrollIntoView({behavior:'smooth',block:'start'});
 }
-function advStage(id){const p=plants.find(x=>x.id===id);if(!p)return;const o=['semente','seedling','veg','flor','flush','colheita'];const i=o.indexOf(p.stage);if(i<o.length-1){p.stage=o[i+1];p.week=1;}renderPlants();}
-function buildPhaseline(p){
+
+function advStage(id){
+  const p=plants.find(x=>x.id===id); if(!p)return;
+  const order=['semente','seedling','veg','flor','flush','colheita'];
+  const i=order.indexOf(p.stage);
+  if(i<order.length-1){p.stage=order[i+1];p.week=1;}
+  renderPlants(); saveState();
+  toast('Estágio avançado ✓','ok');
+}
+
+function buildPhase(p){
   const phases=[{k:'semente',w:5},{k:'seedling',w:8},{k:'veg',w:30},{k:'flor',w:40},{k:'flush',w:10},{k:'colheita',w:7}];
-  const o=['semente','seedling','veg','flor','flush','colheita'];const cur=o.indexOf(p.stage);
-  return phases.map((ph,i)=>{const active=i===cur,done=i<cur;const bg=active?stageInfo[ph.k].color:done?'var(--g3)':'var(--bg5)';const col=active?'var(--bg)':done?'rgba(255,255,255,.5)':'var(--w4)';return`<div class="phase-seg" style="flex:${ph.w};background:${bg};color:${col}">${ph.k.slice(0,3)}</div>`}).join('');
+  const order=['semente','seedling','veg','flor','flush','colheita'];
+  const cur=order.indexOf(p.stage);
+  return phases.map((ph,i)=>{
+    const active=i===cur,done=i<cur;
+    const bg=active?stageInfo[ph.k].color:done?'var(--g3)':'var(--bg5)';
+    return`<div style="flex:${ph.w};background:${bg}"></div>`;
+  }).join('');
 }
+
 function renderPlants(){
-  const cols=['var(--g)','var(--a)','var(--b)','var(--pu)','#fb923c','#f472b6'];
-  document.getElementById('plantCountBadge').textContent=plants.length+' planta'+(plants.length!==1?'s':'');
-  document.getElementById('psTot').textContent=plants.length;
+  // Stats
+  const tot=plants.length;
+  document.getElementById('psTot').textContent=tot;
   document.getElementById('psVeg').textContent=plants.filter(p=>p.stage==='veg').length;
-  document.getElementById('psFlor').textContent=plants.filter(p=>p.stage==='flor'||p.stage==='flush').length;
+  document.getElementById('psFlor').textContent=plants.filter(p=>['flor','flush'].includes(p.stage)).length;
   document.getElementById('psStr').textContent=new Set(plants.map(p=>p.strain.toLowerCase())).size;
 
-  // Dashboard: lista resumida de plantas (ciclo de cultivo)
-  const cards=document.getElementById('plantCards'),empty=document.getElementById('plantEmpty');
-  if(!plants.length){cards.innerHTML='';empty.style.display='block';}
-  else{
-    empty.style.display='none';
-    cards.innerHTML=plants.map(p=>{
-      const age=daysSince(p.germDate);const si=stageInfo[p.stage]||{label:p.stage,color:'var(--w3)',pct:0};
-      const col=cols[Math.abs(parseInt(p.id.slice(-2),16)||0)%cols.length];
-      return`<div class="plant-card" style="margin-bottom:8px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          <div style="width:26px;height:26px;border-radius:8px;background:rgba(0,0,0,.3);border:1px solid ${col};color:${col};display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0">${p.name.slice(0,2).toUpperCase()}</div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:11px;font-weight:500">${p.name}</div>
-            <div style="font-size:9px;color:var(--w3);font-style:italic">${p.strain}</div>
+  // Dashboard card
+  const cards=document.getElementById('plantCards');
+  const empty=document.getElementById('plantEmpty');
+  if(!tot){
+    if(cards) cards.innerHTML='';
+    if(empty) empty.style.display='block';
+  } else {
+    if(empty) empty.style.display='none';
+    if(cards) cards.innerHTML=plants.map(p=>{
+      const age=daysSince(p.germDate);
+      const si=stageInfo[p.stage]||{label:p.stage,color:'var(--w3)',pct:0};
+      return`<div class="plant-item">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+          <div>
+            <div style="font-size:11px;font-weight:500;color:${si.color}">${p.name}</div>
+            <div style="font-size:9px;color:var(--w3)">${p.strain}</div>
           </div>
           <div style="text-align:right">
-            <div style="font-size:14px;font-weight:600;font-family:'IBM Plex Sans',sans-serif">${fmtAge(age)}</div>
-            <span style="font-size:8px;padding:2px 6px;border-radius:12px;color:${si.color};background:rgba(0,0,0,.4);border:1px solid ${si.color}40">${si.label}</span>
+            <div style="font-size:20px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;line-height:1">${age!==null?age:'—'}</div>
+            <div style="font-size:8px;color:var(--w3)">dias</div>
           </div>
         </div>
-        <div class="phase-tl">${buildPhaseline(p)}</div>
-        <div style="display:flex;justify-content:space-between;font-size:8px;margin-top:3px">
-          <span style="color:var(--w3)">Semana ${p.week} · ${p.substrate}</span>
-          <span style="color:var(--a)">↯ ${harvestEst(p)}</span>
-        </div>
+        <div style="display:inline-block;font-size:8px;padding:2px 7px;border-radius:10px;color:${si.color};background:rgba(0,0,0,.4);border:1px solid ${si.color}40;margin-bottom:5px">${si.label} · Sem ${p.week}</div>
+        <div class="phase-tl">${buildPhase(p)}</div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${si.pct}%;background:${si.color}"></div></div>
         <div style="display:flex;gap:5px;margin-top:8px">
-          <button class="btn" onclick="advStage('${p.id}')" style="flex:1;font-size:8px;padding:5px 8px">Próx. estágio</button>
-          <button class="btn btn-g" onclick="editPlant('${p.id}')" style="font-size:8px;padding:5px 8px">✎</button>
-          <button class="btn btn-r" onclick="deletePlant('${p.id}')" style="font-size:8px;padding:5px 8px">✕</button>
+          <button class="btn" onclick="advStage('${p.id}')" style="flex:1;font-size:8px;padding:4px 6px">Próx. fase</button>
+          <button class="btn btn-g" onclick="editPlant('${p.id}');openPanel()" style="font-size:8px;padding:4px 8px">✎</button>
+          <button class="btn btn-r" onclick="deletePlant('${p.id}')" style="font-size:8px;padding:4px 8px">✕</button>
         </div>
       </div>`;
     }).join('');
   }
 
-  // Painel: lista de plantas para edição
+  // Panel list
   const panelList=document.getElementById('panelPlantList');
-  panelList.innerHTML=plants.length?'<div class="fl" style="margin-bottom:6px">Plantas cadastradas</div>'+plants.map(p=>{
-    const age=daysSince(p.germDate);const si=stageInfo[p.stage]||{label:p.stage,color:'var(--w3)',pct:0};
-    return`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr)">
-      <div style="flex:1;min-width:0"><div style="font-size:10px;font-weight:500">${p.name} <span style="font-weight:400;color:var(--w3);font-style:italic">${p.strain}</span></div>
-      <div style="font-size:9px;color:var(--w3);">${si.label} · Sem ${p.week} · ${fmtAge(age)}</div></div>
-      <button class="btn btn-g" onclick="editPlant('${p.id}')" style="font-size:8px;padding:4px 8px">✎</button>
-      <button class="btn btn-r" onclick="deletePlant('${p.id}')" style="font-size:8px;padding:4px 8px">✕</button>
-    </div>`;
-  }).join(''):'';
-
-  // Resumo no card de plantas (row 3)
-  const summary=document.getElementById('plantSummaryList');
-  if(!plants.length){summary.innerHTML='<div style="font-size:10px;color:var(--w3);text-align:center;padding:20px 0">Sem plantas cadastradas.</div>';return;}
-  summary.innerHTML=`<div class="g4" style="gap:6px">
-    ${plants.map(p=>{
-      const age=daysSince(p.germDate);const si=stageInfo[p.stage]||{label:p.stage,color:'var(--w3)',pct:0};
-      const cols2=['var(--g)','var(--a)','var(--b)','var(--pu)','#fb923c','#f472b6'];
-      const col=cols2[Math.abs(parseInt(p.id.slice(-2),16)||0)%cols2.length];
-      return`<div class="sm" style="cursor:pointer" onclick="editPlant('${p.id}')">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
-          <div style="width:20px;height:20px;border-radius:6px;background:rgba(0,0,0,.3);border:1px solid ${col};color:${col};display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600">${p.name.slice(0,2).toUpperCase()}</div>
-          <div><div style="font-size:10px;font-weight:500">${p.name}</div><div style="font-size:8px;color:var(--w3)">${p.strain}</div></div>
+  if(panelList){
+    panelList.innerHTML=tot?'<div class="fl" style="margin-bottom:6px;margin-top:4px">Cadastradas</div>'+plants.map(p=>{
+      const age=daysSince(p.germDate);
+      const si=stageInfo[p.stage]||{label:p.stage,color:'var(--w3)',pct:0};
+      return`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:10px;font-weight:500">${p.name} <span style="color:var(--w3);font-weight:400;font-style:italic">${p.strain}</span></div>
+          <div style="font-size:9px;color:${si.color}">${si.label} · Sem ${p.week} · ${fmtAge(age)}</div>
         </div>
-        <div style="font-size:8px;padding:2px 6px;border-radius:10px;color:${si.color};background:rgba(0,0,0,.4);display:inline-block;margin-bottom:4px">${si.label} · Sem ${p.week}</div>
-        <div class="prog-bar"><div class="prog-fill" style="width:${si.pct}%;background:${si.color}"></div></div>
-        <div style="font-size:8px;color:var(--w3);margin-top:3px">Colheita: ${harvestEst(p)}</div>
+        <button class="btn btn-g" onclick="editPlant('${p.id}')" style="font-size:8px;padding:4px 8px">✎</button>
+        <button class="btn btn-r" onclick="deletePlant('${p.id}')" style="font-size:8px;padding:4px 8px">✕</button>
       </div>`;
-    }).join('')}
-  </div>`;
+    }).join(''):'';
+  }
 }
 
-// ── CLOCK ─────────────────────────────────────────────────
-function clock(){document.getElementById('liveClock').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});updLight();}
+// ── LOG DIÁRIO ──────────────────────────────────────────────────────────────
+function addLog(){
+  const n=document.getElementById('dNotes')?.value.trim(); if(!n)return;
+  const types={Observação:'var(--g)',Rega:'var(--b)','LST / Técnica':'var(--w2)',Problema:'var(--a)','Mudança de fase':'var(--g)'};
+  const tp=document.getElementById('dType')?.value||'Observação';
+  const e=document.createElement('div'); e.className='log-e';
+  e.innerHTML=`<div class="ld" style="background:${types[tp]||'var(--g)'}"></div><div><div style="font-size:10px;color:var(--w2)">Sem. ${document.getElementById('dW')?.value||1} · ${document.getElementById('dPh')?.value} — ${n}</div><div style="font-size:9px;color:var(--w3);margin-top:2px">${new Date().toLocaleTimeString('pt-BR')} · ${liveTemp?.toFixed(1)||'—'}°C · ${liveHum?.toFixed(1)||'—'}%</div></div>`;
+  const list=document.getElementById('logList');
+  if(list){list.insertBefore(e,list.firstChild);}
+  document.getElementById('dNotes').value='';
+  toast('Entrada salva ✓','ok');
+}
 
-// ── STATE ─────────────────────────────────────────────────
+// ── CLOCK ───────────────────────────────────────────────────────────────────
+function clock(){
+  document.getElementById('liveClock').textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  updLight();
+}
+
+// ── STATE ───────────────────────────────────────────────────────────────────
 function saveState(){
-  try{localStorage.setItem('growos_v4',JSON.stringify({
-    lOn:document.getElementById('lOn').value,lOff:document.getElementById('lOff').value,
-    plants,
-    logHTML:document.getElementById('logList').innerHTML,
-    aCfgMin:document.getElementById('aCfgMin').value,aCfgMax:document.getElementById('aCfgMax').value,
-    aCfgNightStart:document.getElementById('aCfgNightStart').value,
-    aCfgNightEnd:document.getElementById('aCfgNightEnd').value,
-    aCfgNightMax:document.getElementById('aCfgNightMax').value,
-  }));}catch(e){}
-}
-function loadState(){
   try{
-    const s=JSON.parse(localStorage.getItem('growos_v4')||'{}');
-    if(s.lOn)document.getElementById('lOn').value=s.lOn;
-    if(s.lOff)document.getElementById('lOff').value=s.lOff;
-
-    if(s.plants&&s.plants.length)plants=s.plants;
-    if(s.logHTML)document.getElementById('logList').innerHTML=s.logHTML;
-    if(s.aCfgMin)document.getElementById('aCfgMin').value=s.aCfgMin;
-    if(s.aCfgMax)document.getElementById('aCfgMax').value=s.aCfgMax;
-    if(s.aCfgNightStart)document.getElementById('aCfgNightStart').value=s.aCfgNightStart;
-    if(s.aCfgNightEnd)document.getElementById('aCfgNightEnd').value=s.aCfgNightEnd;
-    if(s.aCfgNightMax)document.getElementById('aCfgNightMax').value=s.aCfgNightMax;
+    localStorage.setItem('growos_v5',JSON.stringify({
+      lOn:document.getElementById('lOn')?.value||'06:00',
+      lOff:document.getElementById('lOff')?.value||'00:00',
+      plants,
+      aCfgMin:document.getElementById('aCfgMin')?.value,
+      aCfgMax:document.getElementById('aCfgMax')?.value,
+      aCfgNightStart:document.getElementById('aCfgNightStart')?.value,
+      aCfgNightEnd:document.getElementById('aCfgNightEnd')?.value,
+      aCfgNightMax:document.getElementById('aCfgNightMax')?.value,
+    }));
   }catch(e){}
 }
-function initDemoPlants(){
-  if(!plants.length){plants=[
-    {id:'demo1',name:'Planta A',strain:'White Widow',germDate:new Date(Date.now()-35*864e5).toISOString().slice(0,10),stage:'veg',week:5,substrate:'Terra',pot:'20',floDays:'63',seedType:'Feminizada',notes:'LST iniciado na semana 3.'},
-    {id:'demo2',name:'Planta B',strain:'OG Kush',germDate:new Date(Date.now()-56*864e5).toISOString().slice(0,10),stage:'flor',week:3,substrate:'Coco',pot:'15',floDays:'56',seedType:'Feminizada',notes:''}
-  ];}
+
+function loadState(){
+  try{
+    const s=JSON.parse(localStorage.getItem('growos_v5')||'{}');
+    if(s.lOn){const el=document.getElementById('lOn');if(el)el.value=s.lOn;}
+    if(s.lOff){const el=document.getElementById('lOff');if(el)el.value=s.lOff;}
+    if(s.plants&&s.plants.length) plants=s.plants;
+    if(s.aCfgMin){const el=document.getElementById('aCfgMin');if(el)el.value=s.aCfgMin;}
+    if(s.aCfgMax){const el=document.getElementById('aCfgMax');if(el)el.value=s.aCfgMax;}
+    if(s.aCfgNightStart){const el=document.getElementById('aCfgNightStart');if(el)el.value=s.aCfgNightStart;}
+    if(s.aCfgNightEnd){const el=document.getElementById('aCfgNightEnd');if(el)el.value=s.aCfgNightEnd;}
+    if(s.aCfgNightMax){const el=document.getElementById('aCfgNightMax');if(el)el.value=s.aCfgNightMax;}
+  }catch(e){}
+}
+
+// ── AUTO LOG TOGGLE ─────────────────────────────────────────────────────────
+function toggleAutoLog(){
+  document.getElementById('autoLogOverlay').classList.toggle('open');
 }
 </script>
 
 <!-- VPD AUTOMATION ENGINE -->
 <script>
-let autoRunning=false,autoTries=0,autoState='idle';
-let autoWaitTimer=null,autoCountdownTimer=null,autoCountdownTotal=0,autoCountdownLeft=0;
+let autoRunning=false, autoTries=0, autoState='idle';
+let autoWaitTimer=null, autoCountdownTimer=null;
+let autoCountdownTotal=0, autoCountdownLeft=0;
 
 const autoCfg=()=>({
-  vpdMin:  parseFloat(document.getElementById('aCfgMin')?.value||'0.8'),
-  vpdMax:  parseFloat(document.getElementById('aCfgMax')?.value||'1.2'),
-  waitAdj: parseInt(document.getElementById('aCfgWaitAdj')?.value||'600'),
-  waitChk1:parseInt(document.getElementById('aCfgChk1')?.value||'1200'),
-  waitChk2:parseInt(document.getElementById('aCfgChk2')?.value||'2400'),
-  maxTries:parseInt(document.getElementById('aCfgMaxTries')?.value||'3'),
-  turboRH: parseFloat(document.getElementById('aCfgTurboRH')?.value||'75'),
+  vpdMin:   parseFloat(document.getElementById('aCfgMin')?.value||'0.8'),
+  vpdMax:   parseFloat(document.getElementById('aCfgMax')?.value||'1.2'),
+  waitAdj:  parseInt(document.getElementById('aCfgWaitAdj')?.value||'600'),
+  waitChk1: parseInt(document.getElementById('aCfgChk1')?.value||'1200'),
+  waitChk2: parseInt(document.getElementById('aCfgChk2')?.value||'2400'),
+  maxTries: parseInt(document.getElementById('aCfgMaxTries')?.value||'3'),
+  turboRH:  parseFloat(document.getElementById('aCfgTurboRH')?.value||'75'),
   nightStart:document.getElementById('aCfgNightStart')?.value||'00:00',
   nightEnd:  document.getElementById('aCfgNightEnd')?.value||'06:00',
   nightMax:  parseFloat(document.getElementById('aCfgNightMax')?.value||'1.0'),
   sensorInt: parseInt(document.getElementById('aCfgSensorInt')?.value||'60'),
 });
 
-function autoUpdPhase(){const p=document.getElementById('aCfgPhase').value;const ranges={veg:[0.8,1.2],flor:[1.0,1.5],flush:[1.2,1.6]};if(p!=='custom'&&ranges[p]){document.getElementById('aCfgMin').value=ranges[p][0];document.getElementById('aCfgMax').value=ranges[p][1];}autoUpdOverlay()}
-function autoUpdOverlay(){const mn=parseFloat(document.getElementById('aCfgMin').value)||0.8,mx=parseFloat(document.getElementById('aCfgMax').value)||1.2;document.getElementById('aRangeOv').style.left=(mn/2*100)+'%';document.getElementById('aRangeOv').style.right=(100-mx/2*100)+'%';document.getElementById('aRangeMinL').textContent=mn.toFixed(2);document.getElementById('aRangeMaxL').textContent=mx.toFixed(2);}
+function autoUpdPhase(){
+  const p=document.getElementById('aCfgPhase')?.value;
+  const ranges={veg:[0.8,1.2],flor:[1.0,1.5],flush:[1.2,1.6]};
+  if(p!=='custom'&&ranges[p]){
+    const mn=document.getElementById('aCfgMin'); if(mn) mn.value=ranges[p][0];
+    const mx=document.getElementById('aCfgMax'); if(mx) mx.value=ranges[p][1];
+  }
+  autoUpdOverlay();
+}
+function autoUpdOverlay(){
+  const mn=parseFloat(document.getElementById('aCfgMin')?.value||'0.8');
+  const mx=parseFloat(document.getElementById('aCfgMax')?.value||'1.2');
+  const ov=document.getElementById('aRangeOv');
+  if(ov){ov.style.left=(mn/2*100)+'%';ov.style.right=(100-mx/2*100)+'%';}
+  const mnL=document.getElementById('aRangeMinL'); if(mnL) mnL.textContent=mn.toFixed(2);
+  const mxL=document.getElementById('aRangeMaxL'); if(mxL) mxL.textContent=mx.toFixed(2);
+}
 
-function autoIsNight(){const c=autoCfg();const now=new Date(),cur=now.getHours()*60+now.getMinutes();const[sh,sm]=c.nightStart.split(':').map(Number),[eh,em]=c.nightEnd.split(':').map(Number);const s=sh*60+sm,e=eh*60+em;return s>e?cur>=s||cur<e:cur>=s&&cur<e;}
-function autoEffMax(){const c=autoCfg();return autoIsNight()?Math.min(c.vpdMax,c.nightMax):c.vpdMax}
+function autoIsNight(){
+  const c=autoCfg();
+  const now=new Date(), cur=now.getHours()*60+now.getMinutes();
+  const[sh,sm]=c.nightStart.split(':').map(Number);
+  const[eh,em]=c.nightEnd.split(':').map(Number);
+  const s=sh*60+sm, e=eh*60+em;
+  return s>e?cur>=s||cur<e:cur>=s&&cur<e;
+}
+function autoEffMax(){const c=autoCfg();return autoIsNight()?Math.min(c.vpdMax,c.nightMax):c.vpdMax;}
 
 function toggleAutoEngine(){
   if(autoRunning){
-    autoRunning=false;clearTimeout(autoWaitTimer);clearInterval(autoCountdownTimer);
+    autoRunning=false;
+    clearTimeout(autoWaitTimer);clearInterval(autoCountdownTimer);
     autoWaitTimer=null;autoCountdownTimer=null;
-    setAutoUI(false);autoLog('Automação pausada pelo usuário','warn');
-  }else{
-    autoRunning=true;autoTries=0;setAutoUI(true);
-    autoLog('Automação iniciada — Inkbird IBS-TH3 via Tuya','ok');autoRunCycle();
+    setAutoUI(false);
+    autoLog('Automação pausada pelo usuário','warn');
+  } else {
+    autoRunning=true;autoTries=0;
+    setAutoUI(true);
+    autoLog('Automação iniciada — Inkbird IBS-TH3 via Tuya','ok');
+    autoRunCycle();
   }
 }
 
 async function autoRunCycle(){
   if(!autoRunning)return;
-  autoSetState('reading');autoLogStep('s0','running','Buscando dados do Inkbird...');
+  autoSetState('reading');
+  autoLogStep('s0','running','Lendo sensor Inkbird...');
   try{
-    const res=await fetch(WORKER+'/sensor');const d=await res.json();
-    if(!d.ok)throw new Error(d.error||'Worker falhou');
-    liveTemp=d.temp;liveHum=d.humidity;liveVPD=d.vpd;
-    updHubTiles(d.temp,d.humidity,d.vpd);pushChartData(d.temp,d.humidity);
+    const res=await fetch(WORKER+'/sensor');
+    const d=await res.json();
+    if(!d.ok) throw new Error(d.error||'Falhou');
+    liveTemp=d.temp; liveHum=d.humidity; liveVPD=d.vpd;
+    updHubTiles(d.temp,d.humidity,d.vpd);
     document.getElementById('liveDot').className='dot on';
     document.getElementById('lastRead').textContent='↺ '+new Date().toLocaleTimeString('pt-BR');
     autoLogStep('s0','done','T='+d.temp+'°C · UR='+d.humidity+'% · VPD='+d.vpd+' kPa');
-    autoLog('📡 T='+d.temp+'°C UR='+d.humidity+'% VPD='+d.vpd+(autoIsNight()?' 🌙':''),'info');
+    autoLog('📡 Leitura: T='+d.temp+'°C UR='+d.humidity+'% VPD='+d.vpd+(autoIsNight()?' 🌙':''),'info');
     await autoAnalyze(d.temp,d.humidity,d.vpd);
   }catch(e){
-    autoLogStep('s0','error',e.message);autoLog('❌ Erro: '+e.message,'err');autoScheduleNext(60);
+    autoLogStep('s0','error','Erro: '+e.message);
+    autoLog('❌ Erro leitura sensor: '+e.message,'err');
+    autoScheduleNext(60);
   }
 }
 
 async function autoAnalyze(temp,hum,vpd){
   if(!autoRunning)return;
-  const c=autoCfg();const mn=c.vpdMin,mx=autoEffMax(),night=autoIsNight();
-  autoSetState('analyzing');autoLogStep('s1','running','VPD='+vpd+' · '+mn+'–'+mx+(night?' [noite]':''));
+  const c=autoCfg();
+  const mn=c.vpdMin, mx=autoEffMax(), night=autoIsNight();
+  autoSetState('analyzing');
+  autoLogStep('s1','running','VPD='+vpd+' · Range='+mn+'–'+mx+(night?' [noite]':''));
   await new Promise(r=>setTimeout(r,600));
   if(vpd>=mn&&vpd<=mx){
-    autoLogStep('s1','done','VPD '+vpd+' OK ✓');autoLog('✅ VPD OK'+(night?' — perfil noturno':''),'ok');
-    autoTries=0;updAutoTries();autoDoOKConfirm();
-  }else if(vpd>mx){
-    autoLogStep('s1','active','VPD '+vpd+' > '+mx+' → temp_down');autoLog('🌡 VPD alto → temp_down','warn');
+    autoLogStep('s1','done','VPD OK ✓ ('+mn+'–'+mx+')');
+    autoLog('✅ VPD dentro do range'+(night?' — perfil noturno':''),'ok');
+    autoTries=0; updAutoTries();
+    autoDoOKConfirm();
+  } else if(vpd>mx){
+    autoLogStep('s1','active','VPD alto → temp_down');
+    autoLog('🌡 VPD '+vpd+' > '+mx+' → enviando temp_down','warn');
     await autoDoAdjust('temp_down');
-  }else{
-    if(hum>=c.turboRH){autoLogStep('s1','active','UR '+hum+'% > '+c.turboRH+'% → Turbo');autoLog('💧 UR alta → turbo','warn');await autoDoAdjust('turbo');}
-    else{autoLogStep('s1','active','VPD '+vpd+' < '+mn+' → temp_up');autoLog('🌡 VPD baixo → temp_up','warn');await autoDoAdjust('temp_up');}
+  } else {
+    if(hum>=c.turboRH){
+      autoLogStep('s1','active','UR alta → turbo');
+      autoLog('💧 UR '+hum+'% > '+c.turboRH+'% → turbo','warn');
+      await autoDoAdjust('turbo');
+    } else {
+      autoLogStep('s1','active','VPD baixo → temp_up');
+      autoLog('🌡 VPD '+vpd+' < '+mn+' → enviando temp_up','warn');
+      await autoDoAdjust('temp_up');
+    }
   }
 }
 
 async function autoDoAdjust(cmd){
   if(!autoRunning)return;
   const c=autoCfg();
-  if(autoTries>=c.maxTries){autoLog('⚠ Máx tentativas — monitorando','warn');autoTries=0;updAutoTries();autoDoOKConfirm();return;}
-  autoTries++;updAutoTries();autoSetState('adjusting');autoLogStep('s2','running','IR → '+cmd.toUpperCase()+' ('+autoTries+'/'+c.maxTries+')');
+  if(autoTries>=c.maxTries){
+    autoLog('⚠ Máx tentativas ('+c.maxTries+') atingidas — monitorando','warn');
+    autoTries=0; updAutoTries(); autoDoOKConfirm(); return;
+  }
+  autoTries++; updAutoTries();
+  autoSetState('adjusting');
+  autoLogStep('s2','running','Enviando IR → '+cmd.toUpperCase()+' ('+autoTries+'/'+c.maxTries+')');
+  // Update IR status in auto card
+  const irTxt=document.getElementById('autoIRStatusTxt');
+  if(irTxt){irTxt.textContent='Enviando '+cmd.toUpperCase()+'...';irTxt.style.color='var(--a)';}
   try{
     const res=await fetch(WORKER+'/ir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command:cmd})});
     const d=await res.json();
     if(d.ok){
-      autoLogStep('s2','done',cmd.toUpperCase()+' ✓');autoLog('📡 IR → '+cmd.toUpperCase()+' — tentativa '+autoTries+'/'+c.maxTries,'ok');
-      addIRLog(cmd,'ok','Auto: '+cmd+' T'+autoTries);
-      if(document.getElementById('lastCmdDisplay'))document.getElementById('lastCmdDisplay').textContent=cmd.toUpperCase()+' '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
-      await autoWait(c.waitAdj,'Estabilizando — '+Math.round(c.waitAdj/60)+'min','var(--a)','s3');
+      autoLogStep('s2','done','IR '+cmd.toUpperCase()+' recebido ✓ ('+autoTries+'/'+c.maxTries+')');
+      autoLog('📡 IR → '+cmd.toUpperCase()+' enviado e confirmado ✓','ok');
+      if(irTxt){irTxt.textContent='✓ '+cmd.toUpperCase()+' confirmado às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});irTxt.style.color='var(--g)';}
+      const lcd=document.getElementById('lastCmdDisplay');
+      if(lcd) lcd.textContent=cmd.toUpperCase()+' '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+      addIRLog(cmd,'ok','Auto: confirmado ✓');
+      await autoWait(c.waitAdj,'Aguardando estabilização ('+Math.round(c.waitAdj/60)+'min)','var(--a)','s3');
       await autoRunCycle();
-    }else{autoLogStep('s2','error','Falha');autoLog('❌ Falha IR: '+JSON.stringify(d.response),'err');autoScheduleNext(60);}
-  }catch(e){autoLogStep('s2','error',e.message);autoLog('❌ Erro IR: '+e.message,'err');autoScheduleNext(60);}
+    } else {
+      const reason=d.response?JSON.stringify(d.response).slice(0,80):'Sem resposta';
+      autoLogStep('s2','error','IR falhou: '+reason);
+      autoLog('❌ IR → '+cmd.toUpperCase()+' FALHOU: '+reason,'err');
+      if(irTxt){irTxt.textContent='✗ Falha: '+reason;irTxt.style.color='var(--r)';}
+      autoScheduleNext(60);
+    }
+  }catch(e){
+    autoLogStep('s2','error','Erro rede: '+e.message);
+    autoLog('❌ Erro ao enviar IR: '+e.message,'err');
+    if(irTxt){irTxt.textContent='✗ Erro: '+e.message;irTxt.style.color='var(--r)';}
+    autoScheduleNext(60);
+  }
 }
 
 function autoDoOKConfirm(){
   if(!autoRunning)return;
-  const c=autoCfg();autoSetState('ok_check');autoLogStep('s4','running','Confirmação 1ª '+Math.round(c.waitChk1/60)+'min');
-  autoLog('🔍 Estável — confirmação em '+Math.round(c.waitChk1/60)+'min','ok');
-  autoWait(c.waitChk1,'Confirmação 1ª','var(--b)','s4').then(async()=>{
+  const c=autoCfg();
+  autoSetState('ok_check');
+  autoLogStep('s4','running','Confirmação 1ª em '+Math.round(c.waitChk1/60)+'min');
+  autoLog('🔍 VPD estável — confirmação 1ª em '+Math.round(c.waitChk1/60)+'min, 2ª em '+Math.round(c.waitChk2/60)+'min','ok');
+  autoWait(c.waitChk1,'Confirmação 1ª ('+Math.round(c.waitChk1/60)+'min)','var(--b)','s4').then(async()=>{
     if(!autoRunning)return;
+    autoLog('🔍 Verificando confirmação 1ª...','info');
     const res=await fetch(WORKER+'/sensor').then(r=>r.json()).catch(()=>null);
     if(res&&res.ok){
-      liveTemp=res.temp;liveHum=res.humidity;liveVPD=res.vpd;updHubTiles(res.temp,res.humidity,res.vpd);pushChartData(res.temp,res.humidity);
-      autoLog('📡 Confirm. 1ª: VPD='+res.vpd,'info');
+      liveTemp=res.temp;liveHum=res.humidity;liveVPD=res.vpd;
+      updHubTiles(res.temp,res.humidity,res.vpd);
+      autoLog('📡 Confirm. 1ª: VPD='+res.vpd+' T='+res.temp+'°C UR='+res.humidity+'%','info');
       if(res.vpd>=autoCfg().vpdMin&&res.vpd<=autoEffMax()){
-        autoLog('✅ VPD OK — confirm. 2ª em '+Math.round(c.waitChk2/60)+'min','ok');
-        await autoWait(c.waitChk2,'Confirmação 2ª','var(--b)','s4');
-        if(autoRunning){autoLog('🔍 Confirm. 2ª...','info');await autoRunCycle();}
-      }else{autoLog('⚠ VPD saiu do range — novo ciclo','warn');await autoRunCycle();}
-    }else{autoScheduleNext(60);}
+        autoLog('✅ VPD ainda OK — confirmação 2ª em '+Math.round(c.waitChk2/60)+'min','ok');
+        await autoWait(c.waitChk2,'Confirmação 2ª ('+Math.round(c.waitChk2/60)+'min)','var(--b)','s4');
+        if(autoRunning){
+          autoLog('🔍 Verificação final...','info');
+          await autoRunCycle();
+        }
+      } else {
+        autoLog('⚠ VPD saiu do range — novo ciclo de ajuste','warn');
+        await autoRunCycle();
+      }
+    } else {
+      autoLog('❌ Falha ao ler sensor na confirmação','err');
+      autoScheduleNext(60);
+    }
   });
 }
 
 function autoWait(secs,label,color,stepId){
   return new Promise(resolve=>{
     if(!autoRunning){resolve();return;}
-    autoSetState('waiting');autoCountdownTotal=secs;autoCountdownLeft=secs;
+    autoSetState('waiting');
+    autoCountdownTotal=secs; autoCountdownLeft=secs;
     const sid=stepId.replace('s','');
-    const bar=document.getElementById('aBars'+sid),fill=document.getElementById('aFills'+sid),timerEl=document.getElementById('aTimer');
+    const bar=document.getElementById('aBars'+sid);
+    const fill=document.getElementById('aFills'+sid);
+    const timerEl=document.getElementById('aTimer');
     if(bar){bar.style.display='block';if(fill){fill.style.width='0%';fill.style.background=color;}}
     autoLogStep(stepId,'running',label);
-    if(timerEl)timerEl.textContent=autoFmt(secs);
-    if(document.getElementById('aNextRead'))document.getElementById('aNextRead').textContent=autoFmt(secs);
+    if(timerEl) timerEl.textContent=autoFmt(secs);
+    const nextEl=document.getElementById('aNextRead'); if(nextEl) nextEl.textContent=autoFmt(secs);
     autoCountdownTimer=setInterval(()=>{
       if(!autoRunning){clearInterval(autoCountdownTimer);resolve();return;}
-      autoCountdownLeft--;const pct=(autoCountdownTotal-autoCountdownLeft)/autoCountdownTotal*100;
-      if(fill)fill.style.width=pct.toFixed(1)+'%';
-      if(timerEl)timerEl.textContent=autoFmt(autoCountdownLeft);
-      if(document.getElementById('aNextRead'))document.getElementById('aNextRead').textContent=autoFmt(autoCountdownLeft);
-      if(autoCountdownLeft<=0){clearInterval(autoCountdownTimer);if(bar)bar.style.display='none';autoLogStep(stepId,'done',label+' ✓');resolve();}
+      autoCountdownLeft--;
+      const pct=(autoCountdownTotal-autoCountdownLeft)/autoCountdownTotal*100;
+      if(fill) fill.style.width=pct.toFixed(1)+'%';
+      if(timerEl) timerEl.textContent=autoFmt(autoCountdownLeft);
+      const nEl=document.getElementById('aNextRead'); if(nEl) nEl.textContent=autoFmt(autoCountdownLeft);
+      if(autoCountdownLeft<=0){
+        clearInterval(autoCountdownTimer);
+        if(bar) bar.style.display='none';
+        autoLogStep(stepId,'done',label+' ✓');
+        resolve();
+      }
     },1000);
   });
 }
 
-function autoScheduleNext(secs){if(document.getElementById('aNextRead'))document.getElementById('aNextRead').textContent=autoFmt(secs);autoWaitTimer=setTimeout(()=>{if(autoRunning)autoRunCycle();},secs*1000);}
-function autoFmt(s){if(s<=0)return'0:00';return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
-function autoSetState(s){autoState=s;const el=document.getElementById('aStateBadge');if(!el)return;const lbs={idle:'IDLE',reading:'LENDO',analyzing:'ANALISANDO',adjusting:'AJUSTANDO',waiting:'AGUARDANDO',ok_check:'CONFIRMANDO'};const cls={idle:'off-st',reading:'info',analyzing:'info',adjusting:'warn',waiting:'warn',ok_check:'ok'};el.textContent=lbs[s]||s.toUpperCase();el.className='badge '+(cls[s]||'off-st');}
+function autoScheduleNext(secs){
+  const nEl=document.getElementById('aNextRead'); if(nEl) nEl.textContent=autoFmt(secs);
+  autoWaitTimer=setTimeout(()=>{if(autoRunning)autoRunCycle();},secs*1000);
+}
+function autoFmt(s){if(s<=0)return'0:00';return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+
+function autoSetState(s){
+  autoState=s;
+}
+
 function autoLogStep(id,status,desc){
-  const sid=id.replace('s','');const el=document.getElementById('aSteps'+sid);if(!el)return;
-  const cls={running:'running',done:'done',error:'error',active:'active'};el.className='sm-step '+(cls[status]||'');
-  const b=document.getElementById('aBadges'+sid);if(b){const bc={running:'warn',done:'ok',error:'danger',active:'warn'};b.className='badge '+(bc[status]||'off-st');b.textContent=status==='running'?'...':status==='done'?'OK':status==='error'?'ERRO':status==='active'?'AÇÃO':'—';}
-  const d=document.getElementById('aDescs'+sid);if(d&&desc)d.textContent=desc;
+  const sid=id.replace('s','');
+  const el=document.getElementById('aSteps'+sid); if(!el)return;
+  el.className='sm-step '+(status==='running'?'running':status==='done'?'done':status==='error'?'error':status==='active'?'active':'');
+  const b=document.getElementById('aBadges'+sid);
+  if(b){
+    const bc={running:'warn',done:'ok',error:'danger',active:'warn'};
+    b.className='badge '+(bc[status]||'off-st');
+    b.textContent=status==='running'?'...':status==='done'?'OK':status==='error'?'ERRO':status==='active'?'AÇÃO':'—';
+  }
+  const d=document.getElementById('aDescs'+sid); if(d&&desc) d.textContent=desc;
 }
-function updAutoTries(){const el=document.getElementById('aTriesDisplay');if(!el)return;const mx=autoCfg().maxTries;el.textContent=autoTries+'/'+mx;el.style.color=autoTries>=mx?'var(--r)':autoTries>0?'var(--a)':'var(--w)';}
+
+function updAutoTries(){
+  const el=document.getElementById('aTriesDisplay'); if(!el)return;
+  const mx=autoCfg().maxTries;
+  el.textContent=autoTries+'/'+mx;
+  el.style.color=autoTries>=mx?'var(--r)':autoTries>0?'var(--a)':'var(--w)';
+}
+
 function autoLog(msg,type){
-  const list=document.getElementById('autoEngineLog');if(!list)return;
-  const empty=list.querySelector('[data-empty]');if(empty)empty.remove();
+  // Full log overlay
+  const list=document.getElementById('autoEngineLog'); if(!list)return;
+  const empty=list.querySelector('[data-empty]'); if(empty)empty.remove();
   const colors={ok:'var(--g)',warn:'var(--a)',err:'var(--r)',info:'var(--b)'};
-  const d=document.createElement('div');d.className='log-e';
-  d.innerHTML=`<div class="ld" style="background:${colors[type]||'var(--g)'}"></div><div style="flex:1"><div style="font-size:9px;color:${colors[type]||'var(--g)'};">${msg}</div><div style="font-size:8px;color:var(--w4)">${new Date().toLocaleTimeString('pt-BR')}</div></div>`;
-  list.insertBefore(d,list.firstChild);if(list.children.length>40)list.removeChild(list.lastChild);
+  const d=document.createElement('div'); d.className='log-e';
+  d.innerHTML=`<div class="ld" style="background:${colors[type]||'var(--g)'}"></div><div style="flex:1"><div style="font-size:9px;color:${colors[type]||'var(--g)'};line-height:1.4">${msg}</div><div style="font-size:8px;color:var(--w4);margin-top:1px">${new Date().toLocaleTimeString('pt-BR')}</div></div>`;
+  list.insertBefore(d,list.firstChild);
+  if(list.children.length>60) list.removeChild(list.lastChild);
+  // Inline log (last 3)
+  const inline=document.getElementById('autoLogInline'); if(!inline)return;
+  const d2=document.createElement('div');
+  d2.style.cssText='display:flex;gap:6px;padding:4px 0;border-bottom:1px solid var(--bdr);';
+  d2.innerHTML=`<div style="width:5px;height:5px;border-radius:50%;background:${colors[type]||'var(--g)'};flex-shrink:0;margin-top:4px"></div><div style="flex:1;font-size:9px;color:${colors[type]||'var(--g)'};line-height:1.4">${msg}</div><div style="font-size:8px;color:var(--w4);white-space:nowrap">${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>`;
+  inline.insertBefore(d2,inline.firstChild);
+  while(inline.children.length>5) inline.removeChild(inline.lastChild);
 }
-function toggleAutoLog(){
-  const ov=document.getElementById('autoLogOverlay');
-  if(!ov)return;
-  ov.style.display=ov.style.display==='flex'?'none':'flex';
-}
+
 function setAutoUI(on){
-  const btn=document.getElementById('aMainBtn'),dot=document.getElementById('aDot'),st=document.getElementById('aMainStatus');
-  if(on){if(btn){btn.textContent='Parar';btn.className='btn btn-r';}if(dot){dot.style.background='var(--g)';dot.style.animation='blink 2s infinite';}if(st)st.textContent='Rodando';}
-  else{if(btn){btn.textContent='Ligar';btn.className='btn';}if(dot){dot.style.background='var(--w4)';dot.style.animation='none';}if(st)st.textContent='Desligado';autoSetState('idle');['0','1','2','3','4'].forEach(i=>{const el=document.getElementById('aSteps'+i);if(el)el.className='sm-step';const b=document.getElementById('aBadges'+i);if(b){b.className='badge off-st';b.textContent='—';}const bar=document.getElementById('aBars'+i);if(bar)bar.style.display='none';});}
+  const btn=document.getElementById('aMainBtn');
+  const dot=document.getElementById('aDot');
+  const st=document.getElementById('aMainStatus');
+  if(on){
+    if(btn){btn.textContent='Parar';btn.className='btn btn-r';}
+    if(dot){dot.style.background='var(--g)';dot.style.animation='blink 2s infinite';}
+    if(st) st.textContent='Rodando';
+  } else {
+    if(btn){btn.textContent='Ligar';btn.className='btn';}
+    if(dot){dot.style.background='var(--w4)';dot.style.animation='none';}
+    if(st) st.textContent='Desligado';
+    ['0','1','2','3','4'].forEach(i=>{
+      const el=document.getElementById('aSteps'+i); if(el) el.className='sm-step';
+      const b=document.getElementById('aBadges'+i); if(b){b.className='badge off-st';b.textContent='—';}
+      const bar=document.getElementById('aBars'+i); if(bar) bar.style.display='none';
+    });
+  }
 }
 </script>
 
 <script>
 // INIT
-loadState();updLight();updBlumat();autoUpdOverlay();
-initDemoPlants();renderPlants();clock();initCharts();
+loadState();
+autoUpdOverlay();
+renderPlants();
+clock();
 fetchSensor();
-setInterval(fetchSensor,60000);
-setInterval(clock,10000);
-setInterval(saveState,30000);
+setInterval(fetchSensor, 60000);
+setInterval(clock, 10000);
+setInterval(saveState, 30000);
 </script>
 </body>
 </html>
