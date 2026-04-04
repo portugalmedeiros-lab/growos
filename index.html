@@ -508,7 +508,7 @@ function toast(msg,type='ok'){const t=document.getElementById('toast');t.textCon
 
 // ── MINI CHARTS ───────────────────────────────────────────
 let chartTemp=null,chartHum=null;
-function initCharts(){
+function initCharts(){if(!document.getElementById('chartTemp'))return;
   const cfg=(id,color,label)=>{
     const ctx=document.getElementById(id).getContext('2d');
     return new Chart(ctx,{type:'line',data:{labels:[],datasets:[{data:[],borderColor:color,borderWidth:1.5,pointRadius:0,fill:true,backgroundColor:color.replace(')',',0.08)')}]},
@@ -548,18 +548,18 @@ function updHubTiles(t,h,v){
   else if(v<1.6){vc='var(--a)';vt='Floração OK';va='Considere reduzir umidade.'}
   else{vc='var(--r)';vt='VPD Alto — Stress';va='Aumente umidade imediatamente.'}
   document.getElementById('hVPD').style.color=vc;
-  const vb=document.getElementById('hVPDBadge');vb.className='badge '+(v>=0.8&&v<1.6?'ok':v>=1.6?'danger':'warn');vb.textContent=vt;
+  const vb=document.getElementById('hVPDBadge');if(vb){vb.className='badge '+(v>=0.8&&v<1.6?'ok':v>=1.6?'danger':'warn');vb.textContent=vt;}
   document.getElementById('vpdPin').style.left=(Math.min(v/2,1)*100)+'%';
   document.getElementById('vpdDiag').textContent=vt;document.getElementById('vpdDiag').style.color=vc;
   document.getElementById('vpdAdv').textContent=va;
   // Temp
   document.getElementById('hTemp').textContent=t.toFixed(1);
-  const tb=document.getElementById('hTempBadge');tb.className='tile-badge '+(t>28?'danger':t>26?'warn':'ok');tb.textContent=t>28?'↑ Alto':t>26?'↑ Atenção':'✓ Ideal';
-  document.getElementById('hTempAcc').style.background=t>28?'var(--r)':t>26?'var(--a)':'var(--g)';
+  const tb=document.getElementById('hTempBadge');tb.className='badge '+(t>28?'danger':t>26?'warn':'ok');tb.textContent=t>28?'↑ Alto':t>26?'↑ Atenção':'✓ Ideal';
+  const ta=document.getElementById('hTempAcc');if(ta)ta.style.background=t>28?'var(--r)':t>26?'var(--a)':'var(--g)';
   // Hum
   document.getElementById('hHum').textContent=h.toFixed(1);
-  const hb=document.getElementById('hHumBadge');hb.className='tile-badge '+(h>75||h<40?'warn':'ok');hb.textContent=h>75?'↑ Alta':h<40?'↓ Baixa':'✓ Ideal';
-  document.getElementById('hHumAcc').style.background=h>75?'var(--r)':h<40?'var(--a)':'var(--b)';
+  const hb=document.getElementById('hHumBadge');hb.className='badge '+(h>75||h<40?'warn':'ok');hb.textContent=h>75?'↑ Alta':h<40?'↓ Baixa':'✓ Ideal';
+  const ha=document.getElementById('hHumAcc');if(ha)ha.style.background=h>75?'var(--r)':h<40?'var(--a)':'var(--b)';
   // auto aba
   if(document.getElementById('aVPDLive')){document.getElementById('aVPDLive').textContent=v.toFixed(2);document.getElementById('aVPDLive').style.color=vc;}
   if(document.getElementById('aTempLive'))document.getElementById('aTempLive').textContent=t.toFixed(1);
