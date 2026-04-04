@@ -25,13 +25,8 @@
 }
 html,body{height:100%;background:var(--bg);color:var(--w);font-family:'IBM Plex Mono',monospace;font-size:12px;overflow-x:hidden}
 
-/* ── TOPBAR ── */
-nav{
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--bdr);background:var(--bg);
-  position:sticky;top:0;z-index:200;
-  padding:10px 14px;padding-top:calc(10px + var(--safe-top));
-}
+/* NAV */
+nav{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr);background:var(--bg);position:sticky;top:0;z-index:200;padding:10px 14px;padding-top:calc(10px + var(--safe-top))}
 .logo{font-family:'IBM Plex Sans',sans-serif;font-weight:600;font-size:14px;color:var(--g)}
 .logo em{color:var(--w3);font-style:normal;font-weight:400}
 .nav-right{display:flex;align-items:center;gap:8px}
@@ -40,231 +35,142 @@ nav{
 .dot.on{background:var(--g);animation:blink 2s infinite}
 .dot.err{background:var(--r)}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.btn-icon{width:32px;height:32px;border-radius:var(--rad);background:var(--bg3);border:1px solid var(--bdr2);color:var(--w3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s}
+.btn-icon:hover{background:var(--bdr2);color:var(--w)}
+.btn-icon.active{background:var(--gd);border-color:var(--g3);color:var(--g)}
 
-/* botão editar */
-.btn-edit{
-  width:32px;height:32px;border-radius:var(--rad);
-  background:var(--bg3);border:1px solid var(--bdr2);
-  color:var(--w3);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px;transition:all .15s;
-}
-.btn-edit:hover{background:var(--bdr2);color:var(--w)}
-.btn-edit.active{background:var(--gd);border-color:var(--g3);color:var(--g)}
-
-/* ── DASHBOARD GRID ── */
+/* GRID */
 #dashboard{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  grid-auto-rows:minmax(160px,auto);
-  gap:10px;
-  padding:12px;
+  grid-template-columns:220px 1fr 1fr 1fr;
+  grid-template-rows:repeat(2,minmax(200px,auto));
+  gap:10px;padding:12px;
   padding-bottom:calc(12px + var(--safe-bot));
-  max-width:1400px;
-  margin:0 auto;
+  max-width:1400px;margin:0 auto;
 }
-.card[]{grid-column:span 2;}
-.card[]{grid-column:span 3;}
-.card[]{grid-column:span 4;}
-.card[]{grid-row:span 2;}
-.card[] .clima-wrap{flex-direction:column!important;}
-.card[] .clima-wrap .dvdr{width:100%!important;height:1px!important;align-self:auto!important;}
-.card[] .clima-num{font-size:30px!important;}
-
-/* ── CARDS ── */
-.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad2);padding:14px;position:relative;overflow:hidden}
-.sm{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:11px}
-.sec{font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:var(--w3);margin-bottom:10px;display:flex;align-items:center;gap:5px}
-.sec::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--g);flex-shrink:0}
-
-/* ── TILE (métricas grandes) ── */
-.tile{border-radius:var(--rad2);padding:14px 12px;border:1px solid var(--bdr);background:var(--bg2);display:flex;flex-direction:column;gap:5px;position:relative;overflow:hidden}
-.tile-val{font-family:'IBM Plex Sans',sans-serif;font-size:28px;font-weight:600;line-height:1;letter-spacing:-0.5px}
-.tile-unit{font-size:10px;color:var(--w3)}
-.tile-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w3)}
-.tile-badge{font-size:9px;padding:2px 8px;border-radius:20px;display:inline-block;margin-top:2px;align-self:flex-start}
-.tile-accent{position:absolute;bottom:0;left:0;right:0;height:2px;transition:background .5s}
-
-/* ── BADGES ── */
-.badge{font-size:9px;padding:2px 8px;border-radius:20px;display:inline-block;white-space:nowrap}
-.ok{color:var(--g);background:var(--gd)}
-.warn{color:var(--a);background:var(--ad)}
-.info{color:var(--b);background:var(--bd)}
-.danger{color:var(--r);background:var(--rd)}
-.off-st{color:var(--w3);background:var(--bg4)}
-.purp{color:var(--pu);background:var(--pud)}
-
-/* ── VPD BAR ── */
-.vpd-bar{position:relative;height:14px;border-radius:7px;background:linear-gradient(to right,#1e3a8a 0%,#2563eb 15%,#15803d 30%,#4ade80 48%,#ca8a04 70%,#c2410c 85%,#dc2626 100%)}
-.vpd-pin{position:absolute;top:-5px;width:2px;height:24px;background:var(--w);border-radius:1px;transform:translateX(-50%);transition:left .8s ease}
-.vpd-pin::before{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--w);border:2px solid var(--bg)}
-.range-ov{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.12);border-left:2px solid rgba(255,255,255,.5);border-right:2px solid rgba(255,255,255,.5);pointer-events:none;transition:left .3s,right .3s}
-
-/* ── CONTROLES ── */
-.sw-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr)}
-.sw-row:last-child{border-bottom:none}
-.sw{position:relative;width:34px;height:19px;cursor:pointer;flex-shrink:0}
-.sw input{opacity:0;width:0;height:0}
-.sl{position:absolute;inset:0;background:var(--bg5);border:1px solid var(--bdr2);border-radius:10px;transition:.25s}
-.sl::before{content:'';position:absolute;width:13px;height:13px;left:2px;top:2px;background:var(--w3);border-radius:50%;transition:.25s}
-.sw input:checked+.sl{background:var(--gd);border-color:var(--g3)}
-.sw input:checked+.sl::before{transform:translateX(15px);background:var(--g)}
-input,select,textarea{background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rad);color:var(--w);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:7px 9px;outline:none;transition:border-color .15s;width:100%}
-input:focus,select:focus,textarea:focus{border-color:var(--g3)}
-select option{background:var(--bg3)}
-textarea{resize:vertical;min-height:60px}
-input[type=range]{-webkit-appearance:none;height:3px;border-radius:2px;background:var(--bdr2);padding:0}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--g);cursor:pointer}
-input[type=time]{color-scheme:dark}
-
-/* ── BOTÕES ── */
-.btn{background:var(--gd);border:1px solid var(--g3);color:var(--g);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.8px;padding:7px 12px;border-radius:var(--rad);cursor:pointer;transition:all .15s;text-transform:uppercase}
-.btn:hover{background:var(--g3);color:var(--bg)}
-.btn:active{transform:scale(.97)}
-.btn.on{background:var(--g3);color:var(--bg)}
-.btn-g{background:transparent;border:1px solid var(--bdr2);color:var(--w3)}
-.btn-g:hover{color:var(--w2);background:var(--bg3)}
-.btn-w{background:var(--ad);border:1px solid rgba(251,191,36,.25);color:var(--a)}
-.btn-r{background:var(--rd);border:1px solid rgba(248,113,113,.25);color:var(--r)}
-.btn-pu{background:var(--pud);border:1px solid rgba(192,132,252,.25);color:var(--pu)}
-
-/* ── GRIDS INTERNOS ── */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
-@media(max-width:380px){.g3,.g4{grid-template-columns:1fr}}
-
-/* ── PAINEL LATERAL EDITAR ── */
-#editPanel{
-  position:fixed;top:0;right:-420px;bottom:0;width:380px;max-width:100vw;
-  background:var(--bg2);border-left:1px solid var(--bdr2);
-  z-index:600;overflow-y:auto;
-  transition:right .3s cubic-bezier(.4,0,.2,1);
-  padding-bottom:calc(20px + var(--safe-bot));
-}
-#editPanel.open{right:0}
-#editOverlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.5);
-  z-index:498;opacity:0;pointer-events:none;transition:opacity .3s;
-}
-#editOverlay.open{opacity:1;pointer-events:all}
-
-.panel-top{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 16px;border-bottom:1px solid var(--bdr);
-  position:sticky;top:0;background:var(--bg2);z-index:1;
-}
-.panel-top .title{font-size:13px;font-weight:500;color:var(--w)}
-.panel-close{
-  width:28px;height:28px;border-radius:var(--rad);
-  background:var(--bg3);border:1px solid var(--bdr);
-  color:var(--w3);cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:16px;transition:all .15s;
-}
-.panel-close:hover{background:var(--rd);border-color:var(--r);color:var(--r)}
-
-.panel-section{padding:14px 16px;border-bottom:1px solid var(--bdr)}
-.panel-section:last-child{border-bottom:none}
-.panel-sec-title{font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:var(--w3);margin-bottom:12px;display:flex;align-items:center;gap:5px}
-.panel-sec-title::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--g);flex-shrink:0}
-
-/* ── TASKS ── */
-.task{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr);cursor:pointer}
-.task:last-child{border-bottom:none}
-.task.done{opacity:.35}
-.tchk{width:14px;height:14px;border:1px solid var(--bdr2);border-radius:3px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:9px}
-.task.done .tchk{background:var(--g3);border-color:var(--g3);color:var(--bg)}
-
-/* ── LOG ── */
-.log-e{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--bdr)}
-.log-e:last-child{border-bottom:none}
-.ld{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
-
-/* ── PLANTAS ── */
-.plant-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad2);padding:14px;margin-bottom:10px}
-.prog-bar{height:5px;border-radius:3px;background:var(--bg5);overflow:hidden}
-.prog-fill{height:100%;border-radius:3px;transition:width .5s}
-.phase-tl{display:flex;gap:2px;height:18px;border-radius:4px;overflow:hidden;margin:6px 0}
-.phase-seg{display:flex;align-items:center;justify-content:center;font-size:7px;letter-spacing:.3px;text-transform:uppercase}
-.blm-g{position:relative;height:8px;border-radius:4px;background:var(--bg5);overflow:hidden;margin:4px 0}
-.blm-f{height:100%;border-radius:4px;transition:width .5s}
-
-/* ── STATE MACHINE ── */
-.sm-step{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr);transition:background .2s}
-.sm-step:last-child{border-bottom:none}
-.sm-num{width:22px;height:22px;border-radius:50%;background:var(--bg4);border:1px solid var(--bdr2);color:var(--w3);font-size:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
-.sm-step.running .sm-num{background:var(--ad);border-color:rgba(251,191,36,.3);color:var(--a);animation:blink .8s infinite}
-.sm-step.done .sm-num{background:var(--g3);border-color:var(--g3);color:var(--bg)}
-.sm-step.error .sm-num{background:var(--rd);border-color:rgba(248,113,113,.3);color:var(--r)}
-.sm-step.active .sm-num{background:var(--ad);border-color:rgba(251,191,36,.3);color:var(--a)}
-.t-bar{height:3px;border-radius:2px;background:var(--bg5);overflow:hidden;margin-top:6px}
-.t-fill{height:100%;border-radius:2px;transition:width 1s linear}
-
-/* ── IR CONTROLES ── */
-.ir-pad{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-
-/* ── TOAST ── */
-.toast{position:fixed;bottom:calc(20px + var(--safe-bot));left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rad2);padding:10px 18px;font-size:11px;color:var(--w2);transition:transform .3s ease;z-index:999;white-space:nowrap;pointer-events:none}
-.toast.show{transform:translateX(-50%) translateY(0)}
-.toast.ok-t{border-color:var(--g3);color:var(--g)}
-.toast.err-t{border-color:rgba(248,113,113,.3);color:var(--r)}
-
-/* ── TABELA ── */
-table{width:100%;border-collapse:collapse;font-size:10px}
-th{padding:6px 8px;border-bottom:1px solid var(--bdr);color:var(--w3);text-align:left;font-weight:500;font-size:8px;letter-spacing:.8px;text-transform:uppercase}
-td{padding:8px;border-bottom:1px solid var(--bdr);color:var(--w2)}
-tr:last-child td{border-bottom:none}
-tr.hl td:first-child{color:var(--g)}
-tr.hl{background:rgba(163,230,53,.04)}
-
-/* ── CALENDAR ── */
-.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-.cal-d{border:1px solid var(--bdr);border-radius:6px;padding:6px 4px;text-align:center;cursor:pointer;font-size:11px;color:var(--w3)}
-.cal-d.today{border-color:var(--g);color:var(--g)}
-.cal-d.has::after{content:'';display:block;width:3px;height:3px;border-radius:50%;background:var(--g);margin:2px auto 0;opacity:.6}
-.cal-h{font-size:8px;color:var(--w4);text-align:center;padding:3px 0;letter-spacing:.5px;text-transform:uppercase}
-
-/* ── MISC ── */
-.fl{font-size:8px;color:var(--w3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-#dashboard>*{animation:fadeUp .2s ease both}
-#dashboard>*:nth-child(2){animation-delay:.04s}
-#dashboard>*:nth-child(3){animation-delay:.08s}
-#dashboard>*:nth-child(4){animation-delay:.12s}
-#dashboard>*:nth-child(5){animation-delay:.16s}
-
-/* ── GRID LAYOUT FIXO ── */
 #cCiclo    {grid-column:1;  grid-row:1/3}
 #cVpd      {grid-column:2;  grid-row:1}
 #cClima    {grid-column:3/5;grid-row:1}
 #cLuz      {grid-column:2;  grid-row:2}
 #cControles{grid-column:3;  grid-row:2}
 #cAutoState{grid-column:4;  grid-row:1/3}
-@media(max-width:900px){
-  #dashboard{grid-template-columns:repeat(2,1fr)}
+
+@media(max-width:960px){
+  #dashboard{grid-template-columns:1fr 1fr;grid-template-rows:auto}
   #cCiclo,#cVpd,#cClima,#cLuz,#cControles,#cAutoState{grid-column:auto;grid-row:auto}
 }
-@media(max-width:600px){
+@media(max-width:540px){
   #dashboard{grid-template-columns:1fr}
   #editPanel{width:100vw}
-}}
+}
 
-/* Secagem banner */
-.banner-secagem{background:var(--pud);border:1px solid rgba(192,132,252,.3);border-radius:var(--rad);padding:8px 12px;display:none;margin-bottom:10px}
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad2);padding:14px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.sec{font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:var(--w3);margin-bottom:10px;display:flex;align-items:center;gap:5px;flex-shrink:0}
+.sec::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--g);flex-shrink:0}
+.sm{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:11px}
+.badge{font-size:9px;padding:2px 8px;border-radius:20px;display:inline-block;white-space:nowrap}
+.ok{color:var(--g);background:var(--gd)}
+.warn{color:var(--a);background:var(--ad)}
+.info{color:var(--b);background:var(--bd)}
+.danger{color:var(--r);background:var(--rd)}
+.off-st{color:var(--w3);background:var(--bg4)}
+.fl{font-size:8px;color:var(--w3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
 
-/* mini chart */
-.mini-chart-wrap{height:48px;position:relative;margin-top:8px}
+/* PLANTS */
+.plant-item{background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--rad);padding:10px;margin-bottom:8px}
+.prog-bar{height:4px;border-radius:2px;background:var(--bg5);overflow:hidden;margin-top:5px}
+.prog-fill{height:100%;border-radius:2px;transition:width .5s}
+.phase-tl{display:flex;gap:2px;height:8px;border-radius:3px;overflow:hidden;margin-top:5px}
+.ph{flex:1}
 
-@keyframes lightPulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.15)}50%{box-shadow:0 0 0 8px rgba(251,191,36,0)}}
+/* VPD BAR */
+.vpd-bar{position:relative;height:12px;border-radius:6px;background:linear-gradient(to right,#1e3a8a 0%,#2563eb 15%,#15803d 30%,#4ade80 48%,#ca8a04 70%,#c2410c 85%,#dc2626 100%)}
+.vpd-pin{position:absolute;top:-4px;width:2px;height:20px;background:var(--w);border-radius:1px;transform:translateX(-50%);transition:left .8s ease}
+.vpd-pin::before{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--w);border:2px solid var(--bg)}
+.range-ov{position:absolute;top:0;bottom:0;background:rgba(255,255,255,.12);border-left:2px solid rgba(255,255,255,.5);border-right:2px solid rgba(255,255,255,.5);pointer-events:none}
 
+/* LUZ */
+@keyframes lightPulse{0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,.2)}50%{box-shadow:0 0 0 10px rgba(251,191,36,0)}}
+.sun-ring{width:52px;height:52px;border-radius:50%;border:2px solid rgba(251,191,36,.35);display:flex;align-items:center;justify-content:center}
+.sun-ring.on{animation:lightPulse 3s ease-in-out infinite}
+.sun-core{width:26px;height:26px;border-radius:50%}
+.light-bar-wrap{position:absolute;bottom:10px;left:12px;right:12px;display:grid;grid-template-columns:repeat(24,1fr);gap:1px;height:4px}
+
+/* INPUTS */
+input,select,textarea{background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rad);color:var(--w);font-family:'IBM Plex Mono',monospace;font-size:11px;padding:7px 9px;outline:none;transition:border-color .15s;width:100%}
+input:focus,select:focus,textarea:focus{border-color:var(--g3)}
+select option{background:var(--bg3)}
+textarea{resize:vertical;min-height:60px}
+input[type=time]{color-scheme:dark}
+
+/* BUTTONS */
+.btn{background:var(--gd);border:1px solid var(--g3);color:var(--g);font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.8px;padding:7px 12px;border-radius:var(--rad);cursor:pointer;transition:all .15s;text-transform:uppercase}
+.btn:hover{background:var(--g3);color:var(--bg)}
+.btn:active{transform:scale(.97)}
+.btn-g{background:transparent;border:1px solid var(--bdr2);color:var(--w3)}
+.btn-g:hover{color:var(--w2);background:var(--bg3)}
+.btn-r{background:var(--rd);border:1px solid rgba(248,113,113,.25);color:var(--r)}
+.btn-w{background:var(--ad);border:1px solid rgba(251,191,36,.25);color:var(--a)}
+
+/* STATE MACHINE */
+.sm-step{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr)}
+.sm-step:last-child{border-bottom:none}
+.sm-num{width:20px;height:20px;border-radius:50%;background:var(--bg4);border:1px solid var(--bdr2);color:var(--w3);font-size:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
+.sm-step.running .sm-num{background:var(--ad);border-color:rgba(251,191,36,.3);color:var(--a);animation:blink .8s infinite}
+.sm-step.done .sm-num{background:var(--g3);border-color:var(--g3);color:var(--bg)}
+.sm-step.error .sm-num{background:var(--rd);border-color:rgba(248,113,113,.3);color:var(--r)}
+.sm-step.active .sm-num{background:var(--ad);border-color:rgba(251,191,36,.3);color:var(--a)}
+.t-bar{height:3px;border-radius:2px;background:var(--bg5);overflow:hidden;margin-top:5px}
+.t-fill{height:100%;border-radius:2px;transition:width 1s linear}
+
+/* LOG */
+.log-e{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)}
+.log-e:last-child{border-bottom:none}
+.ld{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.log-ov{position:absolute;inset:0;background:rgba(10,10,10,.93);border-radius:var(--rad2);z-index:10;display:none;flex-direction:column;padding:12px;gap:6px}
+.log-ov.open{display:flex}
+
+/* PANEL */
+#editPanel{position:fixed;top:0;right:-420px;bottom:0;width:380px;max-width:100vw;background:var(--bg2);border-left:1px solid var(--bdr2);z-index:600;overflow-y:auto;transition:right .3s cubic-bezier(.4,0,.2,1);padding-bottom:calc(20px + var(--safe-bot))}
+#editPanel.open{right:0}
+#editOverlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:498;opacity:0;pointer-events:none;transition:opacity .3s}
+#editOverlay.open{opacity:1;pointer-events:all}
+.panel-top{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--bdr);position:sticky;top:0;background:var(--bg2);z-index:1}
+.panel-top .title{font-size:13px;font-weight:500}
+.panel-close{width:28px;height:28px;border-radius:var(--rad);background:var(--bg3);border:1px solid var(--bdr);color:var(--w3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s}
+.panel-close:hover{background:var(--rd);border-color:var(--r);color:var(--r)}
+.panel-section{padding:14px 16px;border-bottom:1px solid var(--bdr)}
+.panel-section:last-child{border-bottom:none}
+.panel-sec-title{font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:var(--w3);margin-bottom:12px;display:flex;align-items:center;gap:5px}
+.panel-sec-title::before{content:'';width:3px;height:3px;border-radius:50%;background:var(--g);flex-shrink:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+
+/* TASKS */
+.task{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bdr);cursor:pointer}
+.task:last-child{border-bottom:none}
+.task.done{opacity:.35}
+.tchk{width:14px;height:14px;border:1px solid var(--bdr2);border-radius:3px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:9px}
+.task.done .tchk{background:var(--g3);border-color:var(--g3);color:var(--bg)}
+
+/* MISC */
+.plant-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rad2);padding:14px;margin-bottom:8px}
+.blm-g{height:6px;border-radius:3px;background:var(--bg5);overflow:hidden;margin:4px 0}
+.blm-f{height:100%;border-radius:3px;transition:width .5s}
+.toast{position:fixed;bottom:calc(20px + var(--safe-bot));left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid var(--bdr2);border-radius:var(--rad2);padding:10px 18px;font-size:11px;color:var(--w2);transition:transform .3s ease;z-index:999;white-space:nowrap;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.ok-t{border-color:var(--g3);color:var(--g)}
+.toast.err-t{border-color:rgba(248,113,113,.3);color:var(--r)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+#dashboard>.card{animation:fadeUp .2s ease both}
 </style>
 </head>
 <body>
 <div class="toast" id="toast"></div>
 <div id="editOverlay" onclick="closePanel()"></div>
 
-<!-- TOPBAR -->
 <nav>
   <div class="logo">Grow<em>OS</em></div>
   <div class="nav-right">
@@ -272,97 +178,83 @@ tr.hl{background:rgba(163,230,53,.04)}
       <div class="dot" id="liveDot"></div>
       <span id="liveClock">--:--</span>
     </div>
-    <button class="btn-edit" id="btnRefresh" onclick="fetchSensor();toast('Atualizando...','ok')" title="Atualizar sensor" style="font-size:13px">↺</button>
-    <button class="btn-edit" id="btnEdit" onclick="togglePanel()" title="Editar / Configurações">✎</button>
+    <button class="btn-icon" onclick="fetchSensor();toast('Atualizando...','ok')" title="Atualizar" style="font-size:15px">↺</button>
+    <button class="btn-icon active" id="btnEdit" onclick="togglePanel()" title="Configurações">✎</button>
   </div>
 </nav>
 
-<!-- DASHBOARD GRID -->
 <div id="dashboard">
 
-  <!-- ① CICLO DE CULTIVO -->
+  <!-- ① CICLO — col1 rows1-2 -->
   <div class="card" id="cCiclo">
     <div class="sec">Ciclo de cultivo</div>
-    <div class="banner-secagem" id="secBanner">🌬 Modo secagem ativo</div>
-    <div id="plantCards" style="max-height:520px;overflow-y:auto"></div>
-    <div style="font-size:10px;color:var(--w3);text-align:center;padding:24px 0;border:1px dashed var(--bdr2);border-radius:var(--rad2);display:none" id="plantEmpty">
-      Sem plantas. Abra <span style="color:var(--g)">✎ Editar</span> para adicionar.
+    <div id="plantCards" style="overflow-y:auto;flex:1"></div>
+    <div id="plantEmpty" style="display:none;font-size:10px;color:var(--w3);text-align:center;padding:24px 0;border:1px dashed var(--bdr2);border-radius:var(--rad2)">
+      Sem plantas. Abra ✎ para adicionar.
     </div>
   </div>
 
-  <!-- ② VPD -->
+  <!-- ② VPD — col2 row1 -->
   <div class="card" id="cVpd">
-  <div style="display:none" class="vpd-extra">>
-    <div class="sec" style="justify-content:space-between;margin-bottom:14px">
+    <div class="sec" style="justify-content:space-between;margin-bottom:8px">
       <span style="display:flex;align-items:center;gap:5px"><span style="width:3px;height:3px;border-radius:50%;background:var(--g);display:inline-block"></span>VPD — Inkbird</span>
       <span class="badge off-st" id="hVPDBadge">—</span>
     </div>
     <div style="display:flex;align-items:baseline;gap:5px;margin-bottom:10px">
-      <div style="font-family:'IBM Plex Sans',sans-serif;font-size:40px;font-weight:600;line-height:1;letter-spacing:-1px;color:var(--g)" id="hVPD">—</div>
+      <div style="font-family:'IBM Plex Sans',sans-serif;font-size:44px;font-weight:600;line-height:1;letter-spacing:-1px;color:var(--g)" id="hVPD">—</div>
       <div style="font-size:12px;color:var(--w3)">kPa</div>
     </div>
-    <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--w3);margin-bottom:4px"><span>0.0</span><span>0.5</span><span>1.0</span><span>1.5</span><span>2.0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:8px;color:var(--w3);margin-bottom:3px"><span>0.0</span><span>0.5</span><span>1.0</span><span>1.5</span><span>2.0</span></div>
     <div class="vpd-bar">
-      <div class="range-ov" id="aRangeOv" style="left:35%;right:46%"></div>
+      <div class="range-ov" id="aRangeOv" style="left:40%;right:40%"></div>
       <div class="vpd-pin" id="vpdPin" style="left:0%"></div>
     </div>
     <div style="display:flex;justify-content:space-between;font-size:8px;margin-top:4px">
-      <span style="color:var(--g)"><span id="aRangeMinL">0.8</span> kPa</span>
+      <span style="color:var(--g)" id="aRangeMinL">0.8</span>
       <span style="color:var(--w3)" id="vpdDiag">—</span>
-      <span style="color:var(--a)"><span id="aRangeMaxL">1.2</span> kPa</span>
+      <span style="color:var(--a)" id="aRangeMaxL">1.2</span>
     </div>
-    <div style="margin-top:10px;padding:10px;background:var(--bg3);border-radius:var(--rad);font-size:9px;color:var(--w3);line-height:1.6" id="vpdAdv">Aguardando leitura...</div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
-      <div style="font-size:9px;color:var(--w4)" id="lastRead">—</div>
-      <button class="btn" onclick="fetchSensor()">↺ Atualizar</button>
+    <div style="margin-top:10px;padding:9px;background:var(--bg3);border-radius:var(--rad);font-size:9px;color:var(--w3);line-height:1.6;flex:1" id="vpdAdv">Aguardando leitura...</div>
+    <div style="font-size:9px;color:var(--w4);margin-top:8px" id="lastRead">—</div>
+  </div>
+
+  <!-- ③ CLIMA — col3+4 row1 -->
+  <div class="card" id="cClima" style="flex-direction:row;padding:0">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:6px">
+      <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w3)">Temperatura</div>
+      <div style="display:flex;align-items:baseline;gap:4px">
+        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:48px;font-weight:600;line-height:1;letter-spacing:-1px" id="hTemp">—</div>
+        <div style="font-size:14px;color:var(--w3)">°C</div>
+      </div>
+      <div class="badge off-st" id="hTempBadge">—</div>
+    </div>
+    <div style="width:1px;background:var(--bdr);align-self:stretch;flex-shrink:0;margin:16px 0"></div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:6px">
+      <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--w3)">Umidade</div>
+      <div style="display:flex;align-items:baseline;gap:4px">
+        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:48px;font-weight:600;line-height:1;letter-spacing:-1px" id="hHum">—</div>
+        <div style="font-size:14px;color:var(--w3)">%</div>
+      </div>
+      <div class="badge off-st" id="hHumBadge">—</div>
     </div>
   </div>
 
-  <!-- ③④ CLIMA -->
-  <div class="card" id="cClima" style="display:flex;flex-direction:row;align-items:stretch;padding:0">
-    <div class="clima-wrap" style="display:flex;flex-direction:row;align-items:center;width:100%;height:100%;padding:14px;gap:0">
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 10px">
-      <div class="tile-label" style="margin-bottom:0">Temperatura</div>
-      <div style="display:flex;align-items:baseline;gap:4px">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:42px;font-weight:600;line-height:1;letter-spacing:-1px" id="hTemp" class="clima-num">—</div>
-        <div style="font-size:13px;color:var(--w3)">°C</div>
-      </div>
-      <div class="tile-badge off-st" id="hTempBadge">—</div>
-      <div class="mini-chart-wrap" style="width:100%"><canvas id="chartTemp"></canvas></div>
-      <div class="tile-accent" id="hTempAcc" style="background:var(--a);opacity:.4"></div>
-    </div>
-    <div style="width:1px;background:var(--bdr2);align-self:stretch;flex-shrink:0"></div>
-    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0 10px">
-      <div class="tile-label" style="margin-bottom:0">Umidade</div>
-      <div style="display:flex;align-items:baseline;gap:4px">
-        <div style="font-family:'IBM Plex Sans',sans-serif;font-size:42px;font-weight:600;line-height:1;letter-spacing:-1px" id="hHum" class="clima-num">—</div>
-        <div style="font-size:13px;color:var(--w3)">%</div>
-      </div>
-      <div class="tile-badge off-st" id="hHumBadge">—</div>
-      <div class="mini-chart-wrap" style="width:100%"><canvas id="chartHum"></canvas></div>
-      <div class="tile-accent" id="hHumAcc" style="background:var(--b);opacity:.4"></div>
-    </div>
-  </div></div>
-
-  <!-- ⑤ LUZ -->
-  <div class="card" id="cLuz" style="align-items:center;justify-content:center;padding:14px;gap:0">
-    <div class="tile-label" style="position:absolute;top:12px;left:14px;margin-bottom:0">Luz</div>
-    <div id="lightIconWrap" style="width:52px;height:52px;border-radius:50%;border:2px solid rgba(251,191,36,.3);display:flex;align-items:center;justify-content:center;margin-bottom:8px">
-      <div id="lightCore" style="width:26px;height:26px;border-radius:50%;background:var(--a)"></div>
+  <!-- ④ LUZ — col2 row2 -->
+  <div class="card" id="cLuz" style="align-items:center;justify-content:center;padding:14px 14px 28px">
+    <div class="sec" style="position:absolute;top:12px;left:14px;margin-bottom:0">Luz</div>
+    <div id="lightIconWrap" class="sun-ring on" style="margin-bottom:8px">
+      <div id="lightCore" class="sun-core" style="background:var(--a)"></div>
     </div>
     <div style="font-size:13px;font-weight:500;letter-spacing:1px" id="lightTxt">—</div>
     <div style="font-size:9px;color:var(--w3);margin-top:3px" id="lightCycle">—</div>
     <div style="font-size:9px;color:var(--w3);margin-top:2px" id="lightNext">—</div>
-    <div style="position:absolute;bottom:10px;left:12px;right:12px;display:grid;grid-template-columns:repeat(24,1fr);gap:1px;height:4px" id="lightBar"></div>
-    <div class="tile-accent" id="hLightAcc" style="background:var(--a);opacity:.3"></div>
+    <div class="light-bar-wrap" id="lightBar"></div>
   </div>
 
-
-
-  <!-- ⑦ CONTROLE IR -->
+  <!-- ⑤ CONTROLE IR — col3 row2 -->
   <div class="card" id="cControles">
-    <div class="sec" style="margin-bottom:12px">Controle IR — Ekaza</div>
-    <div class="ir-pad">
+    <div class="sec">Controle IR — Ekaza</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;flex:1;align-content:center">
       <button class="btn" onclick="sendCmd('cool')">❄ Resfriar</button>
       <button class="btn btn-w" onclick="sendCmd('turbo')">⚡ Turbo</button>
       <button class="btn btn-g" onclick="sendCmd('fan')">💨 Fan</button>
@@ -370,56 +262,51 @@ tr.hl{background:rgba(163,230,53,.04)}
       <button class="btn btn-g" onclick="sendCmd('temp_down')">↓ Temp</button>
       <button class="btn btn-g" onclick="sendCmd('temp_up')">↑ Temp</button>
     </div>
-    <div class="sec" style="margin-top:12px;margin-bottom:8px">Log IR</div>
-    <div id="irLog" style="max-height:120px;overflow-y:auto">
-      <div style="font-size:9px;color:var(--w4);text-align:center;padding:12px 0">Nenhum sinal enviado.</div>
+    <div class="sec" style="margin-top:10px;margin-bottom:6px">Log IR</div>
+    <div id="irLog" style="max-height:90px;overflow-y:auto">
+      <div style="font-size:9px;color:var(--w4);text-align:center;padding:8px 0">Nenhum sinal enviado.</div>
     </div>
   </div>
 
-  <!-- ⑧ AUTOMAÇÃO STATE -->
-  <div class="card" id="cAutoState" style="position:relative;display:flex;flex-direction:column">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+  <!-- ⑥ AUTOMAÇÃO VPD — col4 rows1-2 -->
+  <div class="card" id="cAutoState" style="position:relative">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:6px;flex-shrink:0">
       <div class="sec" style="margin-bottom:0">Automação VPD</div>
       <div style="display:flex;align-items:center;gap:6px">
         <div style="width:7px;height:7px;border-radius:50%;background:var(--w4)" id="aDot"></div>
         <span style="font-size:9px;color:var(--w3)" id="aMainStatus">Desligado</span>
-        <button class="btn btn-g" onclick="toggleAutoLog()" style="font-size:8px;padding:4px 9px;letter-spacing:.4px">Log ↗</button>
+        <button class="btn btn-g" onclick="toggleAutoLog()" style="font-size:8px;padding:4px 9px">Log ↗</button>
         <button class="btn" id="aMainBtn" onclick="toggleAutoEngine()">Ligar</button>
       </div>
     </div>
-    <!-- Log overlay -->
-    <div id="autoLogOverlay" style="display:none;position:absolute;inset:0;background:rgba(10,10,10,.93);border-radius:var(--rad2);z-index:10;flex-direction:column;padding:12px;gap:6px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
-        <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--g)">Log de automação</div>
-        <button onclick="toggleAutoLog()" style="width:20px;height:20px;border-radius:5px;background:var(--bg3);border:1px solid var(--bdr2);color:var(--w3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:inherit">✕</button>
-      </div>
-      <div id="autoEngineLog" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
-        <div data-empty style="font-size:9px;color:var(--w4);text-align:center;padding:12px 0">—</div>
-      </div>
-    </div>
-    <div id="aStateFlow">
+    <div id="aStateFlow" style="flex:1;overflow-y:auto">
       <div class="sm-step" id="aSteps0"><div class="sm-num">1</div><div style="flex:1"><div style="font-size:10px">Leitura sensor</div><div style="font-size:9px;color:var(--w3)" id="aDescs0">—</div><div class="t-bar" id="aBars0" style="display:none"><div class="t-fill" id="aFills0" style="width:0%"></div></div></div><span class="badge off-st" id="aBadges0">—</span></div>
       <div class="sm-step" id="aSteps1"><div class="sm-num">2</div><div style="flex:1"><div style="font-size:10px">Análise VPD</div><div style="font-size:9px;color:var(--w3)" id="aDescs1">—</div></div><span class="badge off-st" id="aBadges1">—</span></div>
       <div class="sm-step" id="aSteps2"><div class="sm-num">3</div><div style="flex:1"><div style="font-size:10px">Comando IR</div><div style="font-size:9px;color:var(--w3)" id="aDescs2">—</div></div><span class="badge off-st" id="aBadges2">—</span></div>
       <div class="sm-step" id="aSteps3"><div class="sm-num">4</div><div style="flex:1"><div style="font-size:10px">Aguardando</div><div style="font-size:9px;color:var(--a);font-weight:500" id="aTimer"></div><div class="t-bar" id="aBars3" style="display:none"><div class="t-fill" id="aFills3" style="width:0%;background:var(--a)"></div></div></div><span class="badge off-st" id="aBadges3">—</span></div>
       <div class="sm-step" id="aSteps4"><div class="sm-num">5</div><div style="flex:1"><div style="font-size:10px">Confirmação</div><div style="font-size:9px;color:var(--w3)" id="aDescs4">—</div><div class="t-bar" id="aBars4" style="display:none"><div class="t-fill" id="aFills4" style="width:0%;background:var(--b)"></div></div></div><span class="badge off-st" id="aBadges4">—</span></div>
     </div>
-    <div class="g3" style="gap:6px;margin-top:10px">
+    <div class="g3" style="gap:6px;margin-top:10px;flex-shrink:0">
       <div class="sm" style="text-align:center;padding:8px"><div class="fl" style="margin-bottom:2px">Tentativas</div><div style="font-size:16px;font-weight:500" id="aTriesDisplay">0/3</div></div>
       <div class="sm" style="text-align:center;padding:8px"><div class="fl" style="margin-bottom:2px">Cmd</div><div style="font-size:10px;color:var(--w3)" id="lastCmdDisplay">—</div></div>
       <div class="sm" style="text-align:center;padding:8px"><div class="fl" style="margin-bottom:2px">Próx.</div><div style="font-size:10px;color:var(--w3)" id="aNextRead">—</div></div>
     </div>
-
+    <!-- Log overlay -->
+    <div class="log-ov" id="autoLogOverlay">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+        <div style="font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--g)">Log de automação</div>
+        <button onclick="toggleAutoLog()" style="width:20px;height:20px;border-radius:5px;background:var(--bg3);border:1px solid var(--bdr2);color:var(--w3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;font-family:inherit">✕</button>
+      </div>
+      <div id="autoEngineLog" style="flex:1;overflow-y:auto;display:flex;flex-direction:column">
+        <div data-empty style="font-size:9px;color:var(--w4);text-align:center;padding:12px 0">—</div>
+      </div>
+    </div>
   </div>
-
-
 
 </div><!-- /dashboard -->
 
 
-<!-- ═══════════════════════════════════════════════════════
-     PAINEL LATERAL EDITAR
-═══════════════════════════════════════════════════════ -->
+
 <div id="editPanel">
   <div class="panel-top">
     <div class="title">✎ &nbsp;Editar / Configurações</div>
@@ -592,7 +479,6 @@ tr.hl{background:rgba(163,230,53,.04)}
 
 </div><!-- /editPanel -->
 
-
 <script>
 const WORKER="https://keep.portugalmedeiros.workers.dev";
 let liveTemp=null,liveHum=null,liveVPD=null;
@@ -709,25 +595,23 @@ function updLight(){
   let offMin=fh*60+fm;const cross=offMin<=onMin;if(cross)offMin+=1440;
   const lightOn=cross?(cur>=onMin||cur<fh*60+fm):(cur>=onMin&&cur<offMin);
   const lightH=cross?(1440-onMin+fh*60+fm)/60:(offMin-onMin)/60,darkH=24-lightH;
-  document.getElementById('lightCycle').textContent='Ciclo '+Math.round(lightH)+'/'+Math.round(darkH)+'h';
-  const ltxt=document.getElementById('lightTxt'),lnxt=document.getElementById('lightNext'),la=document.getElementById('hLightAcc');
+  document.getElementById('lightCycle').textContent=Math.round(lightH)+'/'+Math.round(darkH)+'h';
+  const ltxt=document.getElementById('lightTxt'),lnxt=document.getElementById('lightNext'),la=null;
   if(lightOn){
     ltxt.textContent='ACESA';ltxt.style.color='var(--a)';
     const wrap=document.getElementById('lightIconWrap'),core=document.getElementById('lightCore');
-    if(wrap){wrap.style.borderColor='rgba(251,191,36,.35)';wrap.style.animation='lightPulse 3s ease-in-out infinite';}
-    if(core){core.style.background='var(--a)';core.style.borderRadius='50%';}
-    if(la)la.style.background='var(--a)';
+    if(wrap){wrap.classList.add('on');wrap.style.borderColor='rgba(251,191,36,.35)';}
+    if(core){core.style.background='var(--a)';core.style.border='';}
     let ml=offMin-cur;if(ml<0)ml+=1440;lnxt.textContent='Apaga em '+Math.floor(ml/60)+'h '+ml%60+'min';
   }else{
     ltxt.textContent='APAGADA';ltxt.style.color='var(--w3)';
     const wrap2=document.getElementById('lightIconWrap'),core2=document.getElementById('lightCore');
-    if(wrap2){wrap2.style.borderColor='rgba(255,255,255,.1)';wrap2.style.animation='none';}
+    if(wrap2){wrap2.classList.remove('on');wrap2.style.borderColor='rgba(255,255,255,.1)';}
     if(core2){core2.style.background='transparent';core2.style.border='2px solid var(--w3)';}
-    if(la)la.style.background='var(--w4)';
     let ml=onMin-cur;if(ml<0)ml+=1440;lnxt.textContent='Acende em '+Math.floor(ml/60)+'h '+ml%60+'min';
   }
   const bar=document.getElementById('lightBar');let html='';
-  for(let i=0;i<48;i++){const sm=i*30;let son=cross?(sm>=onMin||sm<fh*60+fm):(sm>=onMin&&sm<offMin);const isCur=sm<=cur&&cur<sm+30;html+=`<div style="border-radius:2px;background:${son?'var(--a)':'var(--bg5)'};${isCur?'outline:1px solid var(--w);':''}"></div>`;}
+  for(let i=0;i<24;i++){const sm=i*60;let son=cross?(sm>=onMin||sm<fh*60+fm):(sm>=onMin&&sm<offMin);const isCur=sm<=cur&&cur<sm+60;html+=`<div style="border-radius:1px;height:100%;background:${son?'rgba(251,191,36,'+(isCur?'1':'.45')+')':'rgba(255,255,255,.06)'};${isCur?'outline:1px solid rgba(251,191,36,.8);':''}"></div>`;}
   bar.innerHTML=html;
 }
 
@@ -1069,8 +953,5 @@ setInterval(fetchSensor,60000);
 setInterval(clock,10000);
 setInterval(saveState,30000);
 </script>
-
-
-
 </body>
 </html>
